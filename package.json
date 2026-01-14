@@ -1,9 +1,16 @@
 {
-  "dependencies": {},
+  "scripts": {
+    "dev": "concurrently \"shopify theme dev --store vandanacustomv1\" \"bunx @tailwindcss/cli -i ./assets/tailwind.input.css -o ./assets/tailwind.output.css --watch\""
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.18",
+    "tailwindcss": "^4.1.18"
+  },
   "devDependencies": {
     "@shopify/prettier-plugin-liquid": "^1.10.0",
-    "prettier": "^3.7.4",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "concurrently": "^9.2.1",
+    "prettier": "^3.7.4"
   },
   "name": "meggma",
   "private": true,
