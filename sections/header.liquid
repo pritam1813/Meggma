@@ -201,7 +201,7 @@
 {%- comment -%} Section-specific GSAP animations {%- endcomment -%}
 <script>
   (function () {
-    function initHeroAnimations() {
+    function initHeaderAnimations() {
       const header = document.querySelector('#site-header');
 
       ScrollTrigger.create({
@@ -225,9 +225,9 @@
 
     // Run when DOM is ready
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initHeroAnimations);
+      document.addEventListener('DOMContentLoaded', initHeaderAnimations);
     } else {
-      initHeroAnimations();
+      initHeaderAnimations();
     }
   })();
 </script>
