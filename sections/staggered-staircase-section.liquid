@@ -1,0 +1,233 @@
+{%- comment -%}
+  Staggered Staircase Section
+  - Each step is a block (default 3, can add more)
+  - Customizable image size (1:1 aspect ratio)
+  - GSAP scroll-triggered stagger animation
+  - Staircase pattern: col-start increases by 2 for each step (1, 3, 5...)
+{%- endcomment -%}
+
+{%- liquid
+  assign image_size = section.settings.image_size | default: 128
+  assign bg_color = section.settings.background_color | default: '#f9fafb'
+  assign card_bg_color = section.settings.card_background_color | default: '#ffffff'
+  assign heading_color = section.settings.heading_color | default: '#1f2937'
+  assign text_color = section.settings.text_color | default: '#4b5563'
+-%}
+
+<style>
+  #staircase-section-{{ section.id }} {
+    --staircase-image-size: {{ image_size }}px;
+    background-color: {{ bg_color }};
+  }
+
+  #staircase-section-{{ section.id }} .staircase-card {
+    background-color: {{ card_bg_color }};
+  }
+
+  #staircase-section-{{ section.id }} .staircase-title {
+    color: {{ heading_color }};
+  }
+
+  #staircase-section-{{ section.id }} .staircase-description {
+    color: {{ text_color }};
+  }
+
+  #staircase-section-{{ section.id }} .staircase-image-wrapper {
+    width: var(--staircase-image-size);
+    height: var(--staircase-image-size);
+  }
+
+  @media (max-width: 768px) {
+    #staircase-section-{{ section.id }} .staircase-image-wrapper {
+      width: 96px;
+      height: 96px;
+    }
+  }
+
+  /* Initial state for GSAP animation */
+  #staircase-section-{{ section.id }} .staircase-card {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+</style>
+
+<section id="staircase-section-{{ section.id }}" class="py-20 px-6">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-y-12" id="staircase-grid-{{ section.id }}">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          # Format step number with leading zero (01, 02, 03...)
+          assign step_number = forloop.index | prepend: '00' | slice: -2, 2
+
+          # Calculate column start: 1, 3, 5, 7... (increases by 2 each step)
+          assign col_start = forloop.index0 | times: 2 | plus: 1
+
+          # Cap at column 6 max to prevent overflow (col-start-6 + span-7 = 12)
+          if col_start > 6
+            assign col_start = 6
+          endif
+        -%}
+        <div
+          class="staircase-card md:col-span-7 flex items-center p-6 rounded-2xl shadow-lg gap-6 {% if col_start == 1 %}md:col-start-1{% elsif col_start == 3 %}md:col-start-3{% elsif col_start == 5 %}md:col-start-5{% else %}md:col-start-6{% endif %}"
+          {{ block.shopify_attributes }}
+        >
+          <div class="staircase-image-wrapper flex-shrink-0 rounded-xl overflow-hidden bg-gray-200">
+            {%- if block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: image_size | times: 2 }}"
+                alt="{{ block.settings.image.alt | escape | default: block.settings.title }}"
+                class="w-full h-full object-contain"
+                width="{{ image_size }}"
+                height="{{ image_size }}"
+                loading="lazy"
+              >
+            {%- else -%}
+              {{ 'image' | placeholder_svg_tag: 'w-full h-full' }}
+            {%- endif -%}
+          </div>
+          <div>
+            <h3 class="staircase-title text-xl font-bold">
+              {{ step_number }}. {{ block.settings.title | default: 'Step Title' }}
+            </h3>
+            <p class="staircase-description mt-1">
+              {{ block.settings.description | default: 'Add a description for this step.' }}
+            </p>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    function initStaircaseAnimations() {
+      const sectionId = '{{ section.id }}';
+      const items = document.querySelectorAll('#staircase-grid-' + sectionId + ' .staircase-card');
+
+      if (!items.length || !window.gsap || !window.ScrollTrigger) return;
+
+      gsap.to(items, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '#staircase-grid-' + sectionId,
+          start: 'top 80%',
+          toggleActions: 'play none none reset',
+        },
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initStaircaseAnimations);
+    } else {
+      initStaircaseAnimations();
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Staircase Section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "image_size",
+      "label": "Image size",
+      "min": 64,
+      "max": 200,
+      "step": 8,
+      "default": 128,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#f9fafb"
+    },
+    {
+      "type": "color",
+      "id": "card_background_color",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1f2937"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#4b5563"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Step Title"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Add a description for this step."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Staircase Section",
+      "blocks": [
+        {
+          "type": "step",
+          "settings": {
+            "title": "Strategy Phase",
+            "description": "Defining the blueprint and setting clear objectives for the roadmap ahead."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Design & Build",
+            "description": "Translating abstract ideas into functional, high-quality components."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Final Delivery",
+            "description": "Ensuring excellence through testing and launching the final result."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
