@@ -14,14 +14,18 @@
 <div class="product-info">
   <h1>{{ product.title }}</h1>
   <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
+  <div>{{ product.description }}</div>
 </div>
 
 <div class="product-form">
   {% form 'product', product %}
     {% assign current_variant = product.selected_or_first_available_variant %}
 
-    <select name="id">
+    {%- comment -%} Variant selector with label for accessibility {%- endcomment -%}
+    <label for="variant-select-{{ section.id }}" class="sr-only">
+      {{ 'products.product.select_variant' | t | default: 'Select variant' }}
+    </label>
+    <select name="id" id="variant-select-{{ section.id }}">
       {% for variant in product.variants %}
         <option
           value="{{ variant.id }}"
@@ -34,12 +38,40 @@
       {% endfor %}
     </select>
 
-    <input type="text" name="quantity" min="1" value="1">
+    {%- comment -%} Quantity input with label for accessibility {%- endcomment -%}
+    <label for="quantity-{{ section.id }}" class="sr-only">
+      {{ 'products.product.quantity' | t | default: 'Quantity' }}
+    </label>
+    <input
+      type="number"
+      id="quantity-{{ section.id }}"
+      name="quantity"
+      min="1"
+      value="1"
+      aria-label="{{ 'products.product.quantity' | t | default: 'Quantity' }}"
+    >
 
-    <input type="submit" value="Add to cart">
+    <button type="submit">
+      {{ 'products.product.add_to_cart' | t | default: 'Add to cart' }}
+    </button>
     {{ form | payment_button }}
   {% endform %}
 </div>
+
+{%- comment -%} Screen reader only class for accessibility labels {%- endcomment -%}
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
 
 {% schema %}
 {

@@ -48,5 +48,19 @@
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"
+  },
+  "products": {
+    "product": {
+      "select_variant": "Select variant",
+      "quantity": "Quantity",
+      "add_to_cart": "Add to cart"
+    }
+  },
+  "general": {
+    "header": "Header",
+    "product": "Product"
+  },
+  "labels": {
+    "menu": "Menu"
   }
 }
