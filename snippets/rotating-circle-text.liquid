@@ -1,0 +1,106 @@
+{%- comment -%}
+  Rotating Circle Text Snippet
+
+  A reusable SVG component with center text and circular text that rotates on scroll.
+
+  Parameters:
+  - id: Unique identifier for this instance (required for GSAP targeting)
+  - radius: Circle radius in pixels (default: 120)
+  - center_text_line1: First line of center text
+  - center_text_line2: Second line of center text
+  - circular_text: Text that rotates around the center
+  - center_font_size: Font size for center text (default: 24)
+  - circular_font_size: Font size for circular text (default: 14)
+  - center_color: Color for center text (default: #1e293b)
+  - circular_color: Color for circular text (default: #4f46e5)
+  - trigger_element: Element ID to trigger scroll animation (optional)
+  - size: Width/height of SVG container (default: 400)
+
+  @example
+  {% render 'rotating-circle-text',
+    id: 'my-circle',
+    radius: 120,
+    center_text_line1: 'Main',
+    center_text_line2: 'Text',
+    circular_text: 'Circular Text Around The Center •',
+    trigger_element: 'my-section'
+  %}
+{%- endcomment -%}
+
+{%- liquid
+  assign svg_id = id | default: 'rotating-circle'
+  assign svg_size = size | default: 400
+  assign circle_radius = radius | default: 120
+  assign center_x = svg_size | divided_by: 2
+  assign center_y = svg_size | divided_by: 2
+  assign center_fs = center_font_size | default: 24
+  assign circular_fs = circular_font_size | default: 14
+  assign center_clr = center_color | default: '#1e293b'
+  assign circular_clr = circular_color | default: '#4f46e5'
+  assign line1 = center_text_line1 | default: 'Main'
+  assign line2 = center_text_line2 | default: 'Text'
+  assign circ_text = circular_text | default: 'Circular Text Surrounding The Main Text • Cool SVG Design •'
+  assign trigger = trigger_element | default: ''
+-%}
+
+<svg
+  viewBox="0 0 {{ svg_size }} {{ svg_size }}"
+  xmlns="http://www.w3.org/2000/svg"
+  class="w-full h-auto"
+  id="{{ svg_id }}"
+>
+  <defs>
+    <path
+      id="{{ svg_id }}-circle-path"
+      d="M {{ center_x }}, {{ center_y }} m -{{ circle_radius }}, 0 a {{ circle_radius }}, {{ circle_radius }} 0 1, 1 {{ circle_radius | times: 2 }}, 0 a {{ circle_radius }}, {{ circle_radius }} 0 1, 1 -{{ circle_radius | times: 2 }}, 0"
+    />
+  </defs>
+
+  {%- comment -%} Center Text {%- endcomment -%}
+  <text
+    x="{{ center_x }}"
+    y="{{ center_y }}"
+    text-anchor="middle"
+    style="fill: {{ center_clr }}; font-size: {{ center_fs }}px; font-weight: 700; text-transform: uppercase; letter-spacing: -0.05em;"
+  >
+    <tspan x="{{ center_x }}" dy="-0.2em">{{ line1 }}</tspan>
+    <tspan x="{{ center_x }}" dy="1.2em">{{ line2 }}</tspan>
+  </text>
+
+  {%- comment -%} Rotating Circular Text {%- endcomment -%}
+  <g id="{{ svg_id }}-rotating-text">
+    <text style="fill: {{ circular_clr }}; font-size: {{ circular_fs }}px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 500;">
+      <textPath href="#{{ svg_id }}-circle-path" startOffset="0%">
+        {{ circ_text }}
+      </textPath>
+    </text>
+  </g>
+</svg>
+
+{%- if trigger != blank -%}
+  <script>
+    (function() {
+      function initRotatingCircle{{ svg_id | replace: '-', '' }}() {
+        if (!window.gsap || !window.ScrollTrigger) return;
+
+        gsap.to('#{{ svg_id }}-rotating-text', {
+          rotation: 360,
+          transformOrigin: 'center center',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '#{{ trigger }}',
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1,
+          },
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initRotatingCircle{{ svg_id | replace: '-', '' }});
+      } else {
+        initRotatingCircle{{ svg_id | replace: '-', '' }}();
+      }
+    })();
+  </script>
+{%- endif -%}
