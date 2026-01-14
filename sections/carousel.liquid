@@ -1,30 +1,67 @@
-{% stylesheet %}
-  .carousel-section {
+{%- comment -%}
+  Carousel Section
+  - Products from selected collection with full product details
+  - Hover image swap on focused card
+  - Fully customizable colors
+{%- endcomment -%}
+
+{%- liquid
+  assign bg_color = section.settings.background_color | default: '#0f172a'
+  assign card_bg_color = section.settings.card_background_color | default: '#1e293b'
+  assign card_border_color = section.settings.card_border_color | default: 'rgba(255,255,255,0.1)'
+  assign card_focus_border_color = section.settings.card_focus_border_color | default: '#00d4ff'
+  assign card_text_color = section.settings.card_text_color | default: '#ffffff'
+  assign card_price_color = section.settings.card_price_color | default: '#00d4ff'
+  assign card_compare_price_color = section.settings.card_compare_price_color | default: '#9ca3af'
+  assign btn_text_color = section.settings.button_text_color | default: '#ffffff'
+  assign btn_bg_color = section.settings.button_background_color | default: 'rgba(255,255,255,0.1)'
+  assign btn_border_color = section.settings.button_border_color | default: 'rgba(255,255,255,0.2)'
+  assign btn_hover_color = section.settings.button_hover_color | default: '#00d4ff'
+  assign prev_text = section.settings.prev_button_text | default: '← Previous'
+  assign next_text = section.settings.next_button_text | default: 'Next →'
+  assign collection = section.settings.collection
+  assign show_rating = section.settings.show_rating
+-%}
+
+<style>
+  #carousel-section-{{ section.id }} {
+    --carousel-bg: {{ bg_color }};
+    --carousel-card-bg: {{ card_bg_color }};
+    --carousel-card-border: {{ card_border_color }};
+    --carousel-card-focus-border: {{ card_focus_border_color }};
+    --carousel-card-text: {{ card_text_color }};
+    --carousel-card-price: {{ card_price_color }};
+    --carousel-card-compare-price: {{ card_compare_price_color }};
+    --carousel-btn-text: {{ btn_text_color }};
+    --carousel-btn-bg: {{ btn_bg_color }};
+    --carousel-btn-border: {{ btn_border_color }};
+    --carousel-btn-hover: {{ btn_hover_color }};
+  }
+
+  #carousel-section-{{ section.id }} {
     margin: 0;
-    padding: 0;
-    background-color: var(--bg-color);
-    color: white;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 60px 0;
+    background-color: var(--carousel-bg);
+    color: var(--carousel-card-text);
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
   }
-  /* Full Width Container */
-  .carousel-container {
+
+  #carousel-section-{{ section.id }} .carousel-container {
     position: relative;
     width: 100vw;
-    height: 500px;
+    height: 550px;
     display: flex;
     align-items: center;
     justify-content: center;
     perspective: 1500px;
-    /* Depth of the 3D space */
   }
 
-  .carousel {
+  #carousel-section-{{ section.id }} .carousel {
     position: relative;
     width: 100%;
     height: 100%;
@@ -34,53 +71,124 @@
     align-items: center;
   }
 
-  /* Individual Card Styles */
-  .item {
+  #carousel-section-{{ section.id }} .carousel-item {
     position: absolute;
-    width: 300px;
-    /* Base width */
-    height: 400px;
+    width: 320px;
     max-width: 60vw;
-    /* Responsive constraint */
     border-radius: 20px;
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    background: var(--carousel-card-bg);
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-size: 5rem;
-    font-weight: bold;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--carousel-card-border);
     transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
     user-select: none;
     overflow: hidden;
+    text-decoration: none;
+    color: inherit;
   }
 
-  .item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    pointer-events: none;
+  #carousel-section-{{ section.id }} .carousel-item:hover {
+    text-decoration: none;
   }
 
-  .item.active {
-    border: 2px solid var(--primary-color);
+  #carousel-section-{{ section.id }} .carousel-item.active {
+    border: 2px solid var(--carousel-card-focus-border);
     box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
   }
 
-  /* Controls */
-  .controls {
+  #carousel-section-{{ section.id }} .carousel-item__image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 320px;
+    overflow: hidden;
+    background: rgba(0,0,0,0.2);
+  }
+
+  #carousel-section-{{ section.id }} .carousel-item__image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 0.4s ease;
+  }
+
+  #carousel-section-{{ section.id }} .carousel-item__image--hover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+  }
+
+  #carousel-section-{{ section.id }} .carousel-item.active:hover .carousel-item__image--primary {
+    opacity: 0;
+  }
+
+  #carousel-section-{{ section.id }} .carousel-item.active:hover .carousel-item__image--hover {
+    opacity: 1;
+  }
+
+  #carousel-section-{{ section.id }} .carousel-item__content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #carousel-section-{{ section.id }} .carousel-item__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--carousel-card-text);
+    margin: 0;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  #carousel-section-{{ section.id }} .carousel-item__rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.875rem;
+  }
+
+  #carousel-section-{{ section.id }} .carousel-item__rating svg {
+    width: 16px;
+    height: 16px;
+    fill: #fbbf24;
+  }
+
+  #carousel-section-{{ section.id }} .carousel-item__prices {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  #carousel-section-{{ section.id }} .carousel-item__price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--carousel-card-price);
+  }
+
+  #carousel-section-{{ section.id }} .carousel-item__compare-price {
+    font-size: 1rem;
+    color: var(--carousel-card-compare-price);
+    text-decoration: line-through;
+  }
+
+  #carousel-section-{{ section.id }} .carousel-controls {
     display: flex;
     gap: 30px;
     margin-top: 40px;
     z-index: 100;
   }
 
-  button {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+  #carousel-section-{{ section.id }} .carousel-btn {
+    background: var(--carousel-btn-bg);
+    border: 1px solid var(--carousel-btn-border);
+    color: var(--carousel-btn-text);
     padding: 12px 24px;
     border-radius: 30px;
     cursor: pointer;
@@ -89,129 +197,276 @@
     backdrop-filter: blur(10px);
   }
 
-  button:hover {
-    background: var(--primary-color);
+  #carousel-section-{{ section.id }} .carousel-btn:hover {
+    background: var(--carousel-btn-hover);
     color: black;
     transform: translateY(-2px);
   }
 
-  button:active {
+  #carousel-section-{{ section.id }} .carousel-btn:active {
     transform: translateY(0);
   }
-{% endstylesheet %}
 
-<section class="carousel-section">
+  #carousel-section-{{ section.id }} .placeholder-card .carousel-item__content {
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+  }
+</style>
+
+<section id="carousel-section-{{ section.id }}" class="carousel-section">
   <div class="carousel-container">
-    <div class="carousel" id="carousel">
-      <div class="item">
-        <img src="vandana carousel/img1.webp" alt="" width="300" height="400">
-      </div>
-      <div class="item">
-        <img src="vandana carousel/img2.webp" alt="" width="300" height="400">
-      </div>
-      <div class="item">
-        <img src="vandana carousel/img3.webp" alt="" width="300" height="400">
-      </div>
-      <div class="item">
-        <img src="vandana carousel/img4.webp" alt="" width="300" height="400">
-      </div>
-      <div class="item">
-        <img src="vandana carousel/img5.webp" alt="" width="300" height="400">
-      </div>
-      <div class="item">
-        <img src="vandana carousel/img6.webp" alt="" width="300" height="400">
-      </div>
-      <div class="item">
-        <img src="vandana carousel/img7.webp" alt="" width="300" height="400">
-      </div>
+    <div class="carousel" id="carousel-{{ section.id }}">
+      {%- if collection != blank and collection.products.size > 0 -%}
+        {%- for product in collection.products limit: 10 -%}
+          <a href="{{ product.url }}" class="carousel-item" aria-label="{{ product.title }}">
+            <div class="carousel-item__image-wrapper">
+              {%- if product.featured_image != blank -%}
+                <img
+                  src="{{ product.featured_image | image_url: width: 640 }}"
+                  alt="{{ product.featured_image.alt | escape | default: product.title }}"
+                  class="carousel-item__image carousel-item__image--primary"
+                  width="320"
+                  height="320"
+                  loading="lazy"
+                >
+                {%- if product.images.size > 1 -%}
+                  <img
+                    src="{{ product.images[1] | image_url: width: 640 }}"
+                    alt="{{ product.images[1].alt | escape | default: product.title }}"
+                    class="carousel-item__image carousel-item__image--hover"
+                    width="320"
+                    height="320"
+                    loading="lazy"
+                  >
+                {%- endif -%}
+              {%- else -%}
+                {{ 'product-1' | placeholder_svg_tag: 'carousel-item__image' }}
+              {%- endif -%}
+            </div>
+            <div class="carousel-item__content">
+              <h3 class="carousel-item__title">{{ product.title }}</h3>
+
+              {%- if show_rating -%}
+                <div class="carousel-item__rating">
+                  {%- for i in (1..5) -%}
+                    <svg viewBox="0 0 20 20" aria-hidden="true">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+
+              <div class="carousel-item__prices">
+                <span class="carousel-item__price">{{ product.price | money }}</span>
+                {%- if product.compare_at_price > product.price -%}
+                  <span class="carousel-item__compare-price">{{ product.compare_at_price | money }}</span>
+                {%- endif -%}
+              </div>
+            </div>
+          </a>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for i in (1..7) -%}
+          <div class="carousel-item placeholder-card">
+            <div class="carousel-item__image-wrapper">
+              {{ 'product-1' | placeholder_svg_tag: 'carousel-item__image' }}
+            </div>
+            <div class="carousel-item__content">
+              <h3 class="carousel-item__title">Product Name</h3>
+              <div class="carousel-item__prices">
+                <span class="carousel-item__price">$99.00</span>
+                <span class="carousel-item__compare-price">$129.00</span>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
     </div>
   </div>
 
-  <div class="controls">
-    <button id="prevBtn">← Previous</button>
-    <button id="nextBtn">Next →</button>
+  <div class="carousel-controls">
+    <button class="carousel-btn" id="prevBtn-{{ section.id }}" type="button">{{ prev_text }}</button>
+    <button class="carousel-btn" id="nextBtn-{{ section.id }}" type="button">{{ next_text }}</button>
   </div>
 </section>
 
-{% javascript %}
-  const carousel = document.getElementById('carousel');
-  const items = document.querySelectorAll('.item');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
+<script>
+  (function () {
+    function initCarousel() {
+      const sectionId = '{{ section.id }}';
+      const carousel = document.getElementById('carousel-' + sectionId);
+      const items = carousel.querySelectorAll('.carousel-item');
+      const prevBtn = document.getElementById('prevBtn-' + sectionId);
+      const nextBtn = document.getElementById('nextBtn-' + sectionId);
 
-  let currentIndex = 0;
+      if (items.length === 0) return;
 
-  function updateCarousel() {
-    const width = window.innerWidth;
+      let currentIndex = 0;
 
-    // Responsive logic:
-    // Desktop: spread is wider (250px)
-    // Mobile: spread is tighter based on screen width
-    const spread = width > 1000 ? 280 : width / 3.5;
+      function updateCarousel() {
+        const width = window.innerWidth;
+        const spread = width > 1000 ? 300 : width / 3.5;
 
-    items.forEach((item, index) => {
-      // Calculate the circular distance
-      let distance = index - currentIndex;
+        items.forEach((item, index) => {
+          let distance = index - currentIndex;
 
-      // Wrap around logic for infinite loop
-      if (distance > items.length / 2) distance -= items.length;
-      if (distance < -items.length / 2) distance += items.length;
+          if (distance > items.length / 2) distance -= items.length;
+          if (distance < -items.length / 2) distance += items.length;
 
-      const absDist = Math.abs(distance);
+          const absDist = Math.abs(distance);
+          const xOffset = distance * spread;
+          const zOffset = absDist * -180;
+          const rotationY = distance * -15;
+          const scale = 1 - absDist * 0.15;
+          const opacity = 1 - absDist * 0.3;
+          const zIndex = 100 - absDist;
 
-      // Transformation Calculations
-      const xOffset = distance * spread;
-      const zOffset = absDist * -180; // Depth
-      const rotationY = distance * -15; // Tilted symmetry
-      const scale = 1 - absDist * 0.15;
-      const opacity = 1 - absDist * 0.3;
-      const zIndex = 100 - absDist;
+          item.style.transform = `
+            translateX(${xOffset}px) 
+            translateZ(${zOffset}px) 
+            rotateY(${rotationY}deg) 
+            scale(${scale})
+          `;
 
-      // Apply styles
-      item.style.transform = `
-          translateX(${xOffset}px) 
-          translateZ(${zOffset}px) 
-          rotateY(${rotationY}deg) 
-          scale(${scale})
-        `;
+          item.style.zIndex = Math.round(zIndex);
+          item.style.opacity = opacity > 0 ? opacity : 0;
+          item.style.pointerEvents = distance === 0 ? 'auto' : 'none';
+          item.classList.toggle('active', distance === 0);
+        });
+      }
 
-      item.style.zIndex = Math.round(zIndex);
-      item.style.opacity = opacity > 0 ? opacity : 0;
-      item.style.pointerEvents = distance === 0 ? 'auto' : 'none';
+      nextBtn.addEventListener('click', () => {
+        currentIndex = (currentIndex + 1) % items.length;
+        updateCarousel();
+      });
 
-      // Add active class for styling
-      item.classList.toggle('active', distance === 0);
-    });
-  }
+      prevBtn.addEventListener('click', () => {
+        currentIndex = (currentIndex - 1 + items.length) % items.length;
+        updateCarousel();
+      });
 
-  // Navigation
-  nextBtn.addEventListener('click', () => {
-    currentIndex = (currentIndex + 1) % items.length;
-    updateCarousel();
-  });
+      window.addEventListener('resize', updateCarousel);
+      updateCarousel();
+    }
 
-  prevBtn.addEventListener('click', () => {
-    currentIndex = (currentIndex - 1 + items.length) % items.length;
-    updateCarousel();
-  });
-
-  // Support for Window Resizing
-  window.addEventListener('resize', updateCarousel);
-
-  // Initial positioning
-  updateCarousel();
-
-  // Keyboard support
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight') nextBtn.click();
-    if (e.key === 'ArrowLeft') prevBtn.click();
-  });
-{% endjavascript %}
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCarousel);
+    } else {
+      initCarousel();
+    }
+  })();
+</script>
 
 {% schema %}
 {
   "name": "Carousel",
-  "settings": [],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Collection"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show rating stars",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#0f172a"
+    },
+    {
+      "type": "header",
+      "content": "Card Colors"
+    },
+    {
+      "type": "color",
+      "id": "card_background_color",
+      "label": "Card background",
+      "default": "#1e293b"
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card border color",
+      "default": "#374151"
+    },
+    {
+      "type": "color",
+      "id": "card_focus_border_color",
+      "label": "Focused card border color",
+      "default": "#00d4ff"
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "Card text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_price_color",
+      "label": "Price color",
+      "default": "#00d4ff"
+    },
+    {
+      "type": "color",
+      "id": "card_compare_price_color",
+      "label": "Compare at price color",
+      "default": "#9ca3af"
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "prev_button_text",
+      "label": "Previous button text",
+      "default": "← Previous"
+    },
+    {
+      "type": "text",
+      "id": "next_button_text",
+      "label": "Next button text",
+      "default": "Next →"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color_background",
+      "id": "button_background_color",
+      "label": "Button background"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button border color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button hover color",
+      "default": "#00d4ff"
+    }
+  ],
   "presets": [
     {
       "name": "Carousel",
