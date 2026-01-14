@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev": "concurrently \"shopify theme dev --store vandanacustomv1\" \"bunx @tailwindcss/cli -i ./assets/tailwind.input.css -o ./assets/tailwind.output.css --watch\""
+    "dev": "concurrently \"shopify theme dev --store vandanacustomv1\" \"bunx @tailwindcss/cli -i ./assets/tailwind.input.css -o ./assets/tailwind.output.css --watch\"",
+    "sync": "shopify theme pull --store vandanacustomv1"
   },
   "dependencies": {
     "@tailwindcss/cli": "^4.1.18",
