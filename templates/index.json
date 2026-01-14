@@ -9,13 +9,15 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
-      "name": "Hello World Custom",
-      "settings": {}
+    "hero_VyqG73": {
+      "type": "hero",
+      "name": "Hero",
+      "settings": {
+        "title": ""
+      }
     }
   },
   "order": [
-    "main"
+    "hero_VyqG73"
   ]
 }

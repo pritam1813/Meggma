@@ -1,0 +1,222 @@
+{% stylesheet %}
+  .carousel-section {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  /* Full Width Container */
+  .carousel-container {
+    position: relative;
+    width: 100vw;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1500px;
+    /* Depth of the 3D space */
+  }
+
+  .carousel {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Individual Card Styles */
+  .item {
+    position: absolute;
+    width: 300px;
+    /* Base width */
+    height: 400px;
+    max-width: 60vw;
+    /* Responsive constraint */
+    border-radius: 20px;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 5rem;
+    font-weight: bold;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    user-select: none;
+    overflow: hidden;
+  }
+
+  .item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+
+  .item.active {
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+  }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    gap: 30px;
+    margin-top: 40px;
+    z-index: 100;
+  }
+
+  button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+  }
+
+  button:hover {
+    background: var(--primary-color);
+    color: black;
+    transform: translateY(-2px);
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+{% endstylesheet %}
+
+<section class="carousel-section">
+  <div class="carousel-container">
+    <div class="carousel" id="carousel">
+      <div class="item">
+        <img src="vandana carousel/img1.webp" alt="" width="300" height="400">
+      </div>
+      <div class="item">
+        <img src="vandana carousel/img2.webp" alt="" width="300" height="400">
+      </div>
+      <div class="item">
+        <img src="vandana carousel/img3.webp" alt="" width="300" height="400">
+      </div>
+      <div class="item">
+        <img src="vandana carousel/img4.webp" alt="" width="300" height="400">
+      </div>
+      <div class="item">
+        <img src="vandana carousel/img5.webp" alt="" width="300" height="400">
+      </div>
+      <div class="item">
+        <img src="vandana carousel/img6.webp" alt="" width="300" height="400">
+      </div>
+      <div class="item">
+        <img src="vandana carousel/img7.webp" alt="" width="300" height="400">
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="prevBtn">← Previous</button>
+    <button id="nextBtn">Next →</button>
+  </div>
+</section>
+
+{% javascript %}
+  const carousel = document.getElementById('carousel');
+  const items = document.querySelectorAll('.item');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  let currentIndex = 0;
+
+  function updateCarousel() {
+    const width = window.innerWidth;
+
+    // Responsive logic:
+    // Desktop: spread is wider (250px)
+    // Mobile: spread is tighter based on screen width
+    const spread = width > 1000 ? 280 : width / 3.5;
+
+    items.forEach((item, index) => {
+      // Calculate the circular distance
+      let distance = index - currentIndex;
+
+      // Wrap around logic for infinite loop
+      if (distance > items.length / 2) distance -= items.length;
+      if (distance < -items.length / 2) distance += items.length;
+
+      const absDist = Math.abs(distance);
+
+      // Transformation Calculations
+      const xOffset = distance * spread;
+      const zOffset = absDist * -180; // Depth
+      const rotationY = distance * -15; // Tilted symmetry
+      const scale = 1 - absDist * 0.15;
+      const opacity = 1 - absDist * 0.3;
+      const zIndex = 100 - absDist;
+
+      // Apply styles
+      item.style.transform = `
+          translateX(${xOffset}px) 
+          translateZ(${zOffset}px) 
+          rotateY(${rotationY}deg) 
+          scale(${scale})
+        `;
+
+      item.style.zIndex = Math.round(zIndex);
+      item.style.opacity = opacity > 0 ? opacity : 0;
+      item.style.pointerEvents = distance === 0 ? 'auto' : 'none';
+
+      // Add active class for styling
+      item.classList.toggle('active', distance === 0);
+    });
+  }
+
+  // Navigation
+  nextBtn.addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % items.length;
+    updateCarousel();
+  });
+
+  prevBtn.addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + items.length) % items.length;
+    updateCarousel();
+  });
+
+  // Support for Window Resizing
+  window.addEventListener('resize', updateCarousel);
+
+  // Initial positioning
+  updateCarousel();
+
+  // Keyboard support
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') nextBtn.click();
+    if (e.key === 'ArrowLeft') prevBtn.click();
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Carousel",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Carousel",
+      "category": "Banners"
+    }
+  ]
+}
+{% endschema %}
