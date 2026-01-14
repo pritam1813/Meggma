@@ -1,0 +1,302 @@
+{%- comment -%}
+  Marquee Section
+  - Full screen height with vertically centered text
+  - Background image layer behind text
+  - Customizable overlay with opacity control (including none)
+  - Pause animation on hover
+  - Blocks for text or images in the marquee track
+  - Images auto-sized to match text height
+{%- endcomment -%}
+
+{%- liquid
+  assign bg_color = section.settings.background_color | default: '#000000'
+  assign text_color = section.settings.text_color | default: '#ffffff'
+  assign text_size = section.settings.text_size | default: 'text-3xl'
+  assign speed = section.settings.speed | default: 10
+  assign overlay_opacity = section.settings.overlay_opacity | default: 70
+  assign overlay_opacity_decimal = overlay_opacity | divided_by: 100.0
+  assign show_overlay = section.settings.show_overlay
+-%}
+
+<style>
+  #marquee-section-{{ section.id }} {
+    --marquee-bg: {{ bg_color }};
+    --marquee-text: {{ text_color }};
+    --marquee-overlay-opacity: {{ overlay_opacity_decimal }};
+  }
+
+  #marquee-section-{{ section.id }} .marquee-bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  #marquee-section-{{ section.id }} .marquee-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: var(--marquee-bg);
+    opacity: var(--marquee-overlay-opacity);
+    z-index: 1;
+  }
+
+  #marquee-section-{{ section.id }} .marquee {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  #marquee-section-{{ section.id }} .marquee-track {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  #marquee-section-{{ section.id }} .marquee-item {
+    display: inline-flex;
+    align-items: center;
+    padding-right: 3rem;
+    color: var(--marquee-text);
+    font-weight: 700;
+  }
+
+  #marquee-section-{{ section.id }} .marquee-item img {
+    height: 1em;
+    width: auto;
+    object-fit: contain;
+  }
+
+  /* Responsive text sizes */
+  @media (max-width: 768px) {
+    #marquee-section-{{ section.id }} .marquee-item {
+      padding-right: 1.5rem;
+    }
+  }
+</style>
+
+<section
+  id="marquee-section-{{ section.id }}"
+  class="relative w-full h-screen overflow-hidden flex items-center justify-center"
+  style="background-color: var(--marquee-bg);"
+>
+  {%- if section.settings.background_image != blank -%}
+    <img
+      src="{{ section.settings.background_image | image_url: width: 1920 }}"
+      alt="marquee background image"
+      class="marquee-bg-image"
+      loading="lazy"
+      width="{{ section.settings.background_image.width }}"
+      height="{{ section.settings.background_image.height }}"
+    >
+    {%- if show_overlay -%}
+      <div class="marquee-overlay"></div>
+    {%- endif -%}
+  {%- endif -%}
+
+  <div class="relative z-10 w-full">
+    <div class="marquee">
+      <div class="marquee-track" id="marquee-track-{{ section.id }}">
+        {%- comment -%} First set of items {%- endcomment -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'text' -%}
+            <span class="marquee-item {{ text_size }}" {{ block.shopify_attributes }}>
+              {{ block.settings.text | default: 'MARQUEE TEXT ✦' }}
+            </span>
+          {%- elsif block.type == 'image' -%}
+            <span class="marquee-item {{ text_size }}" {{ block.shopify_attributes }}>
+              {%- if block.settings.image != blank -%}
+                <img
+                  src="{{ block.settings.image | image_url: height: 100 }}"
+                  alt="{{ block.settings.image.alt | escape | default: 'Marquee image' }}"
+                  loading="lazy"
+                  width="{{ block.settings.image.width }}"
+                  height="{{ block.settings.image.height }}"
+                >
+              {%- else -%}
+                {{ 'image' | placeholder_svg_tag: 'h-[1em] w-auto' }}
+              {%- endif -%}
+            </span>
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- comment -%} Duplicate for seamless loop {%- endcomment -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'text' -%}
+            <span class="marquee-item {{ text_size }}" aria-hidden="true">
+              {{ block.settings.text | default: 'MARQUEE TEXT ✦' }}
+            </span>
+          {%- elsif block.type == 'image' -%}
+            <span class="marquee-item {{ text_size }}" aria-hidden="true">
+              {%- if block.settings.image != blank -%}
+                <img
+                  src="{{ block.settings.image | image_url: height: 100 }}"
+                  alt=""
+                  loading="lazy"
+                  width="{{ block.settings.image.width }}"
+                  height="{{ block.settings.image.height }}"
+                >
+              {%- else -%}
+                {{ 'image' | placeholder_svg_tag: 'h-[1em] w-auto' }}
+              {%- endif -%}
+            </span>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    function initMarqueeAnimations() {
+      const sectionId = '{{ section.id }}';
+      const section = document.getElementById('marquee-section-' + sectionId);
+      const marqueeTrack = document.getElementById('marquee-track-' + sectionId);
+
+      if (!marqueeTrack || !window.gsap) return;
+
+      // Create the GSAP animation and store reference
+      const marqueeAnimation = gsap.to(marqueeTrack, {
+        xPercent: -50,
+        duration: {{ speed }},
+        ease: 'linear',
+        repeat: -1,
+      });
+
+      // Pause on hover over text
+      marqueeTrack.addEventListener('mouseenter', () => {
+        marqueeAnimation.pause();
+      });
+
+      // Resume on mouse leave from text
+      marqueeTrack.addEventListener('mouseleave', () => {
+        marqueeAnimation.resume();
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initMarqueeAnimations);
+    } else {
+      initMarqueeAnimations();
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Marquee Section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background/Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "text_size",
+      "label": "Text size",
+      "options": [
+        { "value": "text-xl", "label": "Small" },
+        { "value": "text-2xl", "label": "Medium" },
+        { "value": "text-3xl", "label": "Large" },
+        { "value": "text-4xl md:text-5xl", "label": "Extra Large" },
+        { "value": "text-5xl md:text-6xl", "label": "Huge" }
+      ],
+      "default": "text-3xl"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Animation speed",
+      "info": "Lower = faster",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "default": 10,
+      "unit": "s"
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_overlay",
+      "label": "Show overlay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "info": "Set to 0 for no overlay effect",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 70,
+      "unit": "%"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "MARQUEE TEXT ✦"
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Marquee Section",
+      "blocks": [
+        { "type": "text", "settings": { "text": "GSAP MARQUEE ✦" } },
+        { "type": "text", "settings": { "text": "SMOOTH SCROLL ✦" } },
+        { "type": "text", "settings": { "text": "SHOPIFY THEME ✦" } },
+        { "type": "text", "settings": { "text": "DYNAMIC CONTENT ✦" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
