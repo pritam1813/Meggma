@@ -1,54 +1,115 @@
+{%- style -%}
+  #parallax-section-{{ section.id }} {
+    background-color: {{ section.settings.section_bg_color }};
+  }
+
+  #parallax-section-{{ section.id }} .heading-primary {
+    font-size: {{ section.settings.heading_font_size }}px;
+    color: {{ section.settings.heading_text_color }};
+  }
+
+  #parallax-section-{{ section.id }} .heading-secondary {
+    font-size: {{ section.settings.subheading_font_size }}px;
+    color: {{ section.settings.subheading_text_color }};
+  }
+
+  #parallax-section-{{ section.id }} .description-text {
+    font-size: {{ section.settings.description_font_size }}px;
+    color: {{ section.settings.description_text_color }};
+  }
+
+  #parallax-section-{{ section.id }} .btn-primary {
+    background-color: {{ section.settings.primary_button_bg }};
+    color: {{ section.settings.primary_button_text_color }};
+  }
+
+  #parallax-section-{{ section.id }} .btn-primary:hover {
+    opacity: 0.9;
+  }
+
+  #parallax-section-{{ section.id }} .btn-secondary {
+    background-color: {{ section.settings.secondary_button_bg }};
+    color: {{ section.settings.secondary_button_text_color }};
+    border-color: {{ section.settings.secondary_button_text_color }};
+  }
+
+  #parallax-section-{{ section.id }} .btn-secondary:hover {
+    opacity: 0.9;
+  }
+{%- endstyle -%}
+
 <section
-  id="parallax-w-text"
-  class="relative flex flex-col items-center justify-center min-h-screen px-6 py-24 bg-gray-50 text-center"
+  id="parallax-section-{{ section.id }}"
+  data-section-id="{{ section.id }}"
+  class="parallax-w-text relative flex flex-col items-center justify-center min-h-screen px-6 py-24 text-center"
 >
   <div class="relative w-full max-w-2xl flex flex-col items-center">
-    <div id="textconatiner">
-      <h1 id="txt1" class="text-4xl font-extrabold text-gray-900 mb-2">Main Section Heading</h1>
-      <p id="txt2" class="text-xl text-gray-600 mb-8">This is the secondary line of text providing more context.</p>
+    <div class="textcontainer">
+      <h2 class="heading-primary font-extrabold mb-2">
+        {{ section.settings.heading_text }}
+      </h2>
+      <h2 class="heading-secondary font-extrabold mb-2">
+        {{ section.settings.subheading_text }}
+      </h2>
     </div>
 
-    <div id="mainimg" class="w-full max-w-md">
-      <img
-        src="
-          https://s3-us-west-2.amazonaws.com/s.cdpn.io/32887/fred-
-          blue.svg
-        "
-        alt="Main content"
-        class="rounded-2xl shadow-2xl w-full object-cover"
-        width="1920"
-        height="1080"
-      >
+    <div class="mainimg w-full max-w-md">
+      {%- if section.settings.main_image != blank -%}
+        <img
+          src="{{ section.settings.main_image | image_url: width: 800 }}"
+          alt="{{ section.settings.main_image.alt | default: section.settings.heading_text }}"
+          class="rounded-2xl shadow-2xl w-full object-cover"
+          width="{{ section.settings.main_image.width }}"
+          height="{{ section.settings.main_image.height }}"
+          loading="lazy"
+        >
+      {%- else -%}
+        {{ 'image' | placeholder_svg_tag: 'rounded-2xl shadow-2xl w-full object-cover' }}
+      {%- endif -%}
     </div>
 
-    <div id="floatingimg" class="absolute -right-4 top-1/4 md:-right-12 lg:-right-20 transform translate-y-1/2">
-      {% render 'rotating-circle-text',
-        id: 'parallax-circle',
-        radius: 120,
-        center_text_line1: 'Main',
-        center_text_line2: 'Text',
-        circular_text: 'Circular Text Surrounding The Main Text • Cool SVG Design •',
-        center_font_size: 24,
-        circular_font_size: 14,
-        center_color: '#1e293b',
-        circular_color: '#4f46e5',
-        trigger_element: 'parallax-w-text'
-      %}
-    </div>
+    {% comment %}
+      <div id="floatingimg" class="absolute -right-4 top-1/4 md:-right-12 lg:-right-20 transform translate-y-1/2">
+        {% render 'rotating-circle-text',
+          id: 'parallax-circle',
+          radius: 120,
+          center_text_line1: 'Main',
+          center_text_line2: 'Text',
+          circular_text: 'Circular Text Surrounding The Main Text • Cool SVG Design •',
+          center_font_size: 24,
+          circular_font_size: 14,
+          center_color: '#1e293b',
+          circular_color: '#4f46e5',
+          trigger_element: 'parallax-w-text'
+        %}
+      </div>
+    {% endcomment %}
 
-    <div id="bottomele">
-      <p class="mt-8 text-sm text-gray-500 max-w-sm">
-        This is the smaller supplementary text that sits right below the main image to provide extra details or
-        captions.
-      </p>
+    <div class="bottomele">
+      {%- if section.settings.description_text != blank -%}
+        <p class="description-text mt-8 max-w-sm">
+          {{ section.settings.description_text }}
+        </p>
+      {%- endif -%}
 
-      <div class="mt-8 flex flex-row gap-4">
-        <button class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors">
-          Primary Action
-        </button>
-        <button class="px-8 py-3 bg-white text-indigo-600 font-semibold border border-indigo-200 rounded-lg hover:bg-indigo-50 transition-colors">
-          Learn More
-        </button>
+      <div class="mt-8 flex flex-row gap-4 justify-center flex-wrap">
+        {%- if section.settings.primary_button_text != blank -%}
+          <a
+            href="{{ section.settings.primary_button_link }}"
+            class="btn-primary px-8 py-3 font-semibold rounded-lg transition-colors inline-block"
+          >
+            {{ section.settings.primary_button_text }}
+          </a>
+        {%- endif -%}
+
+        {%- if section.settings.secondary_button_text != blank -%}
+          <a
+            href="{{ section.settings.secondary_button_link }}"
+            class="btn-secondary px-8 py-3 font-semibold border rounded-lg transition-colors inline-block"
+          >
+            {{ section.settings.secondary_button_text }}
+          </a>
+        {%- endif -%}
       </div>
     </div>
   </div>
@@ -56,18 +117,25 @@
 
 <script>
   (function () {
-    function initParallaxTextAnimations() {
-      const tl1 = gsap
-        .timeline()
-        .from('#mainimg', { y: 500 })
-        .from('#floatingimg', { y: 800, rotate: 360 }, '-=0.3')
-        .from('#bottomele', { y: 500 });
+    const sectionId = '{{ section.id }}';
+    const section = document.getElementById(`parallax-section-${sectionId}`);
 
-      const tl2 = gsap.timeline().from('#txt1', { x: -400 }).from('#txt2', { x: 400 }, '<');
+    function initParallaxTextAnimations() {
+      if (!section) return;
+
+      const mainimg = section.querySelector('.mainimg');
+      const bottomele = section.querySelector('.bottomele');
+      const textcontainer = section.querySelector('.textcontainer');
+      const headingPrimary = section.querySelector('.heading-primary');
+      const headingSecondary = section.querySelector('.heading-secondary');
+
+      const tl1 = gsap.timeline().from(mainimg, { y: 500 }).from(bottomele, { y: 500 });
+
+      const tl2 = gsap.timeline().from(headingPrimary, { x: -400 }).from(headingSecondary, { x: 400 }, '<');
 
       ScrollTrigger.create({
         animation: tl2,
-        trigger: '#textconatiner',
+        trigger: textcontainer,
         scrub: 1,
         start: 'top 75%',
         end: 'bottom 25%',
@@ -75,13 +143,11 @@
 
       ScrollTrigger.create({
         animation: tl1,
-        trigger: '#parallax-w-text',
+        trigger: section,
         scrub: 1,
         pin: true,
         start: 'top top',
       });
-
-      // Note: Rotating text animation is handled by the rotating-circle-text snippet
     }
 
     // Run when DOM is ready
@@ -96,7 +162,155 @@
 {% schema %}
 {
   "name": "Parallax Text",
-  "settings": [],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading_text",
+      "label": "Heading Text",
+      "default": "Main Section Heading"
+    },
+    {
+      "type": "text",
+      "id": "subheading_text",
+      "label": "Subheading Text",
+      "default": "This is the secondary line of text providing more context."
+    },
+    {
+      "type": "image_picker",
+      "id": "main_image",
+      "label": "Main Image"
+    },
+    {
+      "type": "textarea",
+      "id": "description_text",
+      "label": "Description Text",
+      "default": "This is the smaller supplementary text that sits right below the main image to provide extra details or captions."
+    },
+    {
+      "type": "header",
+      "content": "Primary Button"
+    },
+    {
+      "type": "text",
+      "id": "primary_button_text",
+      "label": "Primary Button Text",
+      "default": "Primary Action"
+    },
+    {
+      "type": "url",
+      "id": "primary_button_link",
+      "label": "Primary Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Secondary Button"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_text",
+      "label": "Secondary Button Text",
+      "default": "Learn More"
+    },
+    {
+      "type": "url",
+      "id": "secondary_button_link",
+      "label": "Secondary Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Font Sizes"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "label": "Heading Font Size",
+      "min": 16,
+      "max": 72,
+      "step": 2,
+      "default": 36,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "subheading_font_size",
+      "label": "Subheading Font Size",
+      "min": 14,
+      "max": 60,
+      "step": 2,
+      "default": 36,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "description_font_size",
+      "label": "Description Font Size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section Background Color",
+      "default": "#f9fafb"
+    },
+    {
+      "type": "color",
+      "id": "heading_text_color",
+      "label": "Heading Text Color",
+      "default": "#111827"
+    },
+    {
+      "type": "color",
+      "id": "subheading_text_color",
+      "label": "Subheading Text Color",
+      "default": "#111827"
+    },
+    {
+      "type": "color",
+      "id": "description_text_color",
+      "label": "Description Text Color",
+      "default": "#6b7280"
+    },
+    {
+      "type": "header",
+      "content": "Button Colors"
+    },
+    {
+      "type": "color",
+      "id": "primary_button_bg",
+      "label": "Primary Button Background",
+      "default": "#4f46e5"
+    },
+    {
+      "type": "color",
+      "id": "primary_button_text_color",
+      "label": "Primary Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "secondary_button_bg",
+      "label": "Secondary Button Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "secondary_button_text_color",
+      "label": "Secondary Button Text Color",
+      "default": "#4f46e5"
+    }
+  ],
   "presets": [
     {
       "name": "Parallax Text"

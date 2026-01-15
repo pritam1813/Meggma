@@ -15,9 +15,175 @@
       "settings": {
         "title": ""
       }
+    },
+    "carousel_fzJQLk": {
+      "type": "carousel",
+      "name": "Carousel",
+      "settings": {
+        "collection": "printed",
+        "show_rating": true,
+        "background_color": "#0f172a",
+        "card_background_color": "#1e293b",
+        "card_border_color": "#374151",
+        "card_focus_border_color": "#00d4ff",
+        "card_text_color": "#ffffff",
+        "card_price_color": "#00d4ff",
+        "card_compare_price_color": "#9ca3af",
+        "prev_button_text": "← Previous",
+        "next_button_text": "Next →",
+        "button_text_color": "#ffffff",
+        "button_background_color": "",
+        "button_border_color": "#ffffff",
+        "button_hover_color": "#00d4ff"
+      }
+    },
+    "media_with_text_rn8tdq": {
+      "type": "media-with-text",
+      "name": "Media with Text",
+      "settings": {
+        "heading": "The best in sarees",
+        "description": "<p>We believe elegance should leave a lighter footprint. Our cotton sarees are crafted with ethical artistry and sustainable practices, offering comfort and grace. Each saree is thoughtfully woven and beautifully finished with care.</p>",
+        "button_label": "Shop Now",
+        "button_link": "",
+        "bg_color_outer": "#d1d5db",
+        "bg_color_inner": "#ffffff",
+        "text_color_heading": "#292524",
+        "text_color_body": "#444444",
+        "btn_bg_color": "#d1d5db",
+        "btn_text_color": "#ffffff"
+      }
+    },
+    "staggered_staircase_section_8MJ6Lf": {
+      "type": "staggered-staircase-section",
+      "blocks": {
+        "step_6DniVj": {
+          "type": "step",
+          "settings": {
+            "title": "Strategy Phase",
+            "description": "Defining the blueprint and setting clear objectives for the roadmap ahead."
+          }
+        },
+        "step_TFTHbx": {
+          "type": "step",
+          "settings": {
+            "title": "Design & Build",
+            "description": "Translating abstract ideas into functional, high-quality components."
+          }
+        },
+        "step_4dPCmx": {
+          "type": "step",
+          "settings": {
+            "title": "Final Delivery",
+            "description": "Ensuring excellence through testing and launching the final result."
+          }
+        }
+      },
+      "block_order": [
+        "step_6DniVj",
+        "step_TFTHbx",
+        "step_4dPCmx"
+      ],
+      "name": "Staircase Section",
+      "settings": {
+        "image_size": 128,
+        "background_color": "#f3f4f6",
+        "card_background_color": "#ffffff",
+        "heading_color": "#1f2937",
+        "text_color": "#4b5563"
+      }
+    },
+    "marquee_section_64xBPH": {
+      "type": "marquee-section",
+      "blocks": {
+        "text_RJUWd7": {
+          "type": "text",
+          "settings": {
+            "text": "MARQUEE TEXT ✦"
+          }
+        },
+        "text_fQGx6p": {
+          "type": "text",
+          "settings": {
+            "text": "MARQUEE TEXT ✦"
+          }
+        },
+        "text_p9DeR8": {
+          "type": "text",
+          "settings": {
+            "text": "MARQUEE TEXT ✦"
+          }
+        },
+        "text_fPJn6e": {
+          "type": "text",
+          "settings": {
+            "text": "MARQUEE TEXT ✦"
+          }
+        },
+        "text_QrGAkk": {
+          "type": "text",
+          "settings": {
+            "text": "MARQUEE TEXT ✦"
+          }
+        },
+        "image_yzVNt4": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/the-man-in-the-hat.jpg"
+          }
+        },
+        "text_hJVHKW": {
+          "type": "text",
+          "settings": {
+            "text": "MARQUEE TEXT ✦"
+          }
+        },
+        "image_UqVNdM": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/silver-lamp-on-a-white-table-next-to-books.jpg"
+          }
+        },
+        "text_XNPWAK": {
+          "type": "text",
+          "settings": {
+            "text": "MARQUEE TEXT ✦"
+          }
+        }
+      },
+      "block_order": [
+        "text_RJUWd7",
+        "text_fQGx6p",
+        "text_p9DeR8",
+        "text_fPJn6e",
+        "text_QrGAkk",
+        "image_yzVNt4",
+        "text_hJVHKW",
+        "image_UqVNdM",
+        "text_XNPWAK"
+      ],
+      "name": "Marquee Section",
+      "settings": {
+        "background_image": "shopify://shop_images/rack-of-womens-clothing.jpg",
+        "background_color": "#ffffff",
+        "text_color": "#333333",
+        "text_size": "text-3xl",
+        "speed": 11,
+        "show_overlay": true,
+        "overlay_opacity": 70
+      }
+    },
+    "parallax_text_MRTpKT": {
+      "type": "parallax-text",
+      "name": "Parallax Text",
+      "settings": {}
     }
   },
   "order": [
-    "hero_VyqG73"
+    "hero_VyqG73",
+    "carousel_fzJQLk",
+    "media_with_text_rn8tdq",
+    "staggered_staircase_section_8MJ6Lf",
+    "marquee_section_64xBPH",
+    "parallax_text_MRTpKT"
   ]
 }
