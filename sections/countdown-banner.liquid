@@ -1,0 +1,297 @@
+{%- style -%}
+  #countdown-banner-{{ section.id }} {
+    background-color: {{ section.settings.overlay_color }};
+  }
+
+  #countdown-banner-{{ section.id }} .countdown-overlay {
+    background-color: {{ section.settings.content_bg_color }};
+  }
+
+  #countdown-banner-{{ section.id }} .countdown-heading {
+    font-size: {{ section.settings.heading_font_size }}px;
+    color: {{ section.settings.text_color }};
+  }
+
+  #countdown-banner-{{ section.id }} .countdown-subheading {
+    font-size: {{ section.settings.subheading_font_size }}px;
+    color: {{ section.settings.text_color }};
+  }
+
+  #countdown-banner-{{ section.id }} .timer-digit {
+    font-size: {{ section.settings.timer_font_size }}px;
+    color: {{ section.settings.timer_color }};
+    font-variant-numeric: tabular-nums;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    min-width: 2ch;
+    text-align: center;
+  }
+
+  #countdown-banner-{{ section.id }} .timer-separator {
+    font-size: {{ section.settings.timer_font_size }}px;
+    color: {{ section.settings.timer_color }};
+  }
+
+  #countdown-banner-{{ section.id }} .timer-label {
+    font-size: {{ section.settings.label_font_size }}px;
+    color: {{ section.settings.timer_color }};
+    opacity: 0.8;
+  }
+{%- endstyle -%}
+
+<section id="countdown-banner-{{ section.id }}" class="relative w-full overflow-hidden">
+  {%- if section.settings.background_image != blank -%}
+    <img
+      src="{{ section.settings.background_image | image_url: width: 1920 }}"
+      alt="{{ section.settings.background_image.alt | default: 'Countdown banner' }}"
+      class="w-full block object-cover"
+      width="{{ section.settings.background_image.width }}"
+      height="{{ section.settings.background_image.height }}"
+      loading="lazy"
+    >
+  {%- else -%}
+    {{ 'lifestyle-1' | placeholder_svg_tag: 'w-full block object-cover' }}
+  {%- endif -%}
+
+  <div class="countdown-overlay absolute z-10 bottom-6 right-6 md:bottom-10 md:right-10 p-5 rounded-lg">
+    {%- if section.settings.heading != blank -%}
+      <div class="countdown-heading text-start mb-2 font-semibold">{{ section.settings.heading }}</div>
+    {%- endif -%}
+
+    {%- if section.settings.subheading != blank -%}
+      <div class="countdown-subheading text-start mb-4">{{ section.settings.subheading }}</div>
+    {%- endif -%}
+
+    <div
+      class="timer flex items-start gap-1"
+      data-section-id="{{ section.id }}"
+      data-hours="{{ section.settings.countdown_hours }}"
+      data-minutes="{{ section.settings.countdown_minutes }}"
+      data-seconds="{{ section.settings.countdown_seconds }}"
+    >
+      <!-- Hours -->
+      <div class="flex flex-col items-center">
+        <span class="timer-digit font-bold" data-timer-hours>
+          {{- section.settings.countdown_hours | default: 0 | prepend: '00' | slice: -2, 2 -}}
+        </span>
+        <span class="timer-label">hr</span>
+      </div>
+
+      <!-- Separator -->
+      <div class="flex flex-col items-center">
+        <span class="timer-separator font-bold">:</span>
+        <span class="timer-label">&nbsp;</span>
+      </div>
+
+      <!-- Minutes -->
+      <div class="flex flex-col items-center">
+        <span class="timer-digit font-bold" data-timer-minutes>
+          {{- section.settings.countdown_minutes | default: 0 | prepend: '00' | slice: -2, 2 -}}
+        </span>
+        <span class="timer-label">min</span>
+      </div>
+
+      <!-- Separator -->
+      <div class="flex flex-col items-center">
+        <span class="timer-separator font-bold">:</span>
+        <span class="timer-label">&nbsp;</span>
+      </div>
+
+      <!-- Seconds -->
+      <div class="flex flex-col items-center">
+        <span class="timer-digit font-bold" data-timer-seconds>
+          {{- section.settings.countdown_seconds | default: 0 | prepend: '00' | slice: -2, 2 -}}
+        </span>
+        <span class="timer-label">sec</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    const sectionId = '{{ section.id }}';
+    const timerEl = document.querySelector(`#countdown-banner-${sectionId} .timer`);
+
+    if (!timerEl) return;
+
+    let hours = parseInt(timerEl.dataset.hours) || 0;
+    let minutes = parseInt(timerEl.dataset.minutes) || 0;
+    let seconds = parseInt(timerEl.dataset.seconds) || 0;
+
+    const hoursEl = timerEl.querySelector('[data-timer-hours]');
+    const minutesEl = timerEl.querySelector('[data-timer-minutes]');
+    const secondsEl = timerEl.querySelector('[data-timer-seconds]');
+
+    function updateDisplay() {
+      hoursEl.textContent = String(hours).padStart(2, '0');
+      minutesEl.textContent = String(minutes).padStart(2, '0');
+      secondsEl.textContent = String(seconds).padStart(2, '0');
+    }
+
+    function tick() {
+      seconds--;
+
+      if (seconds < 0) {
+        seconds = 59;
+        minutes--;
+      }
+
+      if (minutes < 0) {
+        minutes = 59;
+        hours--;
+      }
+
+      if (hours < 0) {
+        hours = 0;
+        minutes = 0;
+        seconds = 0;
+        return;
+      }
+
+      updateDisplay();
+    }
+
+    setInterval(tick, 1000);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Countdown Banner",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Limited Time Offer"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Don't miss out!"
+    },
+    {
+      "type": "header",
+      "content": "Countdown Timer"
+    },
+    {
+      "type": "range",
+      "id": "countdown_hours",
+      "label": "Hours",
+      "min": 0,
+      "max": 99,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "countdown_minutes",
+      "label": "Minutes",
+      "min": 0,
+      "max": 59,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "countdown_seconds",
+      "label": "Seconds",
+      "min": 0,
+      "max": 59,
+      "step": 1,
+      "default": 45
+    },
+    {
+      "type": "header",
+      "content": "Font Sizes"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "label": "Heading Font Size",
+      "min": 16,
+      "max": 48,
+      "step": 2,
+      "default": 30,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "subheading_font_size",
+      "label": "Subheading Font Size",
+      "min": 14,
+      "max": 36,
+      "step": 2,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "timer_font_size",
+      "label": "Timer Font Size",
+      "min": 24,
+      "max": 72,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "label_font_size",
+      "label": "Label Font Size",
+      "min": 10,
+      "max": 24,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "timer_color",
+      "label": "Timer Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color_background",
+      "id": "content_bg_color",
+      "label": "Content Background",
+      "default": "linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.3))"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Section Background Color",
+      "default": "#111111"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Countdown Banner"
+    }
+  ]
+}
+{% endschema %}
