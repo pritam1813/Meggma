@@ -1,0 +1,313 @@
+{%- style -%}
+  #bg-video-{{ section.id }} {
+    background-color: {{ section.settings.section_bg_color }};
+    padding: {{ section.settings.padding_y }}px {{ section.settings.padding_x }}px;
+  }
+
+  #bg-video-{{ section.id }} .video-container {
+    background-color: {{ section.settings.container_bg_color }};
+    border-radius: {{ section.settings.border_radius }}px;
+  }
+
+  #bg-video-{{ section.id }} .video-subheading {
+    font-size: {{ section.settings.subheading_font_size }}px;
+    color: {{ section.settings.subheading_color }};
+    margin-bottom: {{ section.settings.subheading_margin }}px;
+  }
+
+  #bg-video-{{ section.id }} .video-heading {
+    font-size: {{ section.settings.heading_font_size }}px;
+    color: {{ section.settings.heading_color }};
+    margin-bottom: {{ section.settings.heading_margin }}px;
+  }
+
+  #bg-video-{{ section.id }} .video-btn {
+    background-color: {{ section.settings.button_bg_color }};
+    color: {{ section.settings.button_text_color }};
+    margin-top: {{ section.settings.button_margin }}px;
+  }
+
+  #bg-video-{{ section.id }} .video-btn:hover {
+    opacity: 0.9;
+  }
+
+  #bg-video-{{ section.id }} video {
+    border-radius: {{ section.settings.border_radius }}px;
+  }
+{%- endstyle -%}
+
+<section id="bg-video-{{ section.id }}" class="min-h-screen flex items-center justify-center">
+  <div class="video-container w-full h-full min-h-[80vh] flex justify-center items-center relative overflow-hidden">
+    {%- if section.settings.video_url != blank -%}
+      <video
+        class="video-player absolute inset-0 w-full h-full object-cover"
+        src="{{ section.settings.video_url }}"
+        playsinline
+        muted
+        loop
+        preload="metadata"
+        width="1920"
+        height="1080"
+      ></video>
+    {%- elsif section.settings.video_file != blank -%}
+      <video
+        class="video-player absolute inset-0 w-full h-full object-cover"
+        playsinline
+        muted
+        loop
+        preload="metadata"
+        width="1920"
+        height="1080"
+      >
+        {%- for source in section.settings.video_file.sources -%}
+          {% # theme-check-disable RemoteAsset %}
+          <source src="{{ source.url }}" type="{{ source.mime_type }}">
+        {%- endfor -%}
+      </video>
+    {%- else -%}
+      <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
+        <div class="text-center text-gray-400">
+          <svg class="w-20 h-20 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <p class="text-sm">Add a video in theme settings</p>
+        </div>
+      </div>
+    {%- endif -%}
+
+    <div class="absolute inset-0 flex justify-center items-center z-10">
+      <div class="text-center space-y-2 px-4">
+        {%- if section.settings.subheading != blank -%}
+          <p class="video-subheading">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.heading != blank -%}
+          <h2 class="video-heading font-bold">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.button_text != blank -%}
+          <a
+            href="{{ section.settings.button_link }}"
+            class="video-btn inline-block py-2 px-6 rounded-md font-medium transition-opacity"
+          >
+            {{ section.settings.button_text }}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    const sectionId = '{{ section.id }}';
+    const section = document.getElementById(`bg-video-${sectionId}`);
+    if (!section) return;
+
+    const video = section.querySelector('.video-player');
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.25 }
+    );
+
+    observer.observe(section);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Background Video",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Video"
+    },
+    {
+      "type": "video",
+      "id": "video_file",
+      "label": "Video File"
+    },
+    {
+      "type": "text",
+      "id": "video_url",
+      "label": "Or Video URL",
+      "info": "External video URL (overrides video file if both set)"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "SubHeading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Shop All"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Section Styling"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section Background Color",
+      "default": "#f3f4f6"
+    },
+    {
+      "type": "range",
+      "id": "padding_x",
+      "label": "Horizontal Padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical Padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "container_bg_color",
+      "label": "Container Background Color",
+      "default": "#dbeafe"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border Radius",
+      "min": 0,
+      "max": 48,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Subheading Styling"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading Color",
+      "default": "#1f2937"
+    },
+    {
+      "type": "range",
+      "id": "subheading_font_size",
+      "label": "Subheading Font Size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "default": 18,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "subheading_margin",
+      "label": "Subheading Bottom Margin",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Heading Styling"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#111827"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "label": "Heading Font Size",
+      "min": 24,
+      "max": 72,
+      "step": 4,
+      "default": 36,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_margin",
+      "label": "Heading Bottom Margin",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Button Styling"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Background Color",
+      "default": "#f3f4f6"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#111827"
+    },
+    {
+      "type": "range",
+      "id": "button_margin",
+      "label": "Button Top Margin",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Background Video"
+    }
+  ]
+}
+{% endschema %}
