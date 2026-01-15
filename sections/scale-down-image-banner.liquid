@@ -1,0 +1,235 @@
+{%- style -%}
+  #scaledown-banner-{{ section.id }} {
+    background-color: {{ section.settings.section_bg_color }};
+    padding: {{ section.settings.padding }}px;
+  }
+
+  #scaledown-banner-{{ section.id }} .banner-container {
+    background-color: {{ section.settings.container_bg_color }};
+    border-radius: {{ section.settings.border_radius }}px;
+  }
+
+  #scaledown-banner-{{ section.id }} .banner-image {
+    border-top-left-radius: {{ section.settings.border_radius }}px;
+    border-top-right-radius: {{ section.settings.border_radius }}px;
+  }
+
+  #scaledown-banner-{{ section.id }} .banner-subheading {
+    font-size: {{ section.settings.subheading_font_size }}px;
+    color: {{ section.settings.subheading_color }};
+  }
+
+  #scaledown-banner-{{ section.id }} .banner-heading {
+    font-size: {{ section.settings.heading_font_size }}px;
+    color: {{ section.settings.heading_color }};
+  }
+
+  #scaledown-banner-{{ section.id }} .banner-text {
+    font-size: {{ section.settings.text_font_size }}px;
+    color: {{ section.settings.text_color }};
+  }
+{%- endstyle -%}
+
+<section id="scaledown-banner-{{ section.id }}" class="h-screen">
+  <div class="banner-container w-full h-full overflow-hidden">
+    {%- if section.settings.image != blank -%}
+      <img
+        id="banner-{{ section.id }}"
+        class="banner-image w-full h-3/4 object-cover"
+        src="{{ section.settings.image | image_url: width: 1920 }}"
+        alt="{{ section.settings.image.alt | default: section.settings.heading }}"
+        width="{{ section.settings.image.width }}"
+        height="{{ section.settings.image.height }}"
+        loading="lazy"
+      >
+    {%- else -%}
+      {{ 'lifestyle-2' | placeholder_svg_tag: 'banner-image w-full h-3/4 object-cover' }}
+    {%- endif -%}
+
+    <div class="banner-content flex flex-col justify-center items-center space-y-2 h-1/4 px-4">
+      {%- if section.settings.subheading != blank -%}
+        <p class="banner-subheading">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <h2 class="banner-heading font-bold">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.text != blank -%}
+        <p class="banner-text">{{ section.settings.text }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    function initScaleDownBannerAnimation() {
+      const scaledown = gsap.fromTo(
+        '#banner-{{ section.id }}',
+        {
+          scale: 1.3,
+        },
+        {
+          scale: 1,
+          duration: 3,
+        }
+      );
+
+      ScrollTrigger.create({
+        animation: scaledown,
+        trigger: '#scaledown-banner-{{ section.id }}',
+        scrub: 1,
+        start: 'top center',
+        end: '+=500',
+      });
+    }
+
+    // Run when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initScaleDownBannerAnimation);
+    } else {
+      initScaleDownBannerAnimation();
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Scale Down Banner",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Banner Image"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Sub heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Additional Text",
+      "default": "More Para"
+    },
+    {
+      "type": "header",
+      "content": "Section Styling"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section Background",
+      "default": "#f3f4f6"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Section Padding",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "default": 32,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "container_bg_color",
+      "label": "Container Background",
+      "default": "#fee2e2"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border Radius",
+      "min": 0,
+      "max": 48,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Subheading Styling"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading Color",
+      "default": "#374151"
+    },
+    {
+      "type": "range",
+      "id": "subheading_font_size",
+      "label": "Subheading Font Size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Heading Styling"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#111827"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "label": "Heading Font Size",
+      "min": 24,
+      "max": 72,
+      "step": 4,
+      "default": 36,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Text Styling"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#4b5563"
+    },
+    {
+      "type": "range",
+      "id": "text_font_size",
+      "label": "Text Font Size",
+      "min": 12,
+      "max": 28,
+      "step": 2,
+      "default": 18,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Scale Down Banner"
+    }
+  ]
+}
+{% endschema %}
