@@ -1,0 +1,377 @@
+{%- style -%}
+  #horizontal-gallery-{{ section.id }} {
+    background-color: {{ section.settings.section_bg }};
+  }
+
+  #horizontal-gallery-{{ section.id }} .collection-title {
+    font-size: {{ section.settings.collection_title_size }}px;
+    color: {{ section.settings.collection_title_color }};
+  }
+{%- endstyle -%}
+
+<section id="horizontal-gallery-{{ section.id }}" class="relative">
+  <div class="flex flex-col md:flex-row min-h-screen">
+    <!-- Left Subsection -->
+    <div class="w-full md:w-1/2 flex items-center justify-center p-8 md:p-16">
+      <div class="max-w-lg relative">
+        {%- if section.settings.left_image != blank -%}
+          <img
+            src="{{ section.settings.left_image | image_url: width: 800 }}"
+            alt="{{ section.settings.left_image.alt | default: 'Gallery Image' }}"
+            class="rounded-4xl w-full h-full object-contain"
+            width="{{ section.settings.left_image.width }}"
+            height="{{ section.settings.left_image.height }}"
+            loading="lazy"
+          >
+        {%- else -%}
+          {{ 'collection-1' | placeholder_svg_tag: 'rounded-4xl w-full h-full object-contain' }}
+        {%- endif -%}
+
+        <!-- Rotating Circle - positioned relative to image -->
+        <div class="absolute -top-8 -left-2 md:-top-12 md:-left-8">
+          {%- assign circle_id = 'gallery-circle-' | append: section.id -%}
+          {%- assign trigger_id = 'horizontal-gallery-' | append: section.id -%}
+          {% render 'rotating-circle-text',
+            id: circle_id,
+            trigger_section_id: trigger_id,
+            main_text_line1: 'New',
+            main_text_line2: 'Arrivals',
+            circular_text: 'Shop Our Latest Collection • Premium Quality •',
+            size: 180
+          %}
+        </div>
+
+        <!-- Floating Image - positioned relative to image -->
+        <div class="absolute -right-6 -bottom-6 md:-right-10 md:-bottom-10">
+          <img
+            src="https://www.vandanafashion.in/cdn/shop/files/polotno_8_fa63eacc-1e67-49a3-84ec-00b77d1c8414.png"
+            alt=""
+            class="w-32 h-32 md:w-48 md:h-48 object-contain"
+            width="240"
+            height="240"
+            loading="lazy"
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Subsection with Slider -->
+    <div id="slider-container-{{ section.id }}" class="w-full md:w-1/2 overflow-hidden relative p-8 md:p-16">
+      <div class="slides-wrapper flex h-screen">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'collection_slide' -%}
+            {%- assign collection = block.settings.collection -%}
+            {%- assign featured_product = collection.products.first -%}
+
+            <div
+              class="slide min-w-full h-full flex flex-col items-center justify-center p-8"
+              {{ block.shopify_attributes }}
+            >
+              <h3 class="collection-title font-bold mb-8">
+                {{ block.settings.slide_title | default: collection.title | default: 'Collection Name' }}
+              </h3>
+
+              {%- if featured_product != blank -%}
+                {% render 'product-card',
+                  product: featured_product,
+                  card_bg: section.settings.card_bg,
+                  offer_text: block.settings.offer_text,
+                  offer_text_color: section.settings.offer_text_color,
+                  offer_border_color: section.settings.offer_border_color,
+                  info_title_size: section.settings.info_title_size,
+                  info_title_color: section.settings.info_title_color,
+                  info_price_size: section.settings.info_price_size,
+                  info_price_color: section.settings.info_price_color,
+                  info_rating_color: section.settings.info_rating_color,
+                  button_text: section.settings.button_text,
+                  button_bg: section.settings.button_bg,
+                  button_text_color: section.settings.button_text_color,
+                  button_border_color: section.settings.button_border_color,
+                  button_hover_bg: section.settings.button_hover_bg,
+                  button_hover_text: section.settings.button_hover_text
+                %}
+              {%- else -%}
+                <div class="text-gray-400 text-center">
+                  <p>Select a collection to display a product</p>
+                </div>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if section.blocks.size == 0 -%}
+          <div class="slide min-w-full h-full flex flex-col items-center justify-center p-8">
+            <h3 class="collection-title font-bold mb-8">Collection Name</h3>
+            <div class="text-gray-400 text-center">
+              <p>Add collection blocks in the theme editor</p>
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    function initHorizontalGallery() {
+      const sliderContainer = document.getElementById('slider-container-{{ section.id }}');
+      const section = document.getElementById('horizontal-gallery-{{ section.id }}');
+      const slidesWrapper = sliderContainer.querySelector('.slides-wrapper');
+      const slides = slidesWrapper.querySelectorAll('.slide');
+
+      if (!slidesWrapper || slides.length === 0) return;
+
+      let isMobile = window.innerWidth < 768;
+      let galleryScrollTrigger = null;
+
+      function initScrollAnimation() {
+        // Kill only THIS section's ScrollTrigger, not all of them
+        if (galleryScrollTrigger) {
+          galleryScrollTrigger.kill();
+          galleryScrollTrigger = null;
+        }
+
+        // Reset inline styles for this section only
+        gsap.set([section, sliderContainer, slidesWrapper], { clearProps: 'all' });
+
+        isMobile = window.innerWidth < 768;
+        const scrollDistance = slidesWrapper.scrollWidth - sliderContainer.offsetWidth;
+
+        if (scrollDistance <= 0) return;
+
+        const tween = gsap.to(slidesWrapper, {
+          x: -scrollDistance,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: isMobile ? sliderContainer : section,
+            start: 'top top',
+            end: () => `+=${scrollDistance}`,
+            scrub: 1,
+            pin: isMobile ? sliderContainer : section,
+            pinSpacing: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        // Store reference to this section's ScrollTrigger
+        galleryScrollTrigger = tween.scrollTrigger;
+      }
+
+      // Initialize after a short delay to ensure layout is calculated
+      setTimeout(() => {
+        initScrollAnimation();
+      }, 100);
+
+      // Reinitialize on resize with debounce
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          const newIsMobile = window.innerWidth < 768;
+          if (newIsMobile !== isMobile) {
+            initScrollAnimation();
+          } else {
+            ScrollTrigger.refresh();
+          }
+        }, 250);
+      });
+    }
+
+    // Run when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initHorizontalGallery);
+    } else {
+      initHorizontalGallery();
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Horizontal Gallery",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Left Section"
+    },
+    {
+      "type": "image_picker",
+      "id": "left_image",
+      "label": "Left Image"
+    },
+    {
+      "type": "header",
+      "content": "Section Styling"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "collection_title_size",
+      "label": "Collection Title Size",
+      "min": 24,
+      "max": 72,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "collection_title_color",
+      "label": "Collection Title Color",
+      "default": "#111827"
+    },
+    {
+      "type": "header",
+      "content": "Product Card Styling"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card Background",
+      "default": "#e5e7eb"
+    },
+    {
+      "type": "color",
+      "id": "offer_text_color",
+      "label": "Offer Text Color",
+      "default": "#dc2626"
+    },
+    {
+      "type": "color",
+      "id": "offer_border_color",
+      "label": "Offer Border Color",
+      "default": "#fca5a5"
+    },
+    {
+      "type": "header",
+      "content": "Product Info Styling"
+    },
+    {
+      "type": "range",
+      "id": "info_title_size",
+      "label": "Title Font Size",
+      "min": 14,
+      "max": 32,
+      "step": 2,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "info_title_color",
+      "label": "Title Color",
+      "default": "#111827"
+    },
+    {
+      "type": "range",
+      "id": "info_price_size",
+      "label": "Price Font Size",
+      "min": 12,
+      "max": 24,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "info_price_color",
+      "label": "Price Color",
+      "default": "#374151"
+    },
+    {
+      "type": "color",
+      "id": "info_rating_color",
+      "label": "Star Rating Color",
+      "default": "#fbbf24"
+    },
+    {
+      "type": "header",
+      "content": "Button Styling"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Buy Now"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Button Background",
+      "default": "#00000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#fef08a"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button Border Color",
+      "default": "#fef08a"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg",
+      "label": "Button Hover Background",
+      "default": "#fef08a"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text",
+      "label": "Button Hover Text Color",
+      "default": "#dc2626"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_slide",
+      "name": "Collection Slide",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "slide_title",
+          "label": "Slide Title",
+          "info": "Leave blank to use collection title"
+        },
+        {
+          "type": "text",
+          "id": "offer_text",
+          "label": "Offer Badge Text",
+          "default": "New"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Horizontal Gallery",
+      "blocks": [
+        {
+          "type": "collection_slide"
+        },
+        {
+          "type": "collection_slide"
+        },
+        {
+          "type": "collection_slide"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,171 @@
+{% comment %}
+  Product Card Component
+
+  Usage:
+  {% render 'product-card',
+    product: product,
+    card_bg: '#e5e7eb',
+    offer_text: 'Sale',
+    offer_text_color: '#dc2626',
+    offer_border_color: '#fca5a5',
+    info_title_size: 20,
+    info_title_color: '#111827',
+    info_price_size: 16,
+    info_price_color: '#374151',
+    info_rating_color: '#fbbf24',
+    button_text: 'Buy Now',
+    button_bg: 'transparent',
+    button_text_color: '#fef08a',
+    button_border_color: '#fef08a',
+    button_hover_bg: '#fef08a',
+    button_hover_text: '#dc2626'
+  %}
+
+  Parameters:
+  - product: (required) Shopify product object
+  - card_bg: Background color of the card
+  - offer_text: Text to show in the offer badge (leave blank to hide)
+  - offer_text_color: Color of the offer text
+  - offer_border_color: Border color of the offer badge
+  - info_title_size: Font size for product title in px
+  - info_title_color: Color for product title
+  - info_price_size: Font size for price in px
+  - info_price_color: Color for price text
+  - info_rating_color: Color for star rating
+  - button_text: Text for the button
+  - button_bg: Button background color
+  - button_text_color: Button text color
+  - button_border_color: Button border color
+  - button_hover_bg: Button hover background color
+  - button_hover_text: Button hover text color
+{% endcomment %}
+
+{%- liquid
+  assign card_id = 'product-card-' | append: product.id | append: '-' | append: 'now' | date: '%s%L'
+
+  assign card_bg = card_bg | default: '#e5e7eb'
+  assign offer_text = offer_text | default: ''
+  assign offer_text_color = offer_text_color | default: '#dc2626'
+  assign offer_border_color = offer_border_color | default: '#fca5a5'
+  assign info_title_size = info_title_size | default: 20
+  assign info_title_color = info_title_color | default: '#111827'
+  assign info_price_size = info_price_size | default: 16
+  assign info_price_color = info_price_color | default: '#374151'
+  assign info_rating_color = info_rating_color | default: '#fbbf24'
+  assign button_text = button_text | default: 'Buy Now'
+  assign button_bg = button_bg | default: 'transparent'
+  assign button_text_color = button_text_color | default: '#fef08a'
+  assign button_border_color = button_border_color | default: '#fef08a'
+  assign button_hover_bg = button_hover_bg | default: '#fef08a'
+  assign button_hover_text = button_hover_text | default: '#dc2626'
+
+  assign product_rating = product.metafields.reviews.rating.value | default: 0
+  assign rating_count = product.metafields.reviews.rating_count | default: 0
+-%}
+
+<style>
+  #{{ card_id }} {
+    background-color: {{ card_bg }};
+  }
+
+  #{{ card_id }} .offer-badge {
+    color: {{ offer_text_color }};
+    border-color: {{ offer_border_color }};
+  }
+
+  #{{ card_id }} .product-title {
+    font-size: {{ info_title_size }}px;
+    color: {{ info_title_color }};
+  }
+
+  #{{ card_id }} .product-price {
+    font-size: {{ info_price_size }}px;
+    color: {{ info_price_color }};
+  }
+
+  #{{ card_id }} .star-rating svg {
+    color: {{ info_rating_color }};
+  }
+
+  #{{ card_id }} .buy-btn {
+    background-color: {{ button_bg }};
+    color: {{ button_text_color }};
+    border-color: {{ button_border_color }};
+  }
+
+  #{{ card_id }} .buy-btn:hover {
+    background-color: {{ button_hover_bg }};
+    color: {{ button_hover_text }};
+  }
+</style>
+
+<div
+  id="{{ card_id }}"
+  class="product-card group relative flex flex-col overflow-hidden max-w-fit h-[450px] py-4 px-2 rounded-lg shadow-lg"
+>
+  {%- if offer_text != blank -%}
+    <div class="offer-badge absolute top-2 left-2 px-3 py-0.5 rounded-md border text-sm font-medium z-20">
+      {{ offer_text }}
+    </div>
+  {%- endif -%}
+
+  <a href="{{ product.url }}" class="z-0 flex-1 overflow-hidden transition-all duration-500 ease-in-out">
+    {%- if product.featured_image != blank -%}
+      <img
+        src="{{ product.featured_image | image_url: width: 400 }}"
+        alt="{{ product.featured_image.alt | default: product.title }}"
+        width="250"
+        height="400"
+        class="object-contain aspect-[3/4] transition-transform duration-700 group-hover:scale-105"
+        loading="lazy"
+      >
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'object-contain aspect-[3/4] w-[250px]' }}
+    {%- endif -%}
+  </a>
+
+  <div class="ml-2 space-y-2 z-10 flex flex-col">
+    <!-- Star Rating -->
+    <div class="star-rating flex items-center gap-1">
+      <div class="flex">
+        {%- for i in (1..5) -%}
+          {%- if i <= product_rating -%}
+            <!-- Filled star -->
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            </svg>
+          {%- else -%}
+            <!-- Empty star -->
+            <svg class="w-4 h-4 opacity-30" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            </svg>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+      <span class="text-sm text-gray-500">({{ rating_count }})</span>
+    </div>
+
+    <!-- Product Title -->
+    <a href="{{ product.url }}" class="product-title font-bold hover:underline">
+      {{ product.title }}
+    </a>
+
+    <!-- Price -->
+    <div class="product-price">
+      {{ product.price | money }}
+      {%- if product.compare_at_price > product.price -%}
+        <del class="ml-2 opacity-60">{{ product.compare_at_price | money }}</del>
+      {%- endif -%}
+    </div>
+
+    <!-- Buy Now Button (appears on hover) -->
+    <div class="max-h-0 opacity-0 transition-all duration-500 ease-in-out group-hover:max-h-16 group-hover:opacity-100">
+      <a
+        href="{{ product.url }}"
+        class="buy-btn block w-full px-4 py-2 rounded-md border-2 text-center font-medium translate-y-4 transition-all duration-500 ease-in-out group-hover:translate-y-0"
+      >
+        {{ button_text }}
+      </a>
+    </div>
+  </div>
+</div>
