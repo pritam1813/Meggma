@@ -53,7 +53,7 @@
       </h2>
     </div>
 
-    <div class="mainimg w-full max-w-md">
+    <div class="mainimg relative w-full max-w-md">
       {%- if section.settings.main_image != blank -%}
         <img
           src="{{ section.settings.main_image | image_url: width: 800 }}"
@@ -66,24 +66,26 @@
       {%- else -%}
         {{ 'image' | placeholder_svg_tag: 'rounded-2xl shadow-2xl w-full object-cover' }}
       {%- endif -%}
-    </div>
 
-    {% comment %}
-      <div id="floatingimg" class="absolute -right-4 top-1/4 md:-right-12 lg:-right-20 transform translate-y-1/2">
-        {% render 'rotating-circle-text',
-          id: 'parallax-circle',
-          radius: 120,
-          center_text_line1: 'Main',
-          center_text_line2: 'Text',
-          circular_text: 'Circular Text Surrounding The Main Text • Cool SVG Design •',
-          center_font_size: 24,
-          circular_font_size: 14,
-          center_color: '#1e293b',
-          circular_color: '#4f46e5',
-          trigger_element: 'parallax-w-text'
-        %}
-      </div>
-    {% endcomment %}
+      {%- if section.settings.show_rotating_circle -%}
+        <div id="floatingimg" class="absolute -top-24 -right-24 z-10">
+          {%- assign circle_id = 'parallax-circle-' | append: section.id -%}
+          {%- assign trigger_id = 'parallax-section-' | append: section.id -%}
+          {% render 'rotating-circle-text',
+            id: circle_id,
+            trigger_section_id: trigger_id,
+            main_text_line1: section.settings.circle_center_line1,
+            main_text_line2: section.settings.circle_center_line2,
+            circular_text: section.settings.circle_text,
+            main_text_size: section.settings.circle_center_font_size,
+            main_text_color: section.settings.circle_center_color,
+            circular_text_size: section.settings.circle_text_font_size,
+            circular_text_color: section.settings.circle_text_color,
+            size: section.settings.circle_size
+          %}
+        </div>
+      {%- endif -%}
+    </div>
 
     <div class="bottomele">
       {%- if section.settings.description_text != blank -%}
@@ -128,19 +130,21 @@
       const textcontainer = section.querySelector('.textcontainer');
       const headingPrimary = section.querySelector('.heading-primary');
       const headingSecondary = section.querySelector('.heading-secondary');
+      const floatingimg = section.querySelector('#floatingimg');
 
       const tl = gsap
         .timeline()
-        .from(headingPrimary, { x: -400 })
-        .from(headingSecondary, { x: 400 }, '<')
+        .from(headingPrimary, { x: '-100vw', ease: 'none', duration: 1 })
+        .from(headingSecondary, { x: '100vw', ease: 'none', duration: 1 }, '<')
         .from(mainimg, { y: 500 })
+        .from(floatingimg, { y: 500 })
         .from(bottomele, { y: 500 });
 
       ScrollTrigger.create({
         animation: tl,
         trigger: section,
         scrub: 1,
-        start: '-10% 50%',
+        start: '-50% 50%',
         end: '70% 50%',
       });
     }
@@ -303,6 +307,76 @@
       "type": "color",
       "id": "secondary_button_text_color",
       "label": "Secondary Button Text Color",
+      "default": "#4f46e5"
+    },
+    {
+      "type": "header",
+      "content": "Rotating Circle"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rotating_circle",
+      "label": "Show Rotating Circle",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "circle_center_line1",
+      "label": "Center Text Line 1",
+      "default": "Main"
+    },
+    {
+      "type": "text",
+      "id": "circle_center_line2",
+      "label": "Center Text Line 2",
+      "default": "Text"
+    },
+    {
+      "type": "text",
+      "id": "circle_text",
+      "label": "Circular Text",
+      "default": "Circular Text Surrounding The Main Text • Cool SVG Design •"
+    },
+    {
+      "type": "range",
+      "id": "circle_size",
+      "label": "Circle Size",
+      "min": 100,
+      "max": 400,
+      "step": 10,
+      "default": 200,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "circle_center_font_size",
+      "label": "Center Text Font Size",
+      "min": 14,
+      "max": 48,
+      "step": 2,
+      "default": 30,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "circle_text_font_size",
+      "label": "Circular Text Font Size",
+      "min": 8,
+      "max": 24,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "circle_center_color",
+      "label": "Center Text Color",
+      "default": "#1e293b"
+    },
+    {
+      "type": "color",
+      "id": "circle_text_color",
+      "label": "Circular Text Color",
       "default": "#4f46e5"
     }
   ],
