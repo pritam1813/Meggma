@@ -41,7 +41,7 @@
 <section
   id="parallax-section-{{ section.id }}"
   data-section-id="{{ section.id }}"
-  class="parallax-w-text relative flex flex-col items-center justify-center min-h-screen px-6 py-24 text-center"
+  class="parallax-w-text relative flex flex-col items-center justify-center px-6 py-24 text-center overflow-hidden"
 >
   <div class="relative w-full max-w-2xl flex flex-col items-center">
     <div class="textcontainer">
@@ -129,24 +129,19 @@
       const headingPrimary = section.querySelector('.heading-primary');
       const headingSecondary = section.querySelector('.heading-secondary');
 
-      const tl1 = gsap.timeline().from(mainimg, { y: 500 }).from(bottomele, { y: 500 });
-
-      const tl2 = gsap.timeline().from(headingPrimary, { x: -400 }).from(headingSecondary, { x: 400 }, '<');
-
-      ScrollTrigger.create({
-        animation: tl2,
-        trigger: textcontainer,
-        scrub: 1,
-        start: 'top 75%',
-        end: 'bottom 25%',
-      });
+      const tl = gsap
+        .timeline()
+        .from(headingPrimary, { x: -400 })
+        .from(headingSecondary, { x: 400 }, '<')
+        .from(mainimg, { y: 500 })
+        .from(bottomele, { y: 500 });
 
       ScrollTrigger.create({
-        animation: tl1,
+        animation: tl,
         trigger: section,
         scrub: 1,
-        pin: true,
-        start: 'top top',
+        start: '-10% 50%',
+        end: '70% 50%',
       });
     }
 
