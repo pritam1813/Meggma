@@ -1,55 +1,246 @@
-<footer>
-  <div class="footer__copyright">
-    &copy;
-    {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
+<footer class="flex flex-col lg:flex-row w-full min-h-screen text-[#453e3e]">
+  <div class="w-full lg:w-1/2 h-[60vh] lg:h-auto relative">
+    {%- if section.settings.left_image != blank -%}
+      <img
+        src="{{ section.settings.left_image | image_url: width: 1400 }}"
+        alt="{{ section.settings.left_image.alt | default: 'Footer Image' }}"
+        class="absolute inset-0 w-full h-full object-cover object-top"
+        width="{{ section.settings.left_image.width }}"
+        height="{{ section.settings.left_image.height }}"
+        loading="lazy"
+      >
+    {%- else -%}
+      <img
+        src="https://www.vandanafashion.in/cdn/shop/files/DSC_4617_1.jpg?v=1762606477&width=1400"
+        alt="Footer Image"
+        class="absolute inset-0 w-full h-full object-cover object-top"
+        width="980"
+        height="1400"
+        loading="lazy"
+      >
+    {%- endif -%}
   </div>
 
-  <div class="footer__links">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
+  <div class="w-full lg:w-1/2 bg-theme-beige px-6 py-12 lg:px-20 lg:py-24 flex flex-col justify-center">
+    <!-- Email Signup Section -->
+    <div class="mb-12">
+      <h2 class="text-xl lg:text-2xl font-normal mb-8 leading-snug">
+        {{
+          section.settings.signup_heading
+          | default: 'Get updates on offers and products and save upto 12% on your first order'
+        }}
+      </h2>
 
-  <div class="footer__payment">
-    {% if section.settings.show_payment_icons %}
-      {% for type in shop.enabled_payment_types %}
-        {{ type | payment_type_svg_tag }}
-      {% endfor %}
-    {% endif %}
+      {% form 'customer', id: 'footer-newsletter-form', class: 'newsletter-form' %}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+
+        <div class="w-full max-w-md border-b border-gray-400 pb-2 flex justify-between items-center group focus-within:border-black transition-colors">
+          <input
+            type="email"
+            name="contact[email]"
+            id="footer-newsletter-email"
+            placeholder="{{ section.settings.placeholder_text | default: 'Your email' }}"
+            class="bg-transparent border-none outline-none w-full text-gray-700 placeholder-gray-500 py-1"
+            required
+            autocomplete="email"
+            {% if form.posted_successfully? %}
+              value=""
+            {% endif %}
+          >
+          <button type="submit" class="ml-2 text-gray-600 hover:text-black transition-colors" aria-label="Subscribe">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </button>
+        </div>
+
+        {%- if form.posted_successfully? -%}
+          <p class="text-green-600 text-sm mt-3">
+            {{ section.settings.success_message | default: 'Thank you for subscribing!' }}
+          </p>
+        {%- endif -%}
+
+        {%- if form.errors -%}
+          <p class="text-red-600 text-sm mt-3">
+            {{ form.errors.translated_fields.email | capitalize }}
+            {{ form.errors.messages.email }}
+          </p>
+        {%- endif -%}
+      {% endform %}
+    </div>
+
+    <!-- Company Info -->
+    <div class="mb-10 text-sm leading-relaxed text-gray-700">
+      <p class="font-bold text-gray-900">{{ section.settings.company_name | default: shop.name }}</p>
+      {%- if section.settings.company_cin != blank -%}
+        <p><span class="font-bold text-gray-900">CIN:</span> {{ section.settings.company_cin }}</p>
+      {%- endif -%}
+      {%- if section.settings.company_address != blank -%}
+        {{ section.settings.company_address }}
+      {%- endif -%}
+    </div>
+
+    <hr class="border-gray-300 mb-10">
+
+    <!-- Dynamic Footer Menu -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-y-10 gap-x-4 mb-16">
+      {%- if section.settings.menu != blank -%}
+        {%- assign footer_menu = linklists[section.settings.menu] -%}
+
+        {%- for link in footer_menu.links -%}
+          <div>
+            {%- if link.links.size > 0 -%}
+              {%- comment -%} Parent link with children - display as column header {%- endcomment -%}
+              <h3 class="font-bold text-sm mb-4 text-gray-900">{{ link.title }}</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                {%- for child_link in link.links -%}
+                  <li>
+                    <a href="{{ child_link.url }}" class="hover:text-black hover:underline">
+                      {{ child_link.title }}
+                    </a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- else -%}
+              {%- comment -%} Single link without children {%- endcomment -%}
+              <a href="{{ link.url }}" class="block font-bold text-sm hover:underline">
+                {{ link.title }}
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        {%- comment -%} Fallback when no menu is selected {%- endcomment -%}
+        <div class="col-span-full text-sm text-gray-500">
+          <p>Select a menu in the theme editor to display footer links.</p>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <hr class="border-gray-300 mb-8">
+
+    <!-- Bottom Section -->
+    <div class="flex flex-col space-y-6">
+      {%- if section.settings.show_locale_selector -%}
+        <div>
+          <span class="text-sm font-medium">{{ localization.language.iso_code }}</span>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Quick links row - uses the same menu's top-level items {%- endcomment -%}
+      {%- if section.settings.menu != blank -%}
+        <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-gray-600">
+          {%- for link in footer_menu.links -%}
+            <a href="{{ link.url }}" class="hover:text-black">{{ link.title }}</a>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      <div class="flex flex-wrap items-center gap-4">
+        <div class="text-xs text-gray-500">
+          &copy; {{ 'now' | date: '%Y' }}
+          {{ shop.name }}. {{ powered_by_link }}
+        </div>
+
+        {%- if section.settings.show_payment_icons -%}
+          <div class="flex items-center gap-2">
+            {%- for type in shop.enabled_payment_types -%}
+              <span class="payment-icon">{{ type | payment_type_svg_tag: class: 'w-8 h-auto' }}</span>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
   </div>
 </footer>
 
-{% stylesheet %}
-  footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2rem;
-  }
-  footer a {
-    text-decoration: none;
-    color: var(--color-foreground);
-  }
-  footer .footer__links,
-  footer .footer__payment {
-    display: flex;
-    gap: 1rem;
-  }
-{% endstylesheet %}
-
 {% schema %}
 {
-  "name": "t:general.footer",
+  "name": "Footer",
   "settings": [
+    {
+      "type": "header",
+      "content": "Left Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "left_image",
+      "label": "Image"
+    },
+    {
+      "type": "header",
+      "content": "Email Signup"
+    },
+    {
+      "type": "text",
+      "id": "signup_heading",
+      "label": "Heading",
+      "default": "Get updates on offers and products and save upto 12% on your first order"
+    },
+    {
+      "type": "text",
+      "id": "placeholder_text",
+      "label": "Placeholder Text",
+      "default": "Your email"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success Message",
+      "default": "Thank you for subscribing!"
+    },
+    {
+      "type": "header",
+      "content": "Company Info"
+    },
+    {
+      "type": "text",
+      "id": "company_name",
+      "label": "Company Name",
+      "default": "N R Vandana Tex Industries Limited"
+    },
+    {
+      "type": "text",
+      "id": "company_cin",
+      "label": "CIN Number"
+    },
+    {
+      "type": "richtext",
+      "id": "company_address",
+      "label": "Address"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
     {
       "type": "link_list",
       "id": "menu",
-      "label": "t:labels.menu"
+      "label": "Footer Menu",
+      "default": "footer",
+      "info": "Create a nested menu where top-level items become column headers"
+    },
+    {
+      "type": "header",
+      "content": "Bottom Bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_locale_selector",
+      "label": "Show Language Selector",
+      "default": true
     },
     {
       "type": "checkbox",
       "id": "show_payment_icons",
-      "label": "t:labels.show_payment_icons",
+      "label": "Show Payment Icons",
       "default": true
     }
   ]

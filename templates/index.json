@@ -175,7 +175,156 @@
     "parallax_text_MRTpKT": {
       "type": "parallax-text",
       "name": "Parallax Text",
-      "settings": {}
+      "settings": {
+        "heading_text": "Main Section Heading",
+        "subheading_text": "This is the secondary line",
+        "description_text": "This is the smaller supplementary text that sits right below the main image to provide extra details or captions.",
+        "primary_button_text": "Primary Action",
+        "primary_button_link": "",
+        "secondary_button_text": "Learn More",
+        "secondary_button_link": "",
+        "heading_font_size": 36,
+        "subheading_font_size": 36,
+        "description_font_size": 14,
+        "section_bg_color": "#f9fafb",
+        "heading_text_color": "#111827",
+        "subheading_text_color": "#111827",
+        "description_text_color": "#6b7280",
+        "primary_button_bg": "#4f46e5",
+        "primary_button_text_color": "#ffffff",
+        "secondary_button_bg": "#ffffff",
+        "secondary_button_text_color": "#4f46e5"
+      }
+    },
+    "countdown_banner_JKVPjT": {
+      "type": "countdown-banner",
+      "name": "Countdown Banner",
+      "settings": {
+        "background_image": "shopify://shop_images/DSC07764.jpg",
+        "heading": "Limited Time Offer",
+        "subheading": "Don't miss out!",
+        "countdown_hours": 5,
+        "countdown_minutes": 12,
+        "countdown_seconds": 45,
+        "heading_font_size": 30,
+        "subheading_font_size": 24,
+        "timer_font_size": 40,
+        "label_font_size": 16,
+        "text_color": "#ffffff",
+        "timer_color": "#ffffff",
+        "content_bg_color": "linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3) 100%)",
+        "overlay_color": "#111111"
+      }
+    },
+    "background_video_h6G3k6": {
+      "type": "background-video",
+      "name": "Background Video",
+      "settings": {
+        "video_url": "",
+        "subheading": "SubHeading",
+        "heading": "Heading",
+        "button_text": "Shop All",
+        "button_link": "",
+        "section_bg_color": "#f3f4f6",
+        "padding_x": 40,
+        "padding_y": 40,
+        "container_bg_color": "#dbeafe",
+        "border_radius": 24,
+        "subheading_color": "#1f2937",
+        "subheading_font_size": 18,
+        "subheading_margin": 24,
+        "heading_color": "#111827",
+        "heading_font_size": 36,
+        "heading_margin": 16,
+        "button_bg_color": "#f3f4f6",
+        "button_text_color": "#111827",
+        "button_margin": 16
+      }
+    },
+    "scale_down_image_banner_wA3FtN": {
+      "type": "scale-down-image-banner",
+      "name": "Scale Down Banner",
+      "settings": {
+        "image": "shopify://shop_images/biscotti-lays-in-a-monstera-leaf.jpg",
+        "subheading": "Sub heading",
+        "heading": "Heading",
+        "text": "More Para",
+        "section_bg_color": "#f3f4f6",
+        "padding": 56,
+        "container_bg_color": "#ffffff",
+        "border_radius": 24,
+        "subheading_color": "#374151",
+        "subheading_font_size": 20,
+        "heading_color": "#111827",
+        "heading_font_size": 36,
+        "text_color": "#4b5563",
+        "text_font_size": 18
+      }
+    },
+    "horizontal_gallary_He6GUE": {
+      "type": "horizontal-gallary",
+      "blocks": {
+        "collection_slide_wB7KMk": {
+          "type": "collection_slide",
+          "settings": {
+            "collection": "printed",
+            "slide_title": "",
+            "offer_text": "New"
+          }
+        },
+        "collection_slide_pMTfU4": {
+          "type": "collection_slide",
+          "settings": {
+            "collection": "bedsheet-1",
+            "slide_title": "",
+            "offer_text": "New"
+          }
+        },
+        "collection_slide_fPqF6w": {
+          "type": "collection_slide",
+          "settings": {
+            "collection": "emboidred",
+            "slide_title": "",
+            "offer_text": "New"
+          }
+        },
+        "collection_slide_FLhN4G": {
+          "type": "collection_slide",
+          "settings": {
+            "collection": "bedsheet",
+            "slide_title": "",
+            "offer_text": "New"
+          }
+        }
+      },
+      "block_order": [
+        "collection_slide_wB7KMk",
+        "collection_slide_pMTfU4",
+        "collection_slide_fPqF6w",
+        "collection_slide_FLhN4G"
+      ],
+      "disabled": true,
+      "name": "Horizontal Gallary",
+      "settings": {
+        "left_image": "shopify://shop_images/1_37a79ee5-eb22-41f9-9ac6-6e00546c3350.png",
+        "section_bg": "#fff5f5",
+        "collection_title_size": 48,
+        "collection_title_color": "#111827",
+        "card_bg": "#e5e7eb",
+        "offer_text_color": "#dc2626",
+        "offer_border_color": "#fca5a5",
+        "info_title_size": 20,
+        "info_title_color": "#111827",
+        "info_price_size": 16,
+        "info_price_color": "#374151",
+        "info_rating_color": "#fbbf24",
+        "button_text": "Buy Now",
+        "button_bg": "rgba(0,0,0,0)",
+        "button_text_color": "#fef08a",
+        "button_border_color": "#fef08a",
+        "button_hover_bg": "#fef08a",
+        "button_hover_text": "#dc2626"
+      }
     }
   },
   "order": [
@@ -184,6 +333,10 @@
     "media_with_text_rn8tdq",
     "staggered_staircase_section_8MJ6Lf",
     "marquee_section_64xBPH",
-    "parallax_text_MRTpKT"
+    "parallax_text_MRTpKT",
+    "countdown_banner_JKVPjT",
+    "background_video_h6G3k6",
+    "scale_down_image_banner_wA3FtN",
+    "horizontal_gallary_He6GUE"
   ]
 }
