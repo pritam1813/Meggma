@@ -11,10 +11,36 @@
   "sections": {
     "hero_VyqG73": {
       "type": "hero",
+      "blocks": {
+        "media_card_V7ByMp": {
+          "type": "media_card",
+          "settings": {
+            "media_type": "video",
+            "video": "shopify://files/videos/reels 3.mp4"
+          }
+        },
+        "media_card_GWVpgr": {
+          "type": "media_card",
+          "settings": {
+            "media_type": "video",
+            "video": "shopify://files/videos/reels 6.mp4"
+          }
+        },
+        "media_card_RrQecg": {
+          "type": "media_card",
+          "settings": {
+            "media_type": "video",
+            "video": "shopify://files/videos/reels 5.mp4"
+          }
+        }
+      },
+      "block_order": [
+        "media_card_V7ByMp",
+        "media_card_GWVpgr",
+        "media_card_RrQecg"
+      ],
       "name": "Hero",
-      "settings": {
-        "title": ""
-      }
+      "settings": {}
     },
     "carousel_fzJQLk": {
       "type": "carousel",
@@ -193,7 +219,16 @@
         "primary_button_bg": "#4f46e5",
         "primary_button_text_color": "#ffffff",
         "secondary_button_bg": "#ffffff",
-        "secondary_button_text_color": "#4f46e5"
+        "secondary_button_text_color": "#4f46e5",
+        "show_rotating_circle": true,
+        "circle_center_line1": "Main",
+        "circle_center_line2": "Text",
+        "circle_text": "Circular Text Surrounding The Main Text • Cool SVG Design •",
+        "circle_size": 200,
+        "circle_center_font_size": 30,
+        "circle_text_font_size": 14,
+        "circle_center_color": "#1e293b",
+        "circle_text_color": "#4f46e5"
       }
     },
     "countdown_banner_JKVPjT": {
