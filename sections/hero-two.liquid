@@ -1,0 +1,1212 @@
+{% comment %}
+  Advanced Parallax Hero Section with Overlap
+  Features:
+  - Parallax scrolling background
+  - Fade-in overlay transition
+  - Floating "fluff" elements with independent parallax
+  - Hero overlap with adjacent sections
+  - Sticky height calculations
+  - Support for images, videos, products, and collections as fluff elements
+{% endcomment %}
+
+{% comment %}
+  {{ 'component-card.css' | asset_url | stylesheet_tag }}
+  {{ 'component-price.css' | asset_url | stylesheet_tag }}
+  {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+{% endcomment %}
+
+<style>
+  #shopify-section-{{ section.id }} .parallax-hero-media::after {
+    background-color: {{ section.settings.overlay_color | color_modify: 'alpha', section.settings.overlay_opacity }};
+  }
+
+  @media (min-width: 768px) {
+    #shopify-section-{{ section.id }} .text-overlay {
+      min-height: {{ section.settings.min_height_desktop }}vh;
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    #shopify-section-{{ section.id }} .text-overlay {
+      min-height: {{ section.settings.min_height_mobile }}vh;
+    }
+  }
+
+  /* Parallax container styles */
+  .parallax-container {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .parallax-hero-sticky-outer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% + {{ section.settings.parallax_distance }}vh);
+  }
+
+  .parallax-hero-media {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .parallax-hero-media img,
+  .parallax-hero-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: {{ section.settings.focal_point_x }}% {{ section.settings.focal_point_y }}%;
+  }
+
+  .parallax-hero-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transition: opacity 0.6s ease;
+  }
+
+  /* Fade overlay - sticky at bottom to cover background */
+  .parallax-fade-overlay {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: {{ section.settings.fade_color }};
+    opacity: 0;
+    pointer-events: none;
+    margin-top: -100vh;
+  }
+
+  /* Fluff element positioning */
+  .fluff-element {
+    position: absolute;
+    pointer-events: auto;
+    will-change: transform;
+    transform: translateX(-50%);
+  }
+
+  @media (min-width: 768px) {
+    .fluff-element {
+      top: var(--top-desktop);
+      left: var(--left-desktop);
+      width: var(--width-desktop);
+    }
+    .fluff-mobile-only {
+      display: none;
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .fluff-element {
+      top: var(--top-mobile);
+      left: var(--left-mobile);
+      width: var(--width-mobile);
+    }
+    .fluff-desktop-only {
+      display: none;
+    }
+  }
+
+  /* Hero overlap */
+  hero-overlap {
+    display: block;
+  }
+
+  hero-overlap .image-banner {
+    padding-bottom: var(--hero-overlap-bottom, 0);
+  }
+
+  hero-overlap {
+    margin-bottom: calc(-1 * var(--hero-overlap-bottom, 0));
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .fade-in-up {
+    animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .img--border-radius-small {
+    border-radius: 8px;
+  }
+
+  .img--border-radius-medium {
+    border-radius: 16px;
+  }
+</style>
+
+<hero-overlap
+  data-count-above="{{ section.settings.overlap_sections_above }}"
+  data-count-below="{{ section.settings.overlap_sections_below }}"
+  style="--hero-overlap-top: 0px; --hero-overlap-bottom: 0px;"
+>
+  <parallax-container>
+    <div class="section section--full-width" id="parallax-hero-{{ section.id }}">
+      <div class="image-banner relative">
+        <!-- Sticky parallax background -->
+        <div class="parallax-hero-sticky-outer">
+          <div class="parallax-hero-media">
+            <!-- Desktop Background -->
+            <div class="hidden md:block w-full h-full">
+              {% if section.settings.video_url != blank %}
+                <video
+                  playsinline
+                  autoplay
+                  muted
+                  loop
+                  preload="metadata"
+                  class="parallax-hero-video w-full h-full object-cover"
+                >
+                  <source src="{{ section.settings.video_url }}" type="video/mp4">
+                </video>
+              {% elsif section.settings.image != blank %}
+                {{-
+                  section.settings.image
+                  | image_url: width: 3200
+                  | image_tag:
+                    loading: 'eager',
+                    fetchpriority: 'high',
+                    class: 'w-full h-full object-cover',
+                    widths: '980,1200,1400,1600,1920,2560,3200',
+                    sizes: '100vw'
+                -}}
+              {% else %}
+                {{ 'hero-apparel-1' | placeholder_svg_tag: 'placeholder-svg w-full h-full object-cover' }}
+              {% endif %}
+            </div>
+            <!-- Mobile Background -->
+            <div class="block md:hidden w-full h-full">
+              {% if section.settings.video_url_mobile != blank %}
+                <video
+                  playsinline
+                  autoplay
+                  muted
+                  loop
+                  preload="metadata"
+                  class="parallax-hero-video w-full h-full object-cover"
+                >
+                  <source src="{{ section.settings.video_url_mobile }}" type="video/mp4">
+                </video>
+              {% elsif section.settings.image_mobile != blank %}
+                {{-
+                  section.settings.image_mobile
+                  | image_url: width: 1200
+                  | image_tag:
+                    loading: 'eager',
+                    fetchpriority: 'high',
+                    class: 'w-full h-full object-cover',
+                    widths: '480,640,768,980,1200',
+                    sizes: '100vw'
+                -}}
+              {% elsif section.settings.video_url != blank %}
+                <video
+                  playsinline
+                  autoplay
+                  muted
+                  loop
+                  preload="metadata"
+                  class="parallax-hero-video w-full h-full object-cover"
+                >
+                  <source src="{{ section.settings.video_url }}" type="video/mp4">
+                </video>
+              {% elsif section.settings.image != blank %}
+                {{-
+                  section.settings.image
+                  | image_url: width: 1200
+                  | image_tag:
+                    loading: 'eager',
+                    fetchpriority: 'high',
+                    class: 'w-full h-full object-cover',
+                    widths: '480,640,768,980,1200',
+                    sizes: '100vw'
+                -}}
+              {% else %}
+                {{ 'hero-apparel-1' | placeholder_svg_tag: 'placeholder-svg w-full h-full object-cover' }}
+              {% endif %}
+            </div>
+          </div>
+          <!-- Fade overlay (inside sticky outer container) -->
+          <div class="parallax-fade-overlay" data-fade-in></div>
+        </div>
+
+        <!-- Content container -->
+        <div class="flex wide-container w-full relative justify-center">
+          <!-- Text overlay -->
+          <div class="text-overlay pointer-events-none text-center w-full">
+            <div
+              class="sticky-top flex flex-col justify-center w-full"
+              style="height: 100vh; position: sticky; top: 0;"
+            >
+              <div class="pointer-events-auto max-w-3xl mx-auto px-4">
+                {% if section.settings.heading != blank %}
+                  <h1 class="text-4xl md:text-6xl font-bold mb-4" style="color: {{ section.settings.text_color }}">
+                    {{ section.settings.heading }}
+                  </h1>
+                {% endif %}
+                {% if section.settings.subheading != blank %}
+                  <p class="text-lg md:text-2xl mb-8" style="color: {{ section.settings.text_color }}">
+                    {{ section.settings.subheading }}
+                  </p>
+                {% endif %}
+                {% if section.settings.button_label != blank %}
+                  <a
+                    href="{{ section.settings.button_link }}"
+                    class="inline-block px-8 py-4 bg-white text-black rounded-full font-semibold hover:bg-opacity-90 transition"
+                  >
+                    {{ section.settings.button_label }}
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Fluff elements -->
+          {% for block in section.blocks %}
+            <div
+              class="fluff-element z-{{ block.settings.z_index }} {% if block.settings.mobile_hidden %}fluff-desktop-only{% endif %} {% if block.settings.desktop_hidden %}fluff-mobile-only{% endif %}"
+              style="
+                --top-desktop: {{ block.settings.top_desktop }}%;
+                --left-desktop: {{ block.settings.left_desktop }}%;
+                --top-mobile: {{ block.settings.top_mobile }}%;
+                --left-mobile: {{ block.settings.left_mobile }}%;
+                --width-desktop: {{ block.settings.width_desktop }}px;
+                --width-mobile: {{ block.settings.width_mobile }}px;
+              "
+              data-parallax-speed="{{ block.settings.parallax_speed }}"
+              {{ block.shopify_attributes }}
+            >
+              <div class="parallax-inner max-w-full">
+                {% case block.type %}
+                  {% when 'image' %}
+                    <div class="media relative">
+                      {% if block.settings.image_link != blank %}
+                        <a href="{{ block.settings.image_link }}">
+                      {% endif %}
+
+                      {% if block.settings.image != blank %}
+                        {{-
+                          block.settings.image
+                          | image_url: width: 800
+                          | image_tag:
+                            loading: 'lazy',
+                            class: 'img--border-radius-small w-full h-auto',
+                            widths: '120,240,380,460,600,760',
+                            sizes: '(min-width: 768px) var(--width-desktop), var(--width-mobile)'
+                        -}}
+                      {% endif %}
+
+                      {% if block.settings.image_link != blank %}
+                        </a>
+                      {% endif %}
+                    </div>
+
+                  {% when 'video' %}
+                    <div
+                      class="relative overflow-hidden img--border-radius-small"
+                      style="aspect-ratio: {{ block.settings.aspect_ratio }};"
+                    >
+                      {% if block.settings.video != blank %}
+                        <video
+                          playsinline
+                          autoplay
+                          muted
+                          loop
+                          preload="metadata"
+                          class="w-full h-full object-cover img--border-radius-small"
+                        >
+                          {% for source in block.settings.video.sources %}
+                            <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                          {% endfor %}
+                        </video>
+                      {% endif %}
+                    </div>
+
+                  {% when 'product' %}
+                    {% if block.settings.product != blank %}
+                      {% assign product = block.settings.product %}
+                      <div class="card product-card fade-in-up bg-white rounded-lg shadow-lg overflow-hidden">
+                        <a href="{{ product.url }}" class="block">
+                          {% if product.featured_image %}
+                            {{-
+                              product.featured_image
+                              | image_url: width: 600
+                              | image_tag:
+                                loading: 'lazy',
+                                class: 'w-full h-auto',
+                                widths: '240,380,460,600',
+                                style: 'aspect-ratio: 0.8;'
+                            -}}
+                          {% endif %}
+                        </a>
+                        <div class="p-4">
+                          <h3 class="text-sm font-semibold mb-2">
+                            <a href="{{ product.url }}">{{ product.title }}</a>
+                          </h3>
+                          <div class="text-sm">
+                            {% if product.compare_at_price > product.price %}
+                              <span class="text-red-600 font-bold">{{ product.price | money }}</span>
+                              <span class="line-through text-gray-500 ml-2">
+                                {{- product.compare_at_price | money -}}
+                              </span>
+                            {% else %}
+                              <span class="font-bold">{{ product.price | money }}</span>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </div>
+                    {% endif %}
+
+                  {% when 'collection' %}
+                    {% if block.settings.collection != blank %}
+                      {% assign collection = block.settings.collection %}
+                      <div class="card collection-card fade-in-up bg-white rounded-lg shadow-lg overflow-hidden">
+                        <a href="{{ collection.url }}" class="block">
+                          {% if collection.image %}
+                            {{-
+                              collection.image
+                              | image_url: width: 600
+                              | image_tag:
+                                loading: 'lazy',
+                                class: 'w-full h-auto',
+                                widths: '240,380,460,600',
+                                style: 'aspect-ratio: 0.8;'
+                            -}}
+                          {% endif %}
+                        </a>
+                        <div class="p-4 flex justify-between items-center">
+                          <div>
+                            <h3 class="text-sm font-semibold">
+                              <a href="{{ collection.url }}">{{ collection.title }}</a>
+                            </h3>
+                            <p class="text-xs text-gray-600">{{ collection.products_count }} items</p>
+                          </div>
+                          <svg width="32" height="32" viewBox="0 0 32 32" class="text-gray-400">
+                            <path d="M19.772 19.773V12.23H12.23m0 7.54 7.543-7.543" stroke="currentColor" stroke-width="1.2" fill="none"/>
+                          </svg>
+                        </div>
+                      </div>
+                    {% endif %}
+                {% endcase %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </parallax-container>
+</hero-overlap>
+
+<script>
+  if (!customElements.get('hero-overlap')) {
+    class HeroOverlap extends HTMLElement {
+      connectedCallback() {
+        this.update();
+        this.throttledUpdate = this.throttle(this.update.bind(this), 100);
+        this.resizeObserver = new ResizeObserver(this.throttledUpdate);
+        this.resizeObserver.observe(document.querySelector('#main-content') || document.body);
+      }
+
+      disconnectedCallback() {
+        this.resizeObserver?.disconnect();
+      }
+
+      update() {
+        const outerSection = this.closest('.shopify-section');
+        let overlapTopHeight = 0;
+        let section = outerSection;
+
+        for (let i = 0; i < this.dataset.countAbove; i++) {
+          if (section?.previousElementSibling) {
+            section = section.previousElementSibling;
+            overlapTopHeight += section.getBoundingClientRect().height;
+          }
+        }
+
+        let overlapBottomHeight = 0;
+        section = outerSection;
+
+        for (let i = 0; i < this.dataset.countBelow; i++) {
+          if (section?.nextElementSibling) {
+            section = section.nextElementSibling;
+            overlapBottomHeight += section.getBoundingClientRect().height;
+          }
+        }
+
+        this.style.setProperty('--hero-overlap-top', `${overlapTopHeight}px`);
+        this.style.setProperty('--hero-overlap-bottom', `${overlapBottomHeight}px`);
+      }
+
+      throttle(func, limit) {
+        let lastCall = 0;
+        let timeout;
+        return function (...args) {
+          const now = Date.now();
+          clearTimeout(timeout);
+          if (now - lastCall >= limit) {
+            lastCall = now;
+            func(...args);
+          } else {
+            timeout = setTimeout(() => func(...args), limit - (now - lastCall));
+          }
+        };
+      }
+    }
+    customElements.define('hero-overlap', HeroOverlap);
+  }
+
+  if (!customElements.get('parallax-container')) {
+    class ParallaxContainer extends HTMLElement {
+      connectedCallback() {
+        this.init();
+      }
+
+      init() {
+        const fadeOverlay = this.querySelector('[data-fade-in]');
+        const fluffElements = this.querySelectorAll('.fluff-element');
+        const heroOverlap = this.closest('hero-overlap');
+        const overlapBelow = parseInt(heroOverlap?.dataset.countBelow || 0);
+
+        const handleScroll = () => {
+          const rect = this.getBoundingClientRect();
+          const windowHeight = window.innerHeight;
+          const sectionHeight = rect.height;
+
+          // Calculate scroll progress for parallax (full section)
+          const progress = Math.max(0, Math.min(1, (windowHeight - rect.top) / (windowHeight + rect.height)));
+
+          // Parallax fluff elements
+          fluffElements.forEach((el) => {
+            const speed = parseFloat(el.dataset.parallaxSpeed) || 0.5;
+            const yOffset = (progress - 0.5) * 200 * speed;
+            el.querySelector('.parallax-inner').style.transform = `translateY(${yOffset}px)`;
+          });
+
+          // Overlay fade: only start fading when scrolling into overlap region
+          // The overlap region starts after the first 100vh (initial viewport)
+          if (fadeOverlay) {
+            if (overlapBelow > 0) {
+              // How far we've scrolled past the initial viewport
+              const scrolledPastViewport = -rect.top;
+              // The overlap region is the section height minus one viewport
+              const overlapHeight = sectionHeight - windowHeight;
+              // Calculate progress through the overlap region (0 at start, 1 at end)
+              const overlapProgress =
+                overlapHeight > 0 ? Math.max(0, Math.min(1, scrolledPastViewport / overlapHeight)) : 0;
+              fadeOverlay.style.opacity = overlapProgress;
+            } else {
+              // No overlap sections, no overlay fade
+              fadeOverlay.style.opacity = 0;
+            }
+          }
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll();
+      }
+    }
+    customElements.define('parallax-container', ParallaxContainer);
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Parallax Hero Two",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background Media (Desktop)"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background Image (Desktop)"
+    },
+    {
+      "type": "url",
+      "id": "video_url",
+      "label": "Background Video URL (Desktop)",
+      "info": "Video will override image if both are set"
+    },
+    {
+      "type": "header",
+      "content": "Background Media (Mobile)"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Background Image (Mobile)",
+      "info": "Falls back to desktop image if not set"
+    },
+    {
+      "type": "url",
+      "id": "video_url_mobile",
+      "label": "Background Video URL (Mobile)",
+      "info": "Falls back to desktop video/image if not set"
+    },
+    {
+      "type": "header",
+      "content": "Focal Point"
+    },
+    {
+      "type": "range",
+      "id": "focal_point_x",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Focal Point X",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "focal_point_y",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Focal Point Y",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "label": "Overlay Opacity",
+      "default": 0.5
+    },
+    {
+      "type": "color",
+      "id": "fade_color",
+      "label": "Fade Transition Color",
+      "default": "#f7f4f0"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "min_height_desktop",
+      "min": 50,
+      "max": 500,
+      "step": 10,
+      "unit": "vh",
+      "label": "Minimum Height (Desktop)",
+      "default": 350
+    },
+    {
+      "type": "range",
+      "id": "min_height_mobile",
+      "min": 50,
+      "max": 500,
+      "step": 10,
+      "unit": "vh",
+      "label": "Minimum Height (Mobile)",
+      "default": 350
+    },
+    {
+      "type": "range",
+      "id": "parallax_distance",
+      "min": 0,
+      "max": 300,
+      "step": 10,
+      "unit": "vh",
+      "label": "Parallax Distance",
+      "default": 200,
+      "info": "Additional height for parallax scrolling effect"
+    },
+    {
+      "type": "header",
+      "content": "Section Overlap"
+    },
+    {
+      "type": "range",
+      "id": "overlap_sections_above",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "label": "Overlap Sections Above",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "overlap_sections_below",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "label": "Overlap Sections Below",
+      "default": 2,
+      "info": "Number of sections below that this hero will overlap"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Floating Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "url",
+          "id": "image_link",
+          "label": "Link"
+        },
+        {
+          "type": "header",
+          "content": "Desktop Position"
+        },
+        {
+          "type": "range",
+          "id": "top_desktop",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Top Position",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "left_desktop",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Left Position",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "width_desktop",
+          "min": 80,
+          "max": 600,
+          "step": 20,
+          "unit": "px",
+          "label": "Width",
+          "default": 240
+        },
+        {
+          "type": "header",
+          "content": "Mobile Position"
+        },
+        {
+          "type": "range",
+          "id": "top_mobile",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Top Position",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "left_mobile",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Left Position",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "width_mobile",
+          "min": 80,
+          "max": 400,
+          "step": 20,
+          "unit": "px",
+          "label": "Width",
+          "default": 120
+        },
+        {
+          "type": "header",
+          "content": "Settings"
+        },
+        {
+          "type": "range",
+          "id": "parallax_speed",
+          "min": 0,
+          "max": 2,
+          "step": 0.1,
+          "label": "Parallax Speed",
+          "default": 0.5,
+          "info": "How fast the element moves during scroll"
+        },
+        {
+          "type": "range",
+          "id": "z_index",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "label": "Layer (Z-Index)",
+          "default": 5
+        },
+        {
+          "type": "checkbox",
+          "id": "mobile_hidden",
+          "label": "Hide on Mobile",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "desktop_hidden",
+          "label": "Hide on Desktop",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "video",
+      "name": "Floating Video",
+      "settings": [
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video",
+          "info": "Upload via Settings > Files"
+        },
+        {
+          "type": "select",
+          "id": "aspect_ratio",
+          "label": "Aspect Ratio",
+          "options": [
+            {
+              "value": "0.563",
+              "label": "9:16 (Vertical)"
+            },
+            {
+              "value": "0.75",
+              "label": "3:4"
+            },
+            {
+              "value": "1",
+              "label": "1:1 (Square)"
+            },
+            {
+              "value": "1.333",
+              "label": "4:3"
+            },
+            {
+              "value": "1.778",
+              "label": "16:9"
+            }
+          ],
+          "default": "0.563"
+        },
+        {
+          "type": "header",
+          "content": "Desktop Position"
+        },
+        {
+          "type": "range",
+          "id": "top_desktop",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Top Position",
+          "default": 45
+        },
+        {
+          "type": "range",
+          "id": "left_desktop",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Left Position",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "width_desktop",
+          "min": 80,
+          "max": 600,
+          "step": 20,
+          "unit": "px",
+          "label": "Width",
+          "default": 380
+        },
+        {
+          "type": "header",
+          "content": "Mobile Position"
+        },
+        {
+          "type": "range",
+          "id": "top_mobile",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Top Position",
+          "default": 28
+        },
+        {
+          "type": "range",
+          "id": "left_mobile",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Left Position",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "width_mobile",
+          "min": 80,
+          "max": 400,
+          "step": 20,
+          "unit": "px",
+          "label": "Width",
+          "default": 120
+        },
+        {
+          "type": "header",
+          "content": "Settings"
+        },
+        {
+          "type": "range",
+          "id": "parallax_speed",
+          "min": 0,
+          "max": 2,
+          "step": 0.1,
+          "label": "Parallax Speed",
+          "default": 0.5,
+          "info": "How fast the element moves during scroll"
+        },
+        {
+          "type": "range",
+          "id": "z_index",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "label": "Layer (Z-Index)",
+          "default": 5
+        },
+        {
+          "type": "checkbox",
+          "id": "mobile_hidden",
+          "label": "Hide on Mobile",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "desktop_hidden",
+          "label": "Hide on Desktop",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "product",
+      "name": "Floating Product Card",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "header",
+          "content": "Desktop Position"
+        },
+        {
+          "type": "range",
+          "id": "top_desktop",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Top Position",
+          "default": 30
+        },
+        {
+          "type": "range",
+          "id": "left_desktop",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Left Position",
+          "default": 12
+        },
+        {
+          "type": "range",
+          "id": "width_desktop",
+          "min": 80,
+          "max": 600,
+          "step": 20,
+          "unit": "px",
+          "label": "Width",
+          "default": 240
+        },
+        {
+          "type": "header",
+          "content": "Mobile Position"
+        },
+        {
+          "type": "range",
+          "id": "top_mobile",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Top Position",
+          "default": 51
+        },
+        {
+          "type": "range",
+          "id": "left_mobile",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Left Position",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "width_mobile",
+          "min": 80,
+          "max": 400,
+          "step": 20,
+          "unit": "px",
+          "label": "Width",
+          "default": 280
+        },
+        {
+          "type": "header",
+          "content": "Settings"
+        },
+        {
+          "type": "range",
+          "id": "parallax_speed",
+          "min": 0,
+          "max": 2,
+          "step": 0.1,
+          "label": "Parallax Speed",
+          "default": 0.5,
+          "info": "How fast the element moves during scroll"
+        },
+        {
+          "type": "range",
+          "id": "z_index",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "label": "Layer (Z-Index)",
+          "default": 5
+        },
+        {
+          "type": "checkbox",
+          "id": "mobile_hidden",
+          "label": "Hide on Mobile",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "desktop_hidden",
+          "label": "Hide on Desktop",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "collection",
+      "name": "Floating Collection Card",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "header",
+          "content": "Desktop Position"
+        },
+        {
+          "type": "range",
+          "id": "top_desktop",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Top Position",
+          "default": 78
+        },
+        {
+          "type": "range",
+          "id": "left_desktop",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Left Position",
+          "default": 12
+        },
+        {
+          "type": "range",
+          "id": "width_desktop",
+          "min": 80,
+          "max": 600,
+          "step": 20,
+          "unit": "px",
+          "label": "Width",
+          "default": 240
+        },
+        {
+          "type": "header",
+          "content": "Mobile Position"
+        },
+        {
+          "type": "range",
+          "id": "top_mobile",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Top Position",
+          "default": 78
+        },
+        {
+          "type": "range",
+          "id": "left_mobile",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Left Position",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "width_mobile",
+          "min": 80,
+          "max": 400,
+          "step": 20,
+          "unit": "px",
+          "label": "Width",
+          "default": 240
+        },
+        {
+          "type": "header",
+          "content": "Settings"
+        },
+        {
+          "type": "range",
+          "id": "parallax_speed",
+          "min": 0,
+          "max": 2,
+          "step": 0.1,
+          "label": "Parallax Speed",
+          "default": 0.5,
+          "info": "How fast the element moves during scroll"
+        },
+        {
+          "type": "range",
+          "id": "z_index",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "label": "Layer (Z-Index)",
+          "default": 5
+        },
+        {
+          "type": "checkbox",
+          "id": "mobile_hidden",
+          "label": "Hide on Mobile",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "desktop_hidden",
+          "label": "Hide on Desktop",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Parallax Hero Two",
+      "blocks": [
+        {
+          "type": "image"
+        },
+        {
+          "type": "video"
+        },
+        {
+          "type": "product"
+        },
+        {
+          "type": "collection"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

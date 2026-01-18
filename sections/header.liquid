@@ -38,8 +38,9 @@
     <div id="logo">
       <a href="{{ routes.root_url }}">
         {%- if section.settings.logo != blank -%}
+          {%- assign logo_width_2x = section.settings.logo_width | times: 2 -%}
           <img
-            src="{{ section.settings.logo | image_url: width: section.settings.logo_width | times: 2 }}"
+            src="{{ section.settings.logo | image_url: width: logo_width_2x }}"
             alt="{{ section.settings.logo.alt | default: shop.name }}"
             width="{{ section.settings.logo_width }}"
             height="auto"
