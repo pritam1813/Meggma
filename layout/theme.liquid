@@ -17,6 +17,12 @@
       {{ settings.type_primary_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
     {% endunless %}
 
+    {% comment %}
+      Logo preload is handled via the header section's render.
+      The header section outputs a preload tag using section.settings.
+      See sections/header.liquid for the implementation.
+    {% endcomment %}
+
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
     {{ 'tailwind.output.css' | asset_url | stylesheet_tag: preload: true }}

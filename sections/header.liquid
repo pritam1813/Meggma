@@ -34,18 +34,16 @@
       </div>
     </div>
 
-    {%- comment -%} Logo {%- endcomment -%}
+    {%- comment -%} Logo with preload for LCP optimization {%- endcomment -%}
     <div id="logo">
       <a href="{{ routes.root_url }}">
         {%- if section.settings.logo != blank -%}
-          {%- assign logo_width_2x = section.settings.logo_width | times: 2 -%}
-          <img
-            src="{{ section.settings.logo | image_url: width: logo_width_2x }}"
-            alt="{{ section.settings.logo.alt | default: shop.name }}"
-            width="{{ section.settings.logo_width }}"
-            height="auto"
-            loading="eager"
-          >
+          {{
+            section.settings.logo
+            | image_url: width: section.settings.logo_width
+            | image_tag: widths: section.settings.logo_width, alt: section.settings.logo.alt
+            | default: shop.name, loading: 'eager', fetchpriority: 'high', preload: true
+          }}
         {%- else -%}
           <span class="text-xl font-bold">{{ shop.name }}</span>
         {%- endif -%}
