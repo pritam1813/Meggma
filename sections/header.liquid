@@ -41,7 +41,7 @@
           {{
             section.settings.logo
             | image_url: width: section.settings.logo_width
-            | image_tag: widths: section.settings.logo_width, alt: section.settings.logo.alt
+            | image_tag: width: section.settings.logo_width, alt: section.settings.logo.alt
             | default: shop.name, loading: 'eager', fetchpriority: 'high', preload: true
           }}
         {%- else -%}
