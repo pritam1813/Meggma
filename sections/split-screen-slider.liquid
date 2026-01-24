@@ -1,0 +1,456 @@
+{%- comment -%}
+  Split Screen Slider Section
+  - Left: Sticky images with scroll-reveal (desktop) / fade carousel (mobile)
+  - Right: Product cards from a collection
+{%- endcomment -%}
+
+{%- liquid
+  assign section_id = 'split-slider-' | append: section.id
+  assign collection = section.settings.collection
+  assign products_to_show = section.settings.products_to_show
+  assign show_offer_badge = section.settings.show_offer_badge
+  assign offer_text = section.settings.offer_text
+  assign button_text = section.settings.button_text
+-%}
+
+<section id="{{ section_id }}" class="split-screen-slider">
+  <div
+    id="wrapper-{{ section.id }}"
+    class="split-wrapper flex flex-col md:flex-row w-full"
+    style="background-color: {{ section.settings.background_color }};"
+  >
+    {%- comment -%} Left side with images {%- endcomment -%}
+    <div
+      id="left-{{ section.id }}"
+      class="split-left flex flex-col justify-center items-center p-8 h-screen w-full md:w-1/2 "
+    >
+      <div class="split-images relative w-3/4 md:w-full xl:w-3/4 h-3/4 xl:h-9/10 rounded-xl overflow-hidden shadow-2xl">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'image' -%}
+            <div
+              class="image-layer-{{ section.id }} absolute w-full h-full bg-cover bg-center"
+              style="background-image: url('{% if block.settings.image != blank %}{{ block.settings.image | image_url: width: 800 }}{% else %}https://placehold.co/800x1000/e2e8f0/64748b?text=Image+{{ forloop.index }}{% endif %}');"
+              {{ block.shopify_attributes }}
+            ></div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- comment -%} Default images if no blocks added {%- endcomment -%}
+        {%- if section.blocks.size == 0 -%}
+          <div
+            class="image-layer-{{ section.id }} absolute w-full h-full bg-cover bg-center"
+            style="background-image: url('https://placehold.co/800x1000/e2e8f0/64748b?text=Image+1');"
+          ></div>
+          <div
+            class="image-layer-{{ section.id }} absolute w-full h-full bg-cover bg-center"
+            style="background-image: url('https://placehold.co/800x1000/cbd5e1/475569?text=Image+2');"
+          ></div>
+          <div
+            class="image-layer-{{ section.id }} absolute w-full h-full bg-cover bg-center"
+            style="background-image: url('https://placehold.co/800x1000/94a3b8/334155?text=Image+3');"
+          ></div>
+          <div
+            class="image-layer-{{ section.id }} absolute w-full h-full bg-cover bg-center"
+            style="background-image: url('https://placehold.co/800x1000/64748b/1e293b?text=Image+4');"
+          ></div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- comment -%} Right side with product cards {%- endcomment -%}
+    <div id="right-{{ section.id }}" class="split-right p-8 w-full md:w-1/2 overflow-hidden">
+      <div id="desktopContent-{{ section.id }}" class="desktopContent-{{ section.id }} flex flex-row md:flex-col">
+        {%- if collection != blank and collection.products.size > 0 -%}
+          {%- for product in collection.products limit: products_to_show -%}
+            <div class="item-{{ section.id }} min-w-screen md:min-w-0 md:min-h-screen flex justify-center items-center">
+              <div
+                class="group relative flex flex-col overflow-hidden max-w-fit h-[450px] py-4 px-2 rounded-lg shadow-lg"
+                style="background-color: {{ section.settings.card_background_color }};"
+              >
+                {%- if show_offer_badge and product.compare_at_price > product.price -%}
+                  <div
+                    class="absolute top-2 left-2 px-3 py-1 rounded-md border text-sm"
+                    style="border-color: {{ section.settings.offer_badge_color }}; color: {{ section.settings.offer_badge_color }};"
+                  >
+                    {{ offer_text | default: 'Sale' }}
+                  </div>
+                {%- endif -%}
+
+                <a href="{{ product.url }}" class="z-0 flex-1 overflow-hidden transition-all duration-500 ease-in-out">
+                  {%- if product.featured_image != blank -%}
+                    <img
+                      src="{{ product.featured_image | image_url: width: 250 }}"
+                      alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                      width="250"
+                      height="400"
+                      class="object-contain aspect-3/4 transition-transform duration-700 group-hover:scale-105"
+                      loading="lazy"
+                    >
+                  {%- else -%}
+                    <img
+                      src="https://placehold.co/250x400/e2e8f0/64748b?text={{ product.title | truncate: 10 | url_encode }}"
+                      alt="{{ product.title | escape }}"
+                      width="250"
+                      height="400"
+                      class="object-contain aspect-3/4 transition-transform duration-700 group-hover:scale-105"
+                      loading="lazy"
+                    >
+                  {%- endif -%}
+                </a>
+
+                <div class="ml-2 space-y-2 z-10 flex flex-col" style="color: {{ section.settings.text_color }};">
+                  {%- comment -%} Star Rating {%- endcomment -%}
+                  <div class="flex items-center gap-1">
+                    {%- for i in (1..5) -%}
+                      <svg class="w-4 h-4" fill="{{ section.settings.star_color }}" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                      </svg>
+                    {%- endfor -%}
+                    <span class="text-sm opacity-70">(5)</span>
+                  </div>
+
+                  <a href="{{ product.url }}" class="font-bold text-xl hover:underline">{{ product.title }}</a>
+
+                  <div class="flex items-center gap-2">
+                    <span class="font-semibold">{{ product.price | money }}</span>
+                    {%- if product.compare_at_price > product.price -%}
+                      <del class="text-sm opacity-60">{{ product.compare_at_price | money }}</del>
+                    {%- endif -%}
+                  </div>
+
+                  <div class="max-h-16 opacity-100 md:max-h-0 md:opacity-0 transition-all duration-500 ease-in-out md:group-hover:max-h-16 md:group-hover:opacity-100">
+                    <a
+                      href="{{ product.url }}"
+                      class="block w-full px-4 py-2 rounded-md text-center border-2 translate-y-0 md:translate-y-4 transition-all duration-500 ease-in-out md:group-hover:translate-y-0"
+                      style="border-color: {{ section.settings.button_border_color }}; color: {{ section.settings.button_text_color }}; background-color: transparent;"
+                      onmouseover="this.style.backgroundColor='{{ section.settings.button_hover_bg }}'; this.style.color='{{ section.settings.button_hover_text }}';"
+                      onmouseout="this.style.backgroundColor='transparent'; this.style.color='{{ section.settings.button_text_color }}';"
+                    >
+                      {{ button_text | default: 'View Product' }}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- else -%}
+          {%- comment -%} Placeholder cards when no collection selected {%- endcomment -%}
+          {%- for i in (1..4) -%}
+            <div class="item-{{ section.id }} min-w-screen md:min-w-0 md:min-h-screen flex justify-center items-center">
+              <div
+                class="group relative flex flex-col overflow-hidden max-w-fit h-[450px] py-4 px-2 rounded-lg shadow-lg"
+                style="background-color: {{ section.settings.card_background_color }};"
+              >
+                {%- if show_offer_badge -%}
+                  <div
+                    class="absolute top-2 left-2 px-3 py-1 rounded-md border text-sm"
+                    style="border-color: {{ section.settings.offer_badge_color }}; color: {{ section.settings.offer_badge_color }};"
+                  >
+                    {{ offer_text | default: 'Offer' }}
+                  </div>
+                {%- endif -%}
+
+                <div class="z-0 flex-1 overflow-hidden transition-all duration-500 ease-in-out">
+                  <img
+                    src="https://placehold.co/250x400/e2e8f0/64748b?text=Product+{{ i }}"
+                    alt="Placeholder Product {{ i }}"
+                    width="250"
+                    height="400"
+                    class="object-contain aspect-3/4 transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                  >
+                </div>
+
+                <div class="ml-2 space-y-2 z-10 flex flex-col" style="color: {{ section.settings.text_color }};">
+                  <div class="flex items-center gap-1">
+                    {%- for j in (1..5) -%}
+                      <svg class="w-4 h-4" fill="{{ section.settings.star_color }}" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                      </svg>
+                    {%- endfor -%}
+                    <span class="text-sm opacity-70">(5)</span>
+                  </div>
+
+                  <div class="font-bold text-xl">Product Name {{ i }}</div>
+
+                  <div class="flex items-center gap-2">
+                    <span class="font-semibold">Rs. 100</span>
+                    <del class="text-sm opacity-60">Rs. 200</del>
+                  </div>
+
+                  <div class="max-h-16 opacity-100 md:max-h-0 md:opacity-0 transition-all duration-500 ease-in-out md:group-hover:max-h-16 md:group-hover:opacity-100">
+                    <button
+                      class="w-full px-4 py-2 rounded-md border-2 translate-y-0 md:translate-y-4 transition-all duration-500 ease-in-out md:group-hover:translate-y-0"
+                      style="border-color: {{ section.settings.button_border_color }}; color: {{ section.settings.button_text_color }};"
+                    >
+                      {{ button_text | default: 'Buy Now' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} Section-specific GSAP animations {%- endcomment -%}
+<script>
+  (function () {
+    const sectionId = '{{ section.id }}';
+
+    function initSplitSliderAnimations() {
+      const images = gsap.utils.toArray('.image-layer-' + sectionId + ':not(:first-child)');
+      const allImages = gsap.utils.toArray('.image-layer-' + sectionId);
+      const mainSection = document.getElementById('split-slider-' + sectionId);
+      const leftPanel = document.getElementById('left-' + sectionId);
+      const desktopContent = document.querySelector('.desktopContent-' + sectionId);
+      const items = gsap.utils.toArray('.item-' + sectionId);
+
+      if (!mainSection || !leftPanel || images.length === 0) return;
+
+      const mm = gsap.matchMedia();
+
+      // Desktop: Scroll-based masked reveal
+      mm.add('(min-width: 768px)', () => {
+        // Reset mobile properties
+        gsap.set(images, { opacity: 1, clipPath: 'inset(100% 0% 0% 0%)' });
+
+        // Create scroll-based reveal animation
+        const leftAnimation = gsap.to(images, {
+          clipPath: 'inset(0% 0% 0% 0%)',
+          stagger: 0.5,
+          ease: 'none',
+        });
+
+        const st = ScrollTrigger.create({
+          trigger: mainSection,
+          animation: leftAnimation,
+          start: 'top 5%',
+          end: 'bottom bottom',
+          pin: leftPanel,
+          scrub: true,
+          markers: false,
+        });
+
+        return () => {
+          st.kill();
+        };
+      });
+
+      // Mobile: Infinite fade animation + horizontal scroll
+      mm.add('(max-width: 767px)', () => {
+        // Reset desktop properties
+        gsap.set(images, { clipPath: 'inset(0% 0% 0% 0%)', opacity: 0 });
+        gsap.set(allImages[0], { autoAlpha: 1 });
+
+        // Create infinite fade animation
+        const tl = gsap.timeline({ repeat: -1 });
+        const fadeDuration = 1.5;
+        const stayDuration = 5;
+
+        if (allImages.length > 1) {
+          // Fade each one in successively EXCEPT the first one
+          tl.to(allImages.slice(1), {
+            delay: stayDuration,
+            autoAlpha: 1,
+            duration: fadeDuration,
+            stagger: stayDuration + fadeDuration,
+          })
+            // Hide each one after the next one finishes fading in
+            .to(
+              allImages.slice(0, allImages.length - 1),
+              { autoAlpha: 0, duration: 0.01, stagger: stayDuration + fadeDuration },
+              stayDuration + fadeDuration
+            )
+            // Show the first image
+            .set(allImages[0], { autoAlpha: 1 })
+            // Fade out the last image
+            .to(allImages[allImages.length - 1], { autoAlpha: 0, duration: fadeDuration }, '+=' + stayDuration);
+        }
+
+        // Only play when left section is in viewport
+        ScrollTrigger.create({
+          animation: tl,
+          trigger: leftPanel,
+          start: 'top bottom',
+          end: 'bottom top',
+          toggleActions: 'play pause play pause',
+        });
+
+        // Horizontal scroll for product cards
+        if (desktopContent && items.length > 0) {
+          function getScrollAmount() {
+            const itemsWidth = desktopContent.scrollWidth;
+            return -(itemsWidth - window.innerWidth);
+          }
+
+          const tween = gsap.to(desktopContent, {
+            x: getScrollAmount,
+            duration: 3,
+            ease: 'none',
+          });
+
+          ScrollTrigger.create({
+            trigger: desktopContent,
+            start: 'top 20%',
+            end: () => `+=${getScrollAmount() * -1}`,
+            pin: true,
+            animation: tween,
+            scrub: 1,
+            invalidateOnRefresh: true,
+            markers: false,
+          });
+        }
+
+        return () => {
+          tl.kill();
+        };
+      });
+    }
+
+    // Run when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initSplitSliderAnimations);
+    } else {
+      initSplitSliderAnimations();
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Split Screen Slider",
+  "tag": "section",
+  "class": "split-screen-slider-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#f9fafb"
+    },
+    {
+      "type": "header",
+      "content": "Products"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Products to show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Card Styling"
+    },
+    {
+      "type": "color",
+      "id": "card_background_color",
+      "label": "Card Background",
+      "default": "#e5e7eb"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1f2937"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star Rating Color",
+      "default": "#fbbf24"
+    },
+    {
+      "type": "header",
+      "content": "Offer Badge"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_offer_badge",
+      "label": "Show Offer Badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "offer_text",
+      "label": "Offer Text",
+      "default": "Sale"
+    },
+    {
+      "type": "color",
+      "id": "offer_badge_color",
+      "label": "Offer Badge Color",
+      "default": "#ef4444"
+    },
+    {
+      "type": "header",
+      "content": "Button Styling"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "View Product"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button Border Color",
+      "default": "#fef08a"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#fef08a"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg",
+      "label": "Button Hover Background",
+      "default": "#fef08a"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text",
+      "label": "Button Hover Text Color",
+      "default": "#ef4444"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Split Screen Slider",
+      "blocks": [{ "type": "image" }, { "type": "image" }, { "type": "image" }, { "type": "image" }]
+    }
+  ]
+}
+{% endschema %}
