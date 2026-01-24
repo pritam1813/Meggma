@@ -1,0 +1,538 @@
+{%- comment -%}
+  Image Compare Section
+  - Draggable slider to compare two images
+  - Content section with heading, description, and button
+{%- endcomment -%}
+
+{%- liquid
+  assign section_id = 'image-compare-' | append: section.id
+-%}
+
+{%- style -%}
+  #{{ section_id }} {
+    background-color: {{ section.settings.section_bg_color }};
+    padding: {{ section.settings.padding_top }}px {{ section.settings.padding_x }}px {{ section.settings.padding_bottom }}px;
+  }
+
+  #{{ section_id }} .compare-container {
+    background-color: {{ section.settings.container_bg_color }};
+    border-radius: {{ section.settings.container_radius }}px;
+    padding: {{ section.settings.container_padding_mobile }}px;
+  }
+
+  @media (min-width: 768px) {
+    #{{ section_id }} .compare-container {
+      padding: {{ section.settings.container_padding_desktop }}px;
+    }
+  }
+
+  #{{ section_id }} .compare-gallery {
+    border-radius: {{ section.settings.gallery_radius }}px;
+  }
+
+  #{{ section_id }} .compare-heading {
+    color: {{ section.settings.heading_color }};
+    font-size: {{ section.settings.heading_size_mobile }}px;
+  }
+
+  @media (min-width: 640px) {
+    #{{ section_id }} .compare-heading {
+      font-size: {{ section.settings.heading_size_tablet }}px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    #{{ section_id }} .compare-heading {
+      font-size: {{ section.settings.heading_size_desktop }}px;
+    }
+  }
+
+  #{{ section_id }} .compare-description {
+    color: {{ section.settings.description_color }};
+    font-size: {{ section.settings.description_size }}px;
+  }
+
+  #{{ section_id }} .compare-btn {
+    background-color: {{ section.settings.button_bg_color }};
+    color: {{ section.settings.button_text_color }};
+    border-radius: {{ section.settings.button_radius }}px;
+  }
+
+  #{{ section_id }} .compare-btn:hover {
+    background-color: {{ section.settings.button_hover_bg }};
+    color: {{ section.settings.button_hover_text }};
+  }
+
+  #{{ section_id }} .dragger-line {
+    background-color: {{ section.settings.dragger_color }};
+  }
+
+  #{{ section_id }} .dragger-handle {
+    background-color: {{ section.settings.dragger_color }};
+    color: {{ section.settings.dragger_icon_color }};
+  }
+{%- endstyle -%}
+
+<section id="{{ section_id }}" class="w-full">
+  <div class="compare-container max-w-[1440px] mx-auto">
+    {%- comment -%} Gallery {%- endcomment -%}
+    <div
+      id="gallery-{{ section.id }}"
+      class="compare-gallery w-full aspect-[16/9] overflow-hidden relative invisible cursor-ew-resize"
+    >
+      {%- comment -%} Base Image (Before) {%- endcomment -%}
+      {%- if section.settings.image_before != blank -%}
+        <img
+          src="{{ section.settings.image_before | image_url: width: 1440 }}"
+          alt="{{ section.settings.image_before.alt | default: 'Before image' | escape }}"
+          class="size-full object-cover absolute inset-0"
+          loading="lazy"
+          width="1440"
+          height="810"
+        >
+      {%- else -%}
+        <img
+          src="https://placehold.co/1440x810/e2e8f0/64748b?text=Before+Image"
+          alt="Before image placeholder"
+          class="size-full object-cover absolute inset-0"
+          loading="lazy"
+          width="1440"
+          height="810"
+        >
+      {%- endif -%}
+
+      {%- comment -%} Reveal Image (After) {%- endcomment -%}
+      <img
+        id="reveal-image-{{ section.id }}"
+        class="size-full absolute inset-0 object-cover"
+        style="clip-path: inset(0px 50% 0px 0px);"
+        src="{%- if section.settings.image_after != blank -%}{{ section.settings.image_after | image_url: width: 1440 }}{%- else -%}https://placehold.co/1440x810/cbd5e1/475569?text=After+Image{%- endif -%}"
+        alt="{{ section.settings.image_after.alt | default: 'After image' | escape }}"
+        loading="lazy"
+        width="1440"
+        height="810"
+      >
+
+      {%- comment -%} Dragger Handle {%- endcomment -%}
+      <div id="dragger-{{ section.id }}" class="absolute h-full flex flex-col justify-center items-center touch-none">
+        <div class="dragger-line w-[3px] h-full absolute"></div>
+        <div class="dragger-handle absolute rounded-full size-12 flex justify-center items-center shadow-lg">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+            focusable="false"
+            role="presentation"
+          >
+            <path d="m7 17-5-5 5-5M17 17l5-5-5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </div>
+      </div>
+
+      {%- comment -%} Labels {%- endcomment -%}
+      {%- if section.settings.show_labels -%}
+        <div
+          class="absolute bottom-4 left-4 px-3 py-1 rounded-full text-sm font-medium"
+          style="background-color: {{ section.settings.label_bg_color }}; color: {{ section.settings.label_text_color }};"
+        >
+          {{ section.settings.label_before | default: 'Before' }}
+        </div>
+        <div
+          class="absolute bottom-4 right-4 px-3 py-1 rounded-full text-sm font-medium"
+          style="background-color: {{ section.settings.label_bg_color }}; color: {{ section.settings.label_text_color }};"
+        >
+          {{ section.settings.label_after | default: 'After' }}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Content {%- endcomment -%}
+    <div class="mt-12 text-center mb-4">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="compare-heading font-bold mb-4">
+          {{ section.settings.heading }}
+        </h2>
+      {%- endif -%}
+
+      {%- if section.settings.description != blank -%}
+        <p class="compare-description leading-relaxed max-w-3xl mx-auto">
+          {{ section.settings.description }}
+        </p>
+      {%- endif -%}
+
+      {%- if section.settings.button_text != blank -%}
+        <a
+          href="{{ section.settings.button_link }}"
+          class="compare-btn inline-block mt-12 px-6 py-3 font-medium transition-colors"
+        >
+          {{ section.settings.button_text }}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{%- comment -%} GSAP Draggable Animation {%- endcomment -%}
+<script>
+  (function() {
+    const sectionId = '{{ section.id }}';
+    const gallery = document.getElementById('gallery-' + sectionId);
+    const dragger = document.getElementById('dragger-' + sectionId);
+    const revealImage = document.getElementById('reveal-image-' + sectionId);
+    
+    if (!gallery || !dragger || !revealImage) return;
+
+    function init() {
+      // Make gallery visible
+      gsap.to(gallery, { autoAlpha: 1, duration: 0.3 });
+
+      // Start at configured position
+      const galleryWidth = gallery.offsetWidth;
+      const startPercent = {{ section.settings.start_position }} / 100;
+      const startX = galleryWidth * startPercent;
+
+      gsap.set(dragger, { x: startX });
+      gsap.set(revealImage, {
+        clipPath: `inset(0 ${100 - {{ section.settings.start_position }}}% 0 0)`
+      });
+    }
+
+    function initDraggable() {
+      Draggable.create(dragger, {
+        type: 'x',
+        bounds: gallery,
+        onDrag: function() {
+          const galleryWidth = gallery.offsetWidth;
+          const dragX = gsap.getProperty(this.target, 'x');
+          
+          // Convert to percentage (0–100)
+          const percent = (dragX / galleryWidth) * 100;
+          
+          gsap.set(revealImage, {
+            clipPath: `inset(0 ${100 - percent}% 0 0)`
+          });
+        }
+      });
+    }
+
+    function handleResize() {
+      init();
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        init();
+        initDraggable();
+      });
+    } else {
+      init();
+      initDraggable();
+    }
+
+    // Handle resize
+    window.addEventListener('resize', handleResize);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Image Compare",
+  "tag": "section",
+  "class": "image-compare-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_before",
+      "label": "Before Image (Base)"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_after",
+      "label": "After Image (Reveal)"
+    },
+    {
+      "type": "range",
+      "id": "start_position",
+      "label": "Starting Position",
+      "min": 10,
+      "max": 90,
+      "step": 5,
+      "default": 50,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Labels"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_labels",
+      "label": "Show Labels",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "label_before",
+      "label": "Before Label",
+      "default": "Before"
+    },
+    {
+      "type": "text",
+      "id": "label_after",
+      "label": "After Label",
+      "default": "After"
+    },
+    {
+      "type": "color",
+      "id": "label_bg_color",
+      "label": "Label Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "label_text_color",
+      "label": "Label Text Color",
+      "default": "#1f2937"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Build Once, Scale Everywhere"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "This layout keeps the image at the top and content below on all screen sizes. It's perfect for feature sections, blog highlights, or product showcases where vertical flow matters."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Shop All Products"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Section Styling"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section Background",
+      "default": "#fff1f2"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_x",
+      "label": "Horizontal Padding",
+      "min": 0,
+      "max": 64,
+      "step": 8,
+      "default": 32,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Container Styling"
+    },
+    {
+      "type": "color",
+      "id": "container_bg_color",
+      "label": "Container Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "container_radius",
+      "label": "Container Radius",
+      "min": 0,
+      "max": 48,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "container_padding_mobile",
+      "label": "Container Padding (Mobile)",
+      "min": 16,
+      "max": 64,
+      "step": 8,
+      "default": 32,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "container_padding_desktop",
+      "label": "Container Padding (Desktop)",
+      "min": 32,
+      "max": 96,
+      "step": 8,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gallery_radius",
+      "label": "Gallery Border Radius",
+      "min": 0,
+      "max": 48,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Dragger Styling"
+    },
+    {
+      "type": "color",
+      "id": "dragger_color",
+      "label": "Dragger Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "dragger_icon_color",
+      "label": "Dragger Icon Color",
+      "default": "#1f2937"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#111827"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading Size (Mobile)",
+      "min": 20,
+      "max": 48,
+      "step": 2,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_tablet",
+      "label": "Heading Size (Tablet)",
+      "min": 24,
+      "max": 56,
+      "step": 2,
+      "default": 30,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "label": "Heading Size (Desktop)",
+      "min": 28,
+      "max": 72,
+      "step": 2,
+      "default": 36,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description Color",
+      "default": "#4b5563"
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Description Size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "default": 18,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Button Styling"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Background",
+      "default": "#f3f4f6"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#111827"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg",
+      "label": "Button Hover Background",
+      "default": "#e5e7eb"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text",
+      "label": "Button Hover Text",
+      "default": "#111827"
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "label": "Button Radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image Compare"
+    }
+  ]
+}
+{% endschema %}
