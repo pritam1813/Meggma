@@ -229,7 +229,7 @@
       "name": "Staircase Section",
       "settings": {
         "image_size": 128,
-        "background_color": "#FFFFFF",
+        "background_color": "#ffffff",
         "card_background_color": "#ffffff",
         "heading_color": "#1f2937",
         "text_color": "#4b5563"
@@ -348,6 +348,46 @@
         "circle_text_color": "#4f46e5"
       }
     },
+    "image_compare_Y8MYgp": {
+      "type": "image-compare",
+      "name": "Image Compare",
+      "settings": {
+        "image_before": "shopify://shop_images/woman-in-fur-under-neon.jpg",
+        "image_after": "shopify://shop_images/model-in-sunglasses-and-summer-clothes.jpg",
+        "start_position": 50,
+        "show_labels": true,
+        "label_before": "Before",
+        "label_after": "After",
+        "label_bg_color": "#ffffff",
+        "label_text_color": "#1f2937",
+        "heading": "Build Once, Scale Everywhere",
+        "description": "This layout keeps the image at the top and content below on all screen sizes. It's perfect for feature sections, blog highlights, or product showcases where vertical flow matters.",
+        "button_text": "Shop All Products",
+        "button_link": "",
+        "section_bg_color": "#fff1f2",
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "padding_x": 32,
+        "container_bg_color": "#ffffff",
+        "container_radius": 16,
+        "container_padding_mobile": 32,
+        "container_padding_desktop": 64,
+        "gallery_radius": 24,
+        "dragger_color": "#ffffff",
+        "dragger_icon_color": "#1f2937",
+        "heading_color": "#111827",
+        "heading_size_mobile": 24,
+        "heading_size_tablet": 30,
+        "heading_size_desktop": 36,
+        "description_color": "#4b5563",
+        "description_size": 18,
+        "button_bg_color": "#f3f4f6",
+        "button_text_color": "#111827",
+        "button_hover_bg": "#e5e7eb",
+        "button_hover_text": "#111827",
+        "button_radius": 8
+      }
+    },
     "countdown_banner_JKVPjT": {
       "type": "countdown-banner",
       "name": "Countdown Banner",
@@ -366,6 +406,58 @@
         "timer_color": "#ffffff",
         "content_bg_color": "linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3) 100%)",
         "overlay_color": "#111111"
+      }
+    },
+    "split_screen_slider_GPDTeB": {
+      "type": "split-screen-slider",
+      "blocks": {
+        "image_wzGCyY": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/woman-infront-of-tree-with-berries.jpeg"
+          }
+        },
+        "image_rLaqqy": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/northern-forest.jpg"
+          }
+        },
+        "image_9tJYeg": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/shellfish-pasta-pizza-and-italian-food.jpg"
+          }
+        },
+        "image_KeyY9F": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/rooibos-tea.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "image_wzGCyY",
+        "image_rLaqqy",
+        "image_9tJYeg",
+        "image_KeyY9F"
+      ],
+      "name": "Split Screen Slider",
+      "settings": {
+        "background_color": "#f9fafb",
+        "collection": "printed",
+        "products_to_show": 4,
+        "card_background_color": "#e5e7eb",
+        "text_color": "#1f2937",
+        "star_color": "#fbbf24",
+        "show_offer_badge": true,
+        "offer_text": "Sale",
+        "offer_badge_color": "#ef4444",
+        "button_text": "View Product",
+        "button_border_color": "#fef08a",
+        "button_text_color": "#fef08a",
+        "button_hover_bg": "#fef08a",
+        "button_hover_text": "#ef4444"
       }
     },
     "background_video_h6G3k6": {
@@ -412,71 +504,6 @@
         "text_color": "#4b5563",
         "text_font_size": 18
       }
-    },
-    "horizontal_gallary_He6GUE": {
-      "type": "horizontal-gallary",
-      "blocks": {
-        "collection_slide_wB7KMk": {
-          "type": "collection_slide",
-          "settings": {
-            "collection": "printed",
-            "slide_title": "",
-            "offer_text": "New"
-          }
-        },
-        "collection_slide_pMTfU4": {
-          "type": "collection_slide",
-          "settings": {
-            "collection": "bedsheet-1",
-            "slide_title": "",
-            "offer_text": "New"
-          }
-        },
-        "collection_slide_fPqF6w": {
-          "type": "collection_slide",
-          "settings": {
-            "collection": "emboidred",
-            "slide_title": "",
-            "offer_text": "New"
-          }
-        },
-        "collection_slide_FLhN4G": {
-          "type": "collection_slide",
-          "settings": {
-            "collection": "bedsheet",
-            "slide_title": "",
-            "offer_text": "New"
-          }
-        }
-      },
-      "block_order": [
-        "collection_slide_wB7KMk",
-        "collection_slide_pMTfU4",
-        "collection_slide_fPqF6w",
-        "collection_slide_FLhN4G"
-      ],
-      "disabled": true,
-      "name": "Horizontal Gallary",
-      "settings": {
-        "left_image": "shopify://shop_images/1_37a79ee5-eb22-41f9-9ac6-6e00546c3350.png",
-        "section_bg": "#fff5f5",
-        "collection_title_size": 48,
-        "collection_title_color": "#111827",
-        "card_bg": "#e5e7eb",
-        "offer_text_color": "#dc2626",
-        "offer_border_color": "#fca5a5",
-        "info_title_size": 20,
-        "info_title_color": "#111827",
-        "info_price_size": 16,
-        "info_price_color": "#374151",
-        "info_rating_color": "#fbbf24",
-        "button_text": "Buy Now",
-        "button_bg": "rgba(0,0,0,0)",
-        "button_text_color": "#fef08a",
-        "button_border_color": "#fef08a",
-        "button_hover_bg": "#fef08a",
-        "button_hover_text": "#dc2626"
-      }
     }
   },
   "order": [
@@ -487,9 +514,10 @@
     "staggered_staircase_section_8MJ6Lf",
     "marquee_section_64xBPH",
     "parallax_text_MRTpKT",
+    "image_compare_Y8MYgp",
     "countdown_banner_JKVPjT",
+    "split_screen_slider_GPDTeB",
     "background_video_h6G3k6",
-    "scale_down_image_banner_wA3FtN",
-    "horizontal_gallary_He6GUE"
+    "scale_down_image_banner_wA3FtN"
   ]
 }
