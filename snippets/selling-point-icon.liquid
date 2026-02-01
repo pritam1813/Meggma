@@ -1,0 +1,16 @@
+{% comment %}
+  Selling Point Icon Snippet
+  Renders icons for blocks using asset SVG files as img tags.
+
+  Usage: {% render 'selling-point-icon', icon: 'check' %}
+{% endcomment %}
+
+{% if icon and icon != 'none' and icon != blank %}
+  {% assign icon_file = 'icon-' | append: icon | append: '.svg' %}
+  <img
+    src="{{ icon_file | asset_url }}"
+    alt="{{ icon }}"
+    class="w-full h-full"
+    loading="lazy"
+  >
+{% endif %}

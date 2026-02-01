@@ -1,0 +1,41 @@
+{% comment %}
+  Icon Render Snippet
+  Renders SVG icons from the assets folder as img tags.
+
+  Usage:
+    {% render 'icon', name: 'check' %}
+    {% render 'icon', name: 'truck', size: 24 %}
+    {% render 'icon', name: 'heart', class: 'text-red-500' %}
+
+  Parameters:
+    - name: (required) Icon name without 'icon-' prefix (e.g., 'check', 'truck', 'heart')
+    - size: (optional) Icon size in pixels, defaults to 24
+    - class: (optional) Additional CSS classes
+
+  Available Icons:
+    check, star, heart, truck, shield, leaf, gift, clock, recycle,
+    phone, email, warranty, location, plus, minus, return, payment,
+    lock, info, chat, users
+
+  To add a new icon:
+    1. Add the SVG file to assets/ as 'icon-{name}.svg'
+    2. Use it with: {% render 'icon', name: '{name}' %}
+{% endcomment %}
+
+{% assign icon_size = size | default: 24 %}
+{% assign icon_file = 'icon-' | append: name | append: '.svg' %}
+
+<span
+  class="icon inline-flex items-center justify-center {{ class }}"
+  style="width: {{ icon_size }}px; height: {{ icon_size }}px;"
+  aria-hidden="true"
+>
+  <img
+    src="{{ icon_file | asset_url }}"
+    alt="{{ name }}"
+    width="{{ icon_size }}"
+    height="{{ icon_size }}"
+    class="w-full h-full"
+    loading="lazy"
+  >
+</span>

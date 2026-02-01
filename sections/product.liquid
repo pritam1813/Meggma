@@ -1,84 +1,861 @@
-{% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/product
-{% endcomment %}
-
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
-</div>
-
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <div>{{ product.description }}</div>
-</div>
-
-<div class="product-form">
-  {% form 'product', product %}
-    {% assign current_variant = product.selected_or_first_available_variant %}
-
-    {%- comment -%} Variant selector with label for accessibility {%- endcomment -%}
-    <label for="variant-select-{{ section.id }}" class="sr-only">
-      {{ 'products.product.select_variant' | t | default: 'Select variant' }}
-    </label>
-    <select name="id" id="variant-select-{{ section.id }}">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
-          {% endif %}
-        >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
-
-    {%- comment -%} Quantity input with label for accessibility {%- endcomment -%}
-    <label for="quantity-{{ section.id }}" class="sr-only">
-      {{ 'products.product.quantity' | t | default: 'Quantity' }}
-    </label>
-    <input
-      type="number"
-      id="quantity-{{ section.id }}"
-      name="quantity"
-      min="1"
-      value="1"
-      aria-label="{{ 'products.product.quantity' | t | default: 'Quantity' }}"
-    >
-
-    <button type="submit">
-      {{ 'products.product.add_to_cart' | t | default: 'Add to cart' }}
-    </button>
-    {{ form | payment_button }}
-  {% endform %}
-</div>
-
-{%- comment -%} Screen reader only class for accessibility labels {%- endcomment -%}
-<style>
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+{% style %}
+  /* Fix Shopify breaking <details> layout */
+  #accordions details {
+    display: flex;
+    flex-direction: column;
   }
-</style>
+
+  /* Fix summary to be horizontal with icon at end */
+  #accordions summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  /* Remove default marker/arrow */
+  #accordions summary::-webkit-details-marker,
+  #accordions summary::marker {
+    display: none;
+    content: '';
+  }
+{% endstyle %}
+
+<section class="py-12 px-16 w-full">
+  <div id="product" class="w-full flex flex-col md:flex-row">
+    <div class="w-full md:w-1/2 max-h-svh overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <!-- mobile view -->
+      <div id="viewport" class="overflow-hidden relative w-full md:hidden">
+        <div id="slider" class="flex">
+          {% for media in product.media %}
+            {% if media.media_type == 'image' %}
+              <img
+                src="{{ media | image_url: width: 800 }}"
+                alt="{{ media.alt | default: product.title | escape }}"
+                width="{{ media.width }}"
+                height="{{ media.height }}"
+                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                class="aspect-3/4"
+              >
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <!-- Prev Button -->
+        <button
+          id="prev"
+          class="
+            absolute left-2 top-1/2 -translate-y-1/2
+            bg-white/60 text-black aspect-square h-10 rounded-full
+            hover:bg-white transition
+          "
+        >
+          ‹
+        </button>
+
+        <!-- Next Button -->
+        <button
+          id="next"
+          class="
+            absolute right-2 top-1/2 -translate-y-1/2
+            bg-white/60 text-black aspect-square h-10 rounded-full
+            hover:bg-white transition
+          "
+        >
+          ›
+        </button>
+      </div>
+
+      <!-- larger screens -->
+      <div
+        class="
+          hidden md:flex flex-col lg:flex-row lg:flex-wrap gap-4
+          [&>div]:basis-full
+          md:[&>div:nth-child(3n+1)]:basis-[calc(50%-0.5rem)]
+          md:[&>div:nth-child(3n+2)]:basis-[calc(50%-0.5rem)]
+          w-full relative
+        "
+      >
+        {% for media in product.media %}
+          {% if media.media_type == 'image' %}
+            <div class="aspect-3/4 w-full">
+              <img
+                src="{{ media | image_url: width: 800 }}"
+                alt="{{ media.alt | default: product.title | escape }}"
+                width="{{ media.width }}"
+                height="{{ media.height }}"
+                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                class="w-full"
+              >
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- right -->
+    <div class="w-full md:w-1/2 flex flex-col justify-start my-6 md:my-0 md:px-10 xl:px-16 2xl:px-28 space-y-4 md:max-h-svh md:overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div id="label">
+        {% if product.compare_at_price > product.price %}
+          <span class="px-[11px] py-[3px] border border-rose-900 rounded-sm text-xs text-rose-900">Sale</span>
+        {% endif %}
+      </div>
+      <div id="title">
+        <h2 class="text-4xl">{{ product.title }}</h2>
+      </div>
+      <div id="price" class="space-x-4 flex items-center">
+        <span id="discounted" class="text-3xl text-rose-900 font-semibold">{{ product.price | money }}</span>
+        {% if product.compare_at_price > product.price %}
+          <span id="mrp" class="text-2xl line-through font-normal">{{ product.compare_at_price | money }}</span>
+          {% assign discount = product.compare_at_price
+            | minus: product.price
+            | times: 100
+            | divided_by: product.compare_at_price
+          %}
+          <span id="discount" class="text-lg font-thin">{{ discount }}% off</span>
+        {% endif %}
+      </div>
+
+      {% for option in product.options_with_values %}
+        <div id="choosequantity" class="my-2">
+          <fieldset>
+            <legend class="mb-4 font-semibold text-gray-700">{{ option.name }}</legend>
+
+            <div class="flex flex-wrap gap-4">
+              {% for value in option.values %}
+                {% assign option_id = 'option-' | append: option.position | append: '-' | append: forloop.index %}
+                <div class="relative">
+                  <input
+                    type="radio"
+                    name="option{{ option.position }}"
+                    id="{{ option_id }}"
+                    value="{{ value | escape }}"
+                    class="hidden peer"
+                    {% if forloop.first %}
+                      checked
+                    {% endif %}
+                  >
+                  <label
+                    for="{{ option_id }}"
+                    class="w-20 h-12 flex items-center justify-center border border-gray-300 rounded-md cursor-pointer transition-all hover:shadow-lg peer-checked:border-transparent peer-checked:ring-2 peer-checked:ring-blue-600 peer-checked:text-blue-600 peer-checked:font-bold text-gray-600"
+                  >
+                    <span>{{ value }}</span>
+                  </label>
+                </div>
+              {% endfor %}
+            </div>
+          </fieldset>
+        </div>
+      {% endfor %}
+
+      <div id="inventory" class="mt-8">
+        {% assign current_variant = product.selected_or_first_available_variant %}
+        {% if current_variant.inventory_management %}
+          {% if current_variant.inventory_quantity > 0 %}
+            <div class="font-bold" id="inventorytext">{{ current_variant.inventory_quantity }} in stock</div>
+            {% assign stock_percent = current_variant.inventory_quantity
+              | times: 100
+              | divided_by: 100
+              | at_most: 100
+            %}
+            <div class="h-[5px] w-full" id="indicator">
+              <span
+                class="block rounded-sm mt-3 bg-linear-to-r from-white to-rose-900 h-[5px]"
+                style="width: {{ stock_percent }}%;"
+              ></span>
+            </div>
+          {% else %}
+            <div class="font-bold text-red-600" id="inventorytext">Out of stock</div>
+          {% endif %}
+        {% else %}
+          <div class="font-bold text-green-600" id="inventorytext">In stock</div>
+        {% endif %}
+      </div>
+      <div id="form">
+        {%- form 'product', product, id: 'product-form', class: 'product-form' -%}
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+
+          <div id="addtocart" class="flex space-x-2">
+            <div class="inline-flex items-center border rounded-md w-fit">
+              <button type="button" class="size-8 quantity-btn" data-action="decrease">-</button>
+              <input
+                type="number"
+                name="quantity"
+                id="quantity-input"
+                class="max-w-8 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+                min="1"
+                value="1"
+              >
+              <button type="button" class="size-8 quantity-btn" data-action="increase">+</button>
+            </div>
+            <div id="addtocartbutton" class="flex-1">
+              <button
+                type="submit"
+                name="add"
+                class="py-2 px-7 rounded-md border border-rose-900 w-full text-rose-900 hover:bg-rose-900 hover:text-white duration-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                {% unless product.selected_or_first_available_variant.available %}
+                  disabled
+                {% endunless %}
+              >
+                {% if product.selected_or_first_available_variant.available %}
+                  Add To Cart
+                {% else %}
+                  Sold Out
+                {% endif %}
+              </button>
+            </div>
+          </div>
+          <div id="buynow" class="mt-4">
+            <button
+              type="button"
+              id="buy-now-btn"
+              class="w-full py-2 px-7 rounded-md bg-rose-900 hover:bg-rose-900/80 text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+              {% unless product.selected_or_first_available_variant.available %}
+                disabled
+              {% endunless %}
+            >
+              Buy It Now
+            </button>
+          </div>
+        {%- endform -%}
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const quantityInput = document.getElementById('quantity-input');
+          const quantityBtns = document.querySelectorAll('.quantity-btn');
+          const buyNowBtn = document.getElementById('buy-now-btn');
+          const productForm = document.getElementById('product-form');
+
+          // Quantity +/- buttons
+          quantityBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+              const action = this.dataset.action;
+              let currentValue = parseInt(quantityInput.value) || 1;
+
+              if (action === 'increase') {
+                quantityInput.value = currentValue + 1;
+              } else if (action === 'decrease' && currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+              }
+            });
+          });
+
+          // Buy Now - add to cart and redirect to checkout
+          buyNowBtn.addEventListener('click', function() {
+            const formData = new FormData(productForm);
+
+            fetch('/cart/add.js', {
+              method: 'POST',
+              body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+              window.location.href = '/checkout';
+            })
+            .catch(error => {
+              console.error('Error:', error);
+            });
+          });
+
+          // Update variant ID when options change
+          const optionInputs = document.querySelectorAll('input[name^="option"]');
+          optionInputs.forEach(input => {
+            input.addEventListener('change', updateVariant);
+          });
+
+          function updateVariant() {
+            const selectedOptions = [];
+            document.querySelectorAll('input[name^="option"]:checked').forEach(input => {
+              selectedOptions.push(input.value);
+            });
+
+            const variants = {{ product.variants | json }};
+            const matchedVariant = variants.find(variant => {
+              return variant.options.every((option, index) => option === selectedOptions[index]);
+            });
+
+            if (matchedVariant) {
+              document.querySelector('input[name="id"]').value = matchedVariant.id;
+
+              // Update button state
+              const addBtn = productForm.querySelector('button[name="add"]');
+              const buyBtn = document.getElementById('buy-now-btn');
+
+              if (matchedVariant.available) {
+                addBtn.disabled = false;
+                addBtn.textContent = 'Add To Cart';
+                buyBtn.disabled = false;
+              } else {
+                addBtn.disabled = true;
+                addBtn.textContent = 'Sold Out';
+                buyBtn.disabled = true;
+              }
+            }
+          }
+        });
+      </script>
+      <div id="accordions">
+        {% for block in section.blocks %}
+          {% if block.type == 'accordion' %}
+            <details class="group border-b border-rose-600" {{ block.shopify_attributes }}>
+              <summary
+                class="
+                  p-4 cursor-pointer list-none flex justify-between items-center
+                  [&::-webkit-details-marker]:hidden
+                "
+              >
+                <span class="text-rose-600 flex items-center gap-2">
+                  {% if block.settings.icon != 'none' and block.settings.icon != blank %}
+                    <span class="w-5 h-5 flex items-center justify-center">
+                      {% render 'selling-point-icon', icon: block.settings.icon %}
+                    </span>
+                  {% endif %}
+                  {{ block.settings.heading }}
+                </span>
+
+                <span class="text-xl font-semibold">
+                  <span class="block group-open:hidden text-rose-600">+</span>
+                  <span class="hidden group-open:block text-rose-600">−</span>
+                </span>
+              </summary>
+
+              <div
+                class="
+                  overflow-hidden max-h-0 opacity-0
+                  transition-[max-height,opacity] duration-500 ease-in-out
+                  group-open:max-h-[1000px] group-open:opacity-100
+                "
+              >
+                <div class="p-4 pt-0 prose prose-sm">{{ block.settings.content }}</div>
+              </div>
+            </details>
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% for block in section.blocks %}
+        {% if block.type == 'selling_points' %}
+          <div id="info" class="my-6" {{ block.shopify_attributes }}>
+            {% if block.settings.heading != blank %}
+              <h3 class="text-lg font-semibold mb-4">{{ block.settings.heading }}</h3>
+            {% endif %}
+
+            {% assign icon_width = block.settings.icon_width | default: 48 %}
+            {% assign layout = block.settings.layout | default: 'carousel' %}
+
+            <ul class="{% if layout == 'one_column' %}flex flex-col gap-4{% elsif layout == 'two_column' %}grid grid-cols-2 gap-4{% else %}flex flex-nowrap justify-between items-center gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]{% endif %}">
+              {% comment %} Item 1 {% endcomment %}
+              {% assign icon_1 = block.settings.icon_1 %}
+              {% assign image_1 = block.settings.image_1 %}
+              {% assign text_1 = block.settings.text_1 %}
+              {% unless icon_1 == 'none' and image_1 == blank and text_1 == blank %}
+                <li class="flex {% if layout == 'carousel' %}flex-col{% else %}flex-row{% endif %} items-center gap-2 {% if layout == 'carousel' %}shrink-0{% endif %}">
+                  {% if image_1 != blank %}
+                    <img
+                      src="{{ image_1 | image_url: width: icon_width }}"
+                      alt="{{ text_1 | escape }}"
+                      width="{{ icon_width }}"
+                      height="{{ icon_width }}"
+                      class="object-contain"
+                      style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
+                    >
+                  {% elsif icon_1 != 'none' %}
+                    <span
+                      style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
+                      class="flex items-center justify-center"
+                    >
+                      {% render 'selling-point-icon', icon: icon_1 %}
+                    </span>
+                  {% endif %}
+                  {% if text_1 != blank -%}
+                    <span class="text-sm text-center">{{ text_1 }}</span>
+                  {%- endif %}
+                </li>
+              {% endunless %}
+
+              {% comment %} Item 2 {% endcomment %}
+              {% assign icon_2 = block.settings.icon_2 %}
+              {% assign image_2 = block.settings.image_2 %}
+              {% assign text_2 = block.settings.text_2 %}
+              {% unless icon_2 == 'none' and image_2 == blank and text_2 == blank %}
+                <li class="flex {% if layout == 'carousel' %}flex-col{% else %}flex-row{% endif %} items-center gap-2 {% if layout == 'carousel' %}shrink-0{% endif %}">
+                  {% if image_2 != blank %}
+                    <img
+                      src="{{ image_2 | image_url: width: icon_width }}"
+                      alt="{{ text_2 | escape }}"
+                      width="{{ icon_width }}"
+                      height="{{ icon_width }}"
+                      class="object-contain"
+                      style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
+                    >
+                  {% elsif icon_2 != 'none' %}
+                    <span
+                      style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
+                      class="flex items-center justify-center"
+                    >
+                      {% render 'selling-point-icon', icon: icon_2 %}
+                    </span>
+                  {% endif %}
+                  {% if text_2 != blank -%}
+                    <span class="text-sm text-center">{{ text_2 }}</span>
+                  {%- endif %}
+                </li>
+              {% endunless %}
+
+              {% comment %} Item 3 {% endcomment %}
+              {% assign icon_3 = block.settings.icon_3 %}
+              {% assign image_3 = block.settings.image_3 %}
+              {% assign text_3 = block.settings.text_3 %}
+              {% unless icon_3 == 'none' and image_3 == blank and text_3 == blank %}
+                <li class="flex {% if layout == 'carousel' %}flex-col{% else %}flex-row{% endif %} items-center gap-2 {% if layout == 'carousel' %}shrink-0{% endif %}">
+                  {% if image_3 != blank %}
+                    <img
+                      src="{{ image_3 | image_url: width: icon_width }}"
+                      alt="{{ text_3 | escape }}"
+                      width="{{ icon_width }}"
+                      height="{{ icon_width }}"
+                      class="object-contain"
+                      style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
+                    >
+                  {% elsif icon_3 != 'none' %}
+                    <span
+                      style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
+                      class="flex items-center justify-center"
+                    >
+                      {% render 'selling-point-icon', icon: icon_3 %}
+                    </span>
+                  {% endif %}
+                  {% if text_3 != blank -%}
+                    <span class="text-sm text-center">{{ text_3 }}</span>
+                  {%- endif %}
+                </li>
+              {% endunless %}
+
+              {% comment %} Item 4 {% endcomment %}
+              {% assign icon_4 = block.settings.icon_4 %}
+              {% assign image_4 = block.settings.image_4 %}
+              {% assign text_4 = block.settings.text_4 %}
+              {% unless icon_4 == 'none' and image_4 == blank and text_4 == blank %}
+                <li class="flex {% if layout == 'carousel' %}flex-col{% else %}flex-row{% endif %} items-center gap-2 {% if layout == 'carousel' %}shrink-0{% endif %}">
+                  {% if image_4 != blank %}
+                    <img
+                      src="{{ image_4 | image_url: width: icon_width }}"
+                      alt="{{ text_4 | escape }}"
+                      width="{{ icon_width }}"
+                      height="{{ icon_width }}"
+                      class="object-contain"
+                      style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
+                    >
+                  {% elsif icon_4 != 'none' %}
+                    <span
+                      style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
+                      class="flex items-center justify-center"
+                    >
+                      {% render 'selling-point-icon', icon: icon_4 %}
+                    </span>
+                  {% endif %}
+                  {% if text_4 != blank -%}
+                    <span class="text-sm text-center">{{ text_4 }}</span>
+                  {%- endif %}
+                </li>
+              {% endunless %}
+
+              {% comment %} Item 5 {% endcomment %}
+              {% assign icon_5 = block.settings.icon_5 %}
+              {% assign image_5 = block.settings.image_5 %}
+              {% assign text_5 = block.settings.text_5 %}
+              {% unless icon_5 == 'none' and image_5 == blank and text_5 == blank %}
+                <li class="flex {% if layout == 'carousel' %}flex-col{% else %}flex-row{% endif %} items-center gap-2 {% if layout == 'carousel' %}shrink-0{% endif %}">
+                  {% if image_5 != blank %}
+                    <img
+                      src="{{ image_5 | image_url: width: icon_width }}"
+                      alt="{{ text_5 | escape }}"
+                      width="{{ icon_width }}"
+                      height="{{ icon_width }}"
+                      class="object-contain"
+                      style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
+                    >
+                  {% elsif icon_5 != 'none' %}
+                    <span
+                      style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
+                      class="flex items-center justify-center"
+                    >
+                      {% render 'selling-point-icon', icon: icon_5 %}
+                    </span>
+                  {% endif %}
+                  {% if text_5 != blank -%}
+                    <span class="text-sm text-center">{{ text_5 }}</span>
+                  {%- endif %}
+                </li>
+              {% endunless %}
+
+              {% comment %} Item 6 {% endcomment %}
+              {% assign icon_6 = block.settings.icon_6 %}
+              {% assign image_6 = block.settings.image_6 %}
+              {% assign text_6 = block.settings.text_6 %}
+              {% unless icon_6 == 'none' and image_6 == blank and text_6 == blank %}
+                <li class="flex {% if layout == 'carousel' %}flex-col{% else %}flex-row{% endif %} items-center gap-2 {% if layout == 'carousel' %}shrink-0{% endif %}">
+                  {% if image_6 != blank %}
+                    <img
+                      src="{{ image_6 | image_url: width: icon_width }}"
+                      alt="{{ text_6 | escape }}"
+                      width="{{ icon_width }}"
+                      height="{{ icon_width }}"
+                      class="object-contain"
+                      style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
+                    >
+                  {% elsif icon_6 != 'none' %}
+                    <span
+                      style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
+                      class="flex items-center justify-center"
+                    >
+                      {% render 'selling-point-icon', icon: icon_6 %}
+                    </span>
+                  {% endif %}
+                  {% if text_6 != blank -%}
+                    <span class="text-sm text-center">{{ text_6 }}</span>
+                  {%- endif %}
+                </li>
+              {% endunless %}
+            </ul>
+          </div>
+        {% endif %}
+      {% endfor %}
+      <div id="share" class="flex items-center">
+        <p class="c">Share:</p>
+        <ul class="inline-flex flex-wrap">
+          <li class="size-10">
+            <a href="">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                <!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+                <path d="M453.2 112L523.8 112L369.6 288.2L551 528L409 528L297.7 382.6L170.5 528L99.8 528L264.7 339.5L90.8 112L236.4 112L336.9 244.9L453.2 112zM428.4 485.8L467.5 485.8L215.1 152L173.1 152L428.4 485.8z" />
+              </svg>
+            </a>
+          </li>
+          <li class="size-10">
+            <a href="">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                <!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+                <path d="M240 363.3L240 576L356 576L356 363.3L442.5 363.3L460.5 265.5L356 265.5L356 230.9C356 179.2 376.3 159.4 428.7 159.4C445 159.4 458.1 159.8 465.7 160.6L465.7 71.9C451.4 68 416.4 64 396.2 64C289.3 64 240 114.5 240 223.4L240 265.5L174 265.5L174 363.3L240 363.3z" />
+              </svg>
+            </a>
+          </li>
+          <li class="size-10">
+            <a href="">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                <!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+                <path d="M568 320C568 457 457 568 320 568C294.4 568 269.8 564.1 246.6 556.9C256.7 540.4 271.8 513.4 277.4 491.9C280.4 480.3 292.8 432.9 292.8 432.9C300.9 448.3 324.5 461.4 349.6 461.4C424.4 461.4 478.3 392.6 478.3 307.1C478.3 225.2 411.4 163.9 325.4 163.9C218.4 163.9 161.5 235.7 161.5 314C161.5 350.4 180.9 395.7 211.8 410.1C216.5 412.3 219 411.3 220.1 406.8C220.9 403.4 225.1 386.5 227 378.7C227.6 376.2 227.3 374 225.3 371.6C215.2 359.1 207 336.3 207 315C207 260.3 248.4 207.4 319 207.4C379.9 207.4 422.6 248.9 422.6 308.3C422.6 375.4 388.7 421.9 344.6 421.9C320.3 421.9 302 401.8 307.9 377.1C314.9 347.6 328.4 315.8 328.4 294.5C328.4 275.5 318.2 259.6 297 259.6C272.1 259.6 252.1 285.3 252.1 319.8C252.1 341.8 259.5 356.6 259.5 356.6C259.5 356.6 235 460.4 230.5 479.8C225.5 501.2 227.5 531.4 229.6 551C137.4 514.9 72 425.1 72 320C72 183 183 72 320 72C457 72 568 183 568 320z" />
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
 
 {% schema %}
 {
-  "name": "t:general.product",
+  "name": "Product",
   "settings": [],
-  "disabled_on": {
-    "groups": ["header", "footer"]
-  }
+  "blocks": [
+    {
+      "type": "selling_points",
+      "name": "Selling Points",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading"
+        },
+        {
+          "type": "select",
+          "id": "layout",
+          "label": "Layout",
+          "options": [
+            { "value": "carousel", "label": "Carousel" },
+            { "value": "one_column", "label": "One Column" },
+            { "value": "two_column", "label": "Two Column" }
+          ],
+          "default": "carousel"
+        },
+        {
+          "type": "range",
+          "id": "icon_width",
+          "label": "Icon Width",
+          "min": 20,
+          "max": 140,
+          "step": 4,
+          "unit": "px",
+          "default": 48
+        },
+        {
+          "type": "header",
+          "content": "Item 1"
+        },
+        {
+          "type": "select",
+          "id": "icon_1",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "check", "label": "Checkmark" },
+            { "value": "star", "label": "Star" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "truck", "label": "Truck (Delivery)" },
+            { "value": "shield", "label": "Shield (Security)" },
+            { "value": "leaf", "label": "Leaf (Eco)" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "recycle", "label": "Recycle" },
+            { "value": "phone", "label": "Phone" },
+            { "value": "email", "label": "Email" },
+            { "value": "warranty", "label": "Warranty" },
+            { "value": "location", "label": "Location" },
+            { "value": "return", "label": "Return/Refund" },
+            { "value": "payment", "label": "Payment" },
+            { "value": "lock", "label": "Lock (Secure)" },
+            { "value": "info", "label": "Info" },
+            { "value": "chat", "label": "Chat/Support" },
+            { "value": "users", "label": "Users" }
+          ],
+          "default": "check"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_1",
+          "label": "Image (overrides icon)"
+        },
+        {
+          "type": "text",
+          "id": "text_1",
+          "label": "Text"
+        },
+        {
+          "type": "header",
+          "content": "Item 2"
+        },
+        {
+          "type": "select",
+          "id": "icon_2",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "check", "label": "Checkmark" },
+            { "value": "star", "label": "Star" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "truck", "label": "Truck (Delivery)" },
+            { "value": "shield", "label": "Shield (Security)" },
+            { "value": "leaf", "label": "Leaf (Eco)" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "recycle", "label": "Recycle" },
+            { "value": "phone", "label": "Phone" },
+            { "value": "email", "label": "Email" },
+            { "value": "warranty", "label": "Warranty" },
+            { "value": "location", "label": "Location" },
+            { "value": "return", "label": "Return/Refund" },
+            { "value": "payment", "label": "Payment" },
+            { "value": "lock", "label": "Lock (Secure)" },
+            { "value": "info", "label": "Info" },
+            { "value": "chat", "label": "Chat/Support" },
+            { "value": "users", "label": "Users" }
+          ],
+          "default": "star"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_2",
+          "label": "Image (overrides icon)"
+        },
+        {
+          "type": "text",
+          "id": "text_2",
+          "label": "Text"
+        },
+        {
+          "type": "header",
+          "content": "Item 3"
+        },
+        {
+          "type": "select",
+          "id": "icon_3",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "check", "label": "Checkmark" },
+            { "value": "star", "label": "Star" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "truck", "label": "Truck (Delivery)" },
+            { "value": "shield", "label": "Shield (Security)" },
+            { "value": "leaf", "label": "Leaf (Natural)" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "recycle", "label": "Recycle" }
+          ],
+          "default": "heart"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_3",
+          "label": "Image (overrides icon)"
+        },
+        {
+          "type": "text",
+          "id": "text_3",
+          "label": "Text"
+        },
+        {
+          "type": "header",
+          "content": "Item 4"
+        },
+        {
+          "type": "select",
+          "id": "icon_4",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "check", "label": "Checkmark" },
+            { "value": "star", "label": "Star" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "truck", "label": "Truck (Delivery)" },
+            { "value": "shield", "label": "Shield (Security)" },
+            { "value": "leaf", "label": "Leaf (Natural)" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "recycle", "label": "Recycle" }
+          ],
+          "default": "truck"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_4",
+          "label": "Image (overrides icon)"
+        },
+        {
+          "type": "text",
+          "id": "text_4",
+          "label": "Text"
+        },
+        {
+          "type": "header",
+          "content": "Item 5"
+        },
+        {
+          "type": "select",
+          "id": "icon_5",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "check", "label": "Checkmark" },
+            { "value": "star", "label": "Star" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "truck", "label": "Truck (Delivery)" },
+            { "value": "shield", "label": "Shield (Security)" },
+            { "value": "leaf", "label": "Leaf (Natural)" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "recycle", "label": "Recycle" }
+          ],
+          "default": "shield"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_5",
+          "label": "Image (overrides icon)"
+        },
+        {
+          "type": "text",
+          "id": "text_5",
+          "label": "Text"
+        },
+        {
+          "type": "header",
+          "content": "Item 6"
+        },
+        {
+          "type": "select",
+          "id": "icon_6",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "check", "label": "Checkmark" },
+            { "value": "star", "label": "Star" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "truck", "label": "Truck (Delivery)" },
+            { "value": "shield", "label": "Shield (Security)" },
+            { "value": "leaf", "label": "Leaf (Natural)" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "recycle", "label": "Recycle" }
+          ],
+          "default": "leaf"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_6",
+          "label": "Image (overrides icon)"
+        },
+        {
+          "type": "text",
+          "id": "text_6",
+          "label": "Text"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "name": "Accordion",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Accordion Title"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon (optional)",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "account", "label": "Account" },
+            { "value": "cart", "label": "Cart" },
+            { "value": "chat", "label": "Chat" },
+            { "value": "check", "label": "Check" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "email", "label": "Email" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "info", "label": "Info" },
+            { "value": "leaf", "label": "Leaf" },
+            { "value": "location", "label": "Location" },
+            { "value": "lock", "label": "Lock" },
+            { "value": "payment", "label": "Payment" },
+            { "value": "phone", "label": "Phone" },
+            { "value": "recycle", "label": "Recycle" },
+            { "value": "return", "label": "Return" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "star", "label": "Star" },
+            { "value": "truck", "label": "Truck" },
+            { "value": "users", "label": "Users" },
+            { "value": "warranty", "label": "Warranty" }
+          ],
+          "default": "none"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content",
+          "default": "<p>Add your accordion content here.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product"
+    }
+  ]
 }
 {% endschema %}
