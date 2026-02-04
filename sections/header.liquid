@@ -1,4 +1,4 @@
-<header id="site-header" class="w-full fixed border-b border-white z-20">
+<header id="site-header" class="w-full absolute top-0 left-0 border-b border-white z-20">
   <div class="flex items-center px-6 md:px-12 lg:px-14 py-3 sm:py-4 lg:py-6">
     {%- comment -%} Navigation Links (Desktop) / Mobile Menu Button {%- endcomment -%}
     <div id="navlinks" class="flex-1">
@@ -200,17 +200,55 @@
   overlay.addEventListener('click', toggleMenu);
 {% endjavascript %}
 
-{%- comment -%} Section-specific GSAP animations {%- endcomment -%}
+{%- comment -%} Dynamic Header Positioning & Animations {%- endcomment -%}
 <script>
   (function () {
-    function initHeaderAnimations() {
-      const header = document.querySelector('#site-header');
+    const header = document.querySelector('#site-header');
 
+    // Handle Header Positioning relative to Announcement Bar
+    function updateHeaderPosition() {
+      const announcementBar = document.querySelector('.announcement-bar-section');
+      // Use offsetHeight only if visible
+      const barHeight =
+        announcementBar && announcementBar.offsetWidth > 0 && announcementBar.offsetHeight > 0
+          ? announcementBar.offsetHeight
+          : 0;
+      const scrollY = window.scrollY;
+
+      // Calculate top position so it sits below announcement bar initially
+      const initialTop = barHeight;
+
+      if (scrollY > initialTop) {
+        // Scrolled past announcement bar -> fixed to top
+        header.classList.add('fixed');
+        header.classList.remove('absolute');
+        header.style.top = '0';
+      } else {
+        // Not scrolled past -> absolute positioned below bar
+        header.classList.remove('fixed');
+        header.classList.add('absolute');
+        header.style.top = initialTop + 'px';
+      }
+    }
+
+    window.addEventListener('scroll', updateHeaderPosition, { passive: true });
+    window.addEventListener('resize', updateHeaderPosition);
+    // Init on load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', updateHeaderPosition);
+    } else {
+      updateHeaderPosition();
+    }
+
+    // GSAP ScrollTrigger for Background Change
+    // We keep this purely for style (turning white), position is handled by raw JS above
+    function initHeaderAnimations() {
       ScrollTrigger.create({
-        start: 'top -10', // triggers as soon as you scroll down 1px
+        start: 10, // triggers after scrolling 10px
         onEnter: () => {
           gsap.to(header, {
             backgroundColor: '#fff',
+            borderColor: '#e5e7eb', // gray-200
             duration: 0.3,
             ease: 'power2.out',
           });
@@ -218,6 +256,7 @@
         onLeaveBack: () => {
           gsap.to(header, {
             backgroundColor: 'transparent',
+            borderColor: 'white',
             duration: 0.3,
             ease: 'power2.out',
           });
@@ -225,7 +264,6 @@
       });
     }
 
-    // Run when DOM is ready
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initHeaderAnimations);
     } else {
