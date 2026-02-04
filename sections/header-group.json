@@ -11,6 +11,27 @@
   "type": "header",
   "name": "t:general.header",
   "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement-1": {
+          "type": "announcement",
+          "settings": {
+            "text": "<p>Free shipping on orders over $50! <a href=\"/collections/all\">Shop now</a></p>"
+          }
+        }
+      },
+      "block_order": [
+        "announcement-1"
+      ],
+      "settings": {
+        "background_color": "#000000",
+        "text_color": "#ffffff",
+        "text_size": "text-sm",
+        "autoplay_speed": 5,
+        "show_close_button": true
+      }
+    },
     "header": {
       "type": "header",
       "settings": {
@@ -21,6 +42,7 @@
     }
   },
   "order": [
+    "announcement-bar",
     "header"
   ]
 }
