@@ -1,0 +1,183 @@
+<section class="min-h-[80vh] flex flex-col lg:flex-row bg-yellow-50 overflow-x-hidden">
+  <div
+    id="leftwrapper"
+    class="w-full lg:w-1/2 relative p-16 flex flex-col justify-center items-center group overflow-hidden"
+  >
+    <div id="left-bg" class="w-full h-full bg-gray-100 absolute top-0 left-0 z-1 will-change-transform">
+      <div class="marquee-container w-full h-full flex opacity-50">
+        <div class="relative flex overflow-x-hidden w-full">
+          <div class="animate-marquee py-12 whitespace-nowrap">
+            <span class="mx-4 text-4xl font-bold text-gray-300">Marquee Item 1</span>
+            <span class="mx-4 text-4xl font-bold text-gray-300">Marquee Item 2</span>
+            <span class="mx-4 text-4xl font-bold text-gray-300">Marquee Item 3</span>
+          </div>
+          <div class="absolute top-0 animate-marquee-alt py-12 whitespace-nowrap">
+            <span class="mx-4 text-4xl font-bold text-gray-300">Marquee Item 1</span>
+            <span class="mx-4 text-4xl font-bold text-gray-300">Marquee Item 2</span>
+            <span class="mx-4 text-4xl font-bold text-gray-300">Marquee Item 3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="z-2 relative pointer-events-none">
+      <div class="relative">
+        <img
+          src="https://images.unsplash.com/photo-1767304590980-9c075c875c38?q=80&w=240&auto=format&fit=crop"
+          alt="Main Left"
+          class="aspect-3/4 rounded-3xl shadow-xl object-contain"
+          width="240"
+          height="320"
+        >
+
+        <img
+          id="left-scale-img"
+          src="https://images.unsplash.com/photo-1767486029534-d7a327c9b9c8?q=80&w=104&auto=format&fit=crop"
+          alt="Decoration"
+          class="rounded-full aspect-square absolute bottom-10 -left-10 shadow-lg border-4 border-white will-change-transform"
+          width="104"
+          height="104"
+        >
+      </div>
+
+      <div class="mt-16 space-y-4 pointer-events-auto">
+        <h2 class="text-3xl font-bold">Left Heading</h2>
+        <p>Sub text description goes here.</p>
+        <button class="rounded-md px-6 py-2 bg-white shadow-sm hover:bg-gray-100 transition-colors">Shop Now</button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    id="rightwrapper"
+    class="w-full lg:w-1/2 relative p-16 flex flex-col justify-center items-center overflow-hidden"
+  >
+    <div id="right-bg" class="w-full h-full bg-cyan-100 absolute top-0 left-0 z-1 will-change-transform">
+      <div class="marquee-container w-full h-full flex opacity-50">
+        <div class="relative flex overflow-x-hidden w-full">
+          <div class="animate-marquee py-12 whitespace-nowrap">
+            <span class="mx-4 text-4xl font-bold text-cyan-300">Marquee Item A</span>
+            <span class="mx-4 text-4xl font-bold text-cyan-300">Marquee Item B</span>
+            <span class="mx-4 text-4xl font-bold text-cyan-300">Marquee Item C</span>
+          </div>
+          <div class="absolute top-0 animate-marquee-alt py-12 whitespace-nowrap">
+            <span class="mx-4 text-4xl font-bold text-cyan-300">Marquee Item A</span>
+            <span class="mx-4 text-4xl font-bold text-cyan-300">Marquee Item B</span>
+            <span class="mx-4 text-4xl font-bold text-cyan-300">Marquee Item C</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="z-2 relative">
+      <div class="relative">
+        <img
+          src="https://images.unsplash.com/photo-1767304590980-9c075c875c38?q=80&w=240&auto=format&fit=crop"
+          alt="Main Right"
+          class="aspect-3/4 rounded-3xl shadow-xl object-contain"
+          width="240"
+          height="320"
+        >
+
+        <img
+          id="right-scale-img"
+          src="https://images.unsplash.com/photo-1767486029534-d7a327c9b9c8?q=80&w=104&auto=format&fit=crop"
+          alt="Decoration"
+          class="rounded-full aspect-square absolute bottom-10 -left-10 shadow-lg border-4 border-white will-change-transform"
+          width="104"
+          height="104"
+        >
+      </div>
+
+      <div class="mt-16 space-y-4">
+        <h2 class="text-3xl font-bold">Right Heading</h2>
+        <p>Sub text description goes here.</p>
+        <button class="rounded-md px-6 py-2 bg-white shadow-sm hover:bg-gray-100 transition-colors">Shop Now</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    function initHoverCollectionAnimations() {
+      // 1. Safety Check: Ensure GSAP is loaded
+      if (typeof gsap === 'undefined') {
+        console.error('GSAP is not loaded.');
+        return;
+      }
+
+      const leftWrapper = document.getElementById('leftwrapper');
+      const leftBg = document.getElementById('left-bg');
+      const leftScaleImg = document.getElementById('left-scale-img');
+
+      const rightWrapper = document.getElementById('rightwrapper');
+      const rightBg = document.getElementById('right-bg');
+      const rightScaleImg = document.getElementById('right-scale-img');
+
+      // 2. Safety Check: Ensure elements exist
+      if (!leftWrapper || !leftBg || !rightWrapper || !rightBg) {
+        console.warn('Hover animation elements missing');
+        return;
+      }
+
+      let mm = gsap.matchMedia();
+
+      mm.add('(min-width: 1024px)', () => {
+        // --- SET INITIAL STATES (This replaces the removed CSS classes) ---
+        gsap.set(leftBg, { xPercent: -100 });
+        gsap.set(leftScaleImg, { scale: 0, transformOrigin: 'center center' });
+
+        gsap.set(rightBg, { xPercent: 100 });
+        gsap.set(rightScaleImg, { scale: 0, transformOrigin: 'center center' });
+
+        // --- LEFT ANIMATIONS ---
+        leftWrapper.addEventListener('mouseenter', () => {
+          gsap.to(leftBg, { xPercent: 0, duration: 0.5, ease: 'power2.out', overwrite: 'auto' });
+          gsap.to(leftScaleImg, { scale: 1, duration: 0.4, ease: 'back.out(1.7)', overwrite: 'auto' });
+        });
+
+        leftWrapper.addEventListener('mouseleave', () => {
+          gsap.to(leftBg, { xPercent: -100, duration: 0.5, ease: 'power2.in', overwrite: 'auto' });
+          gsap.to(leftScaleImg, { scale: 0, duration: 0.3, ease: 'power1.in', overwrite: 'auto' });
+        });
+
+        // --- RIGHT ANIMATIONS ---
+        rightWrapper.addEventListener('mouseenter', () => {
+          gsap.to(rightBg, { xPercent: 0, duration: 0.5, ease: 'power2.out', overwrite: 'auto' });
+          gsap.to(rightScaleImg, { scale: 1, duration: 0.4, ease: 'back.out(1.7)', overwrite: 'auto' });
+        });
+
+        rightWrapper.addEventListener('mouseleave', () => {
+          gsap.to(rightBg, { xPercent: 100, duration: 0.5, ease: 'power2.in', overwrite: 'auto' });
+          gsap.to(rightScaleImg, { scale: 0, duration: 0.3, ease: 'power1.in', overwrite: 'auto' });
+        });
+      });
+      return () => {};
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initHoverCollectionAnimations);
+    } else {
+      initHoverCollectionAnimations();
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Hover Collection",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Hover Collection",
+      "category": "Content"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ]
+}
+{% endschema %}
