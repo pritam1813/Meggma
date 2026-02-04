@@ -101,7 +101,7 @@
       </a>
 
       {%- comment -%} Cart (All screens) {%- endcomment -%}
-      <a href="{{ routes.cart_url }}" class="relative" aria-label="Cart">
+      <button type="button" class="relative" aria-label="Cart" data-cart-drawer-trigger>
         <svg
           width="24"
           height="24"
@@ -117,11 +117,14 @@
           <path d="M16 10a4 4 0 1 1-8 0"/>
         </svg>
         {%- if cart.item_count > 0 -%}
-          <span class="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+          <span
+            class="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full w-4 h-4 flex items-center justify-center"
+            data-cart-count
+          >
             {{ cart.item_count }}
           </span>
         {%- endif -%}
-      </a>
+      </button>
     </div>
   </div>
 </header>
