@@ -1,0 +1,75 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "page",
+      "disabled": true,
+      "settings": {}
+    },
+    "image_banner_qjTUm3": {
+      "type": "image-banner",
+      "blocks": {
+        "heading_rNRiEV": {
+          "type": "heading",
+          "settings": {
+            "heading": "Image banner"
+          }
+        },
+        "text_NwGLnw": {
+          "type": "text",
+          "settings": {
+            "text": "Give customers details about the banner image(s) or content on the template."
+          }
+        },
+        "buttons_mhHixi": {
+          "type": "buttons",
+          "settings": {
+            "button_label_1": "Shop now",
+            "button_link_1": "",
+            "button_label_2": "Shop all",
+            "button_link_2": ""
+          }
+        }
+      },
+      "block_order": [
+        "heading_rNRiEV",
+        "text_NwGLnw",
+        "buttons_mhHixi"
+      ],
+      "name": "Image Banner",
+      "settings": {
+        "image": "shopify://shop_images/rooibos-tea.jpg",
+        "image_link": "",
+        "image_layout": "fixed",
+        "desktop_height": 480,
+        "mobile_height": 320,
+        "show_text_below_mobile": false,
+        "tint_color": "#000000",
+        "tint_opacity": 15,
+        "overlay_position": "middle_center",
+        "text_alignment": "center",
+        "center_text_mobile": true,
+        "text_color": "#FFFFFF",
+        "full_width": true,
+        "enable_top_fade": false,
+        "enable_bottom_fade": false,
+        "image_behavior": "none",
+        "text_animation": "slide_up",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    }
+  },
+  "order": [
+    "main",
+    "image_banner_qjTUm3"
+  ]
+}
