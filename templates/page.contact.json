@@ -57,7 +57,7 @@
         "overlay_position": "middle_center",
         "text_alignment": "center",
         "center_text_mobile": true,
-        "text_color": "#FFFFFF",
+        "text_color": "#ffffff",
         "full_width": true,
         "enable_top_fade": false,
         "enable_bottom_fade": false,
@@ -66,10 +66,51 @@
         "padding_top": 0,
         "padding_bottom": 0
       }
+    },
+    "contact_form_UXYrQK": {
+      "type": "contact-form",
+      "blocks": {
+        "dropdown_HeBF8F": {
+          "type": "dropdown",
+          "settings": {
+            "label": "Reason for inquiry",
+            "options": "Order Status, Returns, General Question",
+            "is_required": false,
+            "half_width": true
+          }
+        },
+        "phone_kGqFRp": {
+          "type": "phone",
+          "settings": {
+            "label": "Phone Number",
+            "is_required": false,
+            "half_width": true
+          }
+        },
+        "custom_input_jz8kCi": {
+          "type": "custom_input",
+          "settings": {
+            "label": "Message",
+            "input_type": "multiline",
+            "is_required": false,
+            "half_width": false
+          }
+        }
+      },
+      "block_order": [
+        "dropdown_HeBF8F",
+        "phone_kGqFRp",
+        "custom_input_jz8kCi"
+      ],
+      "name": "Custom Contact Form",
+      "settings": {
+        "title": "Contact Us"
+      }
     }
   },
   "order": [
     "main",
-    "image_banner_qjTUm3"
+    "image_banner_qjTUm3",
+    "contact_form_UXYrQK"
   ]
 }
