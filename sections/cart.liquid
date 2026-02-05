@@ -30,7 +30,7 @@
     {% if cart.item_count > 0 %}
       <div class="cart-header">
         <h1 class="cart-title">{{ 'cart.title' | t | default: 'Your Cart' }}</h1>
-        <span class="cart-item-count">
+        <span class="cart-item-count" data-cart-count>
           {{- cart.item_count }}
           {{ cart.item_count | pluralize: 'item', 'items' -}}
         </span>
@@ -158,11 +158,13 @@
                 </div>
 
                 {%- comment -%} Line total {%- endcomment -%}
-                <div class="cart-item__total">
+                <div class="cart-item__total" data-line-total="{{ forloop.index }}">
                   {% if item.original_line_price != item.final_line_price %}
                     <span class="cart-item__total--original">{{ item.original_line_price | money }}</span>
                   {% endif %}
-                  <span class="cart-item__total--final">{{ item.final_line_price | money }}</span>
+                  <span class="cart-item__total--final" data-line-price="{{ forloop.index }}">
+                    {{- item.final_line_price | money -}}
+                  </span>
                 </div>
               </div>
             {% endfor %}
@@ -174,7 +176,7 @@
 
             <div class="cart-summary__row">
               <span>Subtotal</span>
-              <span>{{ cart.items_subtotal_price | money }}</span>
+              <span data-cart-subtotal>{{ cart.items_subtotal_price | money }}</span>
             </div>
 
             {% if cart.cart_level_discount_applications.size > 0 %}
@@ -202,7 +204,7 @@
 
             <div class="cart-summary__row cart-summary__row--total">
               <span>Total</span>
-              <span>{{ cart.total_price | money }}</span>
+              <span data-cart-total>{{ cart.total_price | money }}</span>
             </div>
 
             {% if cart.total_discount > 0 %}
@@ -801,6 +803,33 @@
       margin-top: 0.25rem;
     }
   }
+
+  /* Loading state */
+  .cart-item--loading {
+    opacity: 0.5;
+    pointer-events: none;
+    position: relative;
+  }
+
+  .cart-item--loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #ddd;
+    border-top-color: var(--cart-accent);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
 {% endstylesheet %}
 
 <script>
@@ -820,24 +849,97 @@
           input.value = currentValue - 1;
         }
 
-        // Trigger change event for potential AJAX update
-        input.dispatchEvent(new Event('change', { bubbles: true }));
+        // Trigger the AJAX update
+        updateCartItem(input);
       });
     });
 
-    // Auto-submit on quantity change (optional - uncomment for AJAX)
-    /*
+    // Also handle direct input changes
     const quantityInputs = document.querySelectorAll('.quantity-input');
     let debounceTimer;
-    quantityInputs.forEach(input => {
-      input.addEventListener('change', function() {
+    quantityInputs.forEach((input) => {
+      input.addEventListener('change', function () {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
-          this.closest('form').submit();
-        }, 500);
+          updateCartItem(this);
+        }, 300);
       });
     });
-    */
+
+    // AJAX Cart Update Function
+    function updateCartItem(input) {
+      const line = parseInt(input.dataset.line);
+      const quantity = parseInt(input.value) || 0;
+      const cartItem = input.closest('.cart-item');
+
+      // Add loading state
+      if (cartItem) cartItem.classList.add('cart-item--loading');
+
+      fetch('/cart/change.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          line: line,
+          quantity: quantity,
+        }),
+      })
+        .then((response) => response.json())
+        .then((cart) => {
+          // If quantity is 0, remove the item from DOM
+          if (quantity === 0 && cartItem) {
+            cartItem.remove();
+            // If no items left, reload to show empty state
+            if (cart.item_count === 0) {
+              window.location.reload();
+              return;
+            }
+          }
+
+          // Update line item prices
+          cart.items.forEach((item, index) => {
+            const lineIndex = index + 1;
+            const linePrice = document.querySelector(`[data-line-price="${lineIndex}"]`);
+            if (linePrice) {
+              linePrice.textContent = formatMoney(item.final_line_price);
+            }
+          });
+
+          // Update cart count
+          const cartCount = document.querySelector('[data-cart-count]');
+          if (cartCount) {
+            const itemWord = cart.item_count === 1 ? 'item' : 'items';
+            cartCount.textContent = `${cart.item_count} ${itemWord}`;
+          }
+
+          // Update subtotal
+          const subtotal = document.querySelector('[data-cart-subtotal]');
+          if (subtotal) {
+            subtotal.textContent = formatMoney(cart.items_subtotal_price);
+          }
+
+          // Update total
+          const total = document.querySelector('[data-cart-total]');
+          if (total) {
+            total.textContent = formatMoney(cart.total_price);
+          }
+
+          // Remove loading state
+          if (cartItem) cartItem.classList.remove('cart-item--loading');
+        })
+        .catch((error) => {
+          console.error('Error updating cart:', error);
+          if (cartItem) cartItem.classList.remove('cart-item--loading');
+          alert('Failed to update cart. Please try again.');
+        });
+    }
+
+    // Format money helper (using Shopify's money format)
+    function formatMoney(cents) {
+      const amount = (cents / 100).toFixed(2);
+      return '{{ cart.currency.symbol | default: "$" }}' + amount;
+    }
   });
 </script>
 
