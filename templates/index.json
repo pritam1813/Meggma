@@ -504,6 +504,32 @@
         "text_color": "#4b5563",
         "text_font_size": 18
       }
+    },
+    "dynamic_marquee_section_LTLUrw": {
+      "type": "dynamic-marquee-section",
+      "blocks": {
+        "marquee_block_3mUQm7": {
+          "type": "marquee-block",
+          "settings": {
+            "text_1": "GSAP MARQUEE ✦",
+            "text_2": "SMOOTH SCROLL ✦",
+            "text_3": "SHOPIFY THEME ✦",
+            "text_4": "DYNAMIC CONTENT ✦",
+            "text_5": "CUSTOM TEXT ✦",
+            "font_size": 48,
+            "background_color": "#e4cccc",
+            "text_color": "#ffffff",
+            "animation_speed": 10,
+            "scroll_based": true
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "marquee_block_3mUQm7"
+      ],
+      "name": "Dynamic Marquee",
+      "settings": {}
     }
   },
   "order": [
@@ -518,6 +544,7 @@
     "countdown_banner_JKVPjT",
     "split_screen_slider_GPDTeB",
     "background_video_h6G3k6",
-    "scale_down_image_banner_wA3FtN"
+    "scale_down_image_banner_wA3FtN",
+    "dynamic_marquee_section_LTLUrw"
   ]
 }

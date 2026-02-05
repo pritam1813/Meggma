@@ -51,7 +51,7 @@
         "overlay_position": "middle_center",
         "text_alignment": "center",
         "center_text_mobile": true,
-        "text_color": "#FFFFFF",
+        "text_color": "#ffffff",
         "full_width": true,
         "enable_top_fade": false,
         "enable_bottom_fade": false,
@@ -63,6 +63,7 @@
     },
     "main": {
       "type": "collections",
+      "disabled": true,
       "settings": {
         "grid_item_width": "collections--full",
         "grid_gap": 10
@@ -70,15 +71,85 @@
     },
     "collection_3ciGWT": {
       "type": "collection",
+      "disabled": true,
       "name": "Collection Grid",
+      "settings": {}
+    },
+    "zigzag_collections_TmN8f9": {
+      "type": "zigzag-collections",
+      "blocks": {
+        "collection_card_ARhNeV": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "bedsheet",
+            "style_variant": "minimal",
+            "aspect_ratio": "4/5",
+            "border_radius": 16,
+            "show_product_count": true,
+            "overlay_opacity": 40
+          }
+        },
+        "collection_card_DUDf6E": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "emboidred",
+            "style_variant": "minimal",
+            "aspect_ratio": "4/5",
+            "border_radius": 16,
+            "show_product_count": true,
+            "overlay_opacity": 40
+          }
+        },
+        "collection_card_39H3FP": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "printed",
+            "style_variant": "minimal",
+            "aspect_ratio": "4/5",
+            "border_radius": 16,
+            "show_product_count": true,
+            "overlay_opacity": 40
+          }
+        },
+        "collection_card_PwEUmB": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "bedsheet-1",
+            "style_variant": "minimal",
+            "aspect_ratio": "4/5",
+            "border_radius": 16,
+            "show_product_count": true,
+            "overlay_opacity": 40
+          }
+        }
+      },
+      "block_order": [
+        "collection_card_ARhNeV",
+        "collection_card_DUDf6E",
+        "collection_card_39H3FP",
+        "collection_card_PwEUmB"
+      ],
+      "name": "Zigzag Collections",
       "settings": {
-        "products_per_page": 16
+        "title": "Shop Collections",
+        "subtitle": "",
+        "title_size": "text-3xl md:text-4xl",
+        "title_alignment": "center",
+        "columns_desktop": 4,
+        "columns_mobile": 2,
+        "gap": 24,
+        "zigzag_offset": 40,
+        "background_color": "#ffffff",
+        "text_color": "#1a1a1a",
+        "padding_top": 80,
+        "padding_bottom": 80
       }
     }
   },
   "order": [
     "image_banner_ERLEJa",
     "main",
-    "collection_3ciGWT"
+    "collection_3ciGWT",
+    "zigzag_collections_TmN8f9"
   ]
 }

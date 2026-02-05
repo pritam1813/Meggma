@@ -1,0 +1,450 @@
+{%- comment -%}
+  Zigzag Collections Grid Section
+  - Displays collections in a responsive grid with vertical zigzag offset
+  - Uses the collection-block component
+  - Configurable title, colors, columns, and spacing
+{%- endcomment -%}
+
+{%- liquid
+  assign section_title = section.settings.title
+  assign title_size = section.settings.title_size | default: 'text-4xl'
+  assign title_alignment = section.settings.title_alignment | default: 'center'
+  assign bg_color = section.settings.background_color | default: '#ffffff'
+  assign text_color = section.settings.text_color | default: '#1a1a1a'
+  assign columns_desktop = section.settings.columns_desktop | default: 4
+  assign columns_mobile = section.settings.columns_mobile | default: 2
+  assign gap = section.settings.gap | default: 24
+  assign zigzag_offset = section.settings.zigzag_offset | default: 40
+  assign padding_top = section.settings.padding_top | default: 80
+  assign padding_bottom = section.settings.padding_bottom | default: 80
+-%}
+
+<style>
+  #collections-grid-{{ section.id }} {
+    --cg-bg: {{ bg_color }};
+    --cg-text: {{ text_color }};
+    --cg-columns-desktop: {{ columns_desktop }};
+    --cg-columns-mobile: {{ columns_mobile }};
+    --cg-gap: {{ gap }}px;
+    --cg-zigzag: {{ zigzag_offset }}px;
+    --cg-pt: {{ padding_top }}px;
+    --cg-pb: {{ padding_bottom }}px;
+  }
+</style>
+
+<section
+  id="collections-grid-{{ section.id }}"
+  class="collections-grid-section"
+>
+  <div class="collections-grid-container">
+    {% if section_title != blank %}
+      <div class="collections-grid-header collections-grid-header--{{ title_alignment }}">
+        <h2 class="collections-grid-title {{ title_size }}">{{ section_title }}</h2>
+        {% if section.settings.subtitle != blank %}
+          <p class="collections-grid-subtitle">{{ section.settings.subtitle }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="collections-grid">
+      {% for block in section.blocks %}
+        <div class="collections-grid-item" {{ block.shopify_attributes }}>
+          {% render 'collection-card-block',
+            block: block,
+            collection: block.settings.collection,
+            style_variant: block.settings.style_variant,
+            aspect_ratio: block.settings.aspect_ratio,
+            border_radius: block.settings.border_radius,
+            show_product_count: block.settings.show_product_count,
+            overlay_opacity: block.settings.overlay_opacity
+          %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .collections-grid-section {
+    background-color: var(--cg-bg);
+    color: var(--cg-text);
+    padding-top: var(--cg-pt);
+    padding-bottom: var(--cg-pb);
+  }
+
+  .collections-grid-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* Header */
+  .collections-grid-header {
+    margin-bottom: 3rem;
+  }
+
+  .collections-grid-header--left {
+    text-align: left;
+  }
+
+  .collections-grid-header--center {
+    text-align: center;
+  }
+
+  .collections-grid-header--right {
+    text-align: right;
+  }
+
+  .collections-grid-title {
+    margin: 0;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .collections-grid-subtitle {
+    margin: 0.75rem 0 0 0;
+    font-size: 1.125rem;
+    opacity: 0.7;
+    max-width: 600px;
+  }
+
+  .collections-grid-header--center .collections-grid-subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Grid Layout */
+  .collections-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--cg-columns-desktop), 1fr);
+    gap: var(--cg-gap);
+  }
+
+  /* Zigzag offset - every even item shifts down */
+  .collections-grid-item:nth-child(even) {
+    transform: translateY(var(--cg-zigzag));
+  }
+
+  /* Animation on scroll */
+  .collections-grid-item {
+    opacity: 0;
+    transform: translateY(calc(var(--cg-zigzag) + 30px));
+    animation: gridItemFadeIn 0.6s ease forwards;
+  }
+
+  .collections-grid-item:nth-child(even) {
+    animation: gridItemFadeInEven 0.6s ease forwards;
+  }
+
+  /* Staggered animation delays */
+  .collections-grid-item:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+  .collections-grid-item:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  .collections-grid-item:nth-child(3) {
+    animation-delay: 0.15s;
+  }
+  .collections-grid-item:nth-child(4) {
+    animation-delay: 0.2s;
+  }
+  .collections-grid-item:nth-child(5) {
+    animation-delay: 0.25s;
+  }
+  .collections-grid-item:nth-child(6) {
+    animation-delay: 0.3s;
+  }
+  .collections-grid-item:nth-child(7) {
+    animation-delay: 0.35s;
+  }
+  .collections-grid-item:nth-child(8) {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes gridItemFadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes gridItemFadeInEven {
+    to {
+      opacity: 1;
+      transform: translateY(var(--cg-zigzag));
+    }
+  }
+
+  /* Tablet */
+  @media (max-width: 1024px) {
+    .collections-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .collections-grid-item:nth-child(3n + 2) {
+      transform: translateY(var(--cg-zigzag));
+    }
+
+    .collections-grid-item:nth-child(3n + 1),
+    .collections-grid-item:nth-child(3n) {
+      transform: translateY(0);
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 767px) {
+    .collections-grid-section {
+      --cg-pt: 48px;
+      --cg-pb: 48px;
+    }
+
+    .collections-grid-container {
+      padding: 0 1rem;
+    }
+
+    .collections-grid-header {
+      margin-bottom: 2rem;
+    }
+
+    .collections-grid-title {
+      font-size: 1.75rem !important;
+    }
+
+    .collections-grid-subtitle {
+      font-size: 1rem;
+    }
+
+    .collections-grid {
+      grid-template-columns: repeat(var(--cg-columns-mobile), 1fr);
+      gap: calc(var(--cg-gap) * 0.75);
+    }
+
+    /* Zigzag on mobile - every even item in each row */
+    .collections-grid-item:nth-child(even) {
+      transform: translateY(calc(var(--cg-zigzag) * 0.6));
+    }
+
+    .collections-grid-item:nth-child(odd) {
+      transform: translateY(0);
+    }
+
+    @keyframes gridItemFadeInEven {
+      to {
+        opacity: 1;
+        transform: translateY(calc(var(--cg-zigzag) * 0.6));
+      }
+    }
+  }
+
+  /* Extra bottom margin to accommodate zigzag offset */
+  .collections-grid {
+    margin-bottom: var(--cg-zigzag);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Zigzag Collections",
+  "tag": "section",
+  "class": "zigzag-collections-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Shop Collections"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle"
+    },
+    {
+      "type": "select",
+      "id": "title_size",
+      "label": "Title size",
+      "options": [
+        { "value": "text-2xl md:text-3xl", "label": "Small" },
+        { "value": "text-3xl md:text-4xl", "label": "Medium" },
+        { "value": "text-4xl md:text-5xl", "label": "Large" },
+        { "value": "text-5xl md:text-6xl", "label": "Extra Large" }
+      ],
+      "default": "text-3xl md:text-4xl"
+    },
+    {
+      "type": "select",
+      "id": "title_alignment",
+      "label": "Title alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns (Desktop)",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "Columns (Mobile)",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Grid gap",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "zigzag_offset",
+      "label": "Zigzag offset",
+      "info": "Vertical offset for alternating items",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 120,
+      "step": 8,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 8,
+      "default": 80,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_card",
+      "name": "Collection Card",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "select",
+          "id": "style_variant",
+          "label": "Card style",
+          "options": [
+            { "value": "minimal", "label": "Minimal" },
+            { "value": "detailed", "label": "Detailed" },
+            { "value": "overlay", "label": "Overlay" }
+          ],
+          "default": "minimal"
+        },
+        {
+          "type": "select",
+          "id": "aspect_ratio",
+          "label": "Image aspect ratio",
+          "options": [
+            { "value": "1/1", "label": "Square (1:1)" },
+            { "value": "4/5", "label": "Portrait (4:5)" },
+            { "value": "3/4", "label": "Tall Portrait (3:4)" },
+            { "value": "16/9", "label": "Landscape (16:9)" }
+          ],
+          "default": "4/5"
+        },
+        {
+          "type": "range",
+          "id": "border_radius",
+          "label": "Border radius",
+          "min": 0,
+          "max": 32,
+          "step": 4,
+          "default": 16,
+          "unit": "px"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_product_count",
+          "label": "Show product count",
+          "default": true
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "label": "Overlay opacity",
+          "info": "Only applies to Overlay style",
+          "min": 20,
+          "max": 80,
+          "step": 10,
+          "default": 40,
+          "unit": "%"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Zigzag Collections",
+      "blocks": [
+        { "type": "collection_card" },
+        { "type": "collection_card" },
+        { "type": "collection_card" },
+        { "type": "collection_card" }
+      ]
+    }
+  ]
+}
+{% endschema %}

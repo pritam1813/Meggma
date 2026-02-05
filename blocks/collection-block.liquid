@@ -1,0 +1,360 @@
+{% doc %}
+  Dynamic Collection Block
+  - Premium, highly stylish collection card
+  - Animated hover effects with circle draw and image zoom
+  - Multiple style variants (minimal, detailed, overlay)
+  - Fully responsive with configurable settings
+
+  @example
+  {% content_for 'block', type: 'collection-block', id: 'collection' %}
+{% enddoc %}
+
+{%- liquid
+  assign collection = block.settings.collection
+  assign style_variant = block.settings.style_variant | default: 'minimal'
+  assign show_product_count = block.settings.show_product_count
+  assign border_radius = block.settings.border_radius | default: 16
+  assign aspect_ratio = block.settings.aspect_ratio | default: '4/5'
+  assign overlay_opacity = block.settings.overlay_opacity | default: 40
+
+  if collection != blank
+    assign collection_img = collection.image | default: collection.featured_image
+    assign collection_title = collection.title
+    assign collection_url = collection.url
+    assign product_count = collection.products_count
+  else
+    assign collection_img = blank
+    assign collection_title = 'Collection Title'
+    assign collection_url = '#'
+    assign product_count = 0
+  endif
+-%}
+
+<div
+  class="collection-block collection-block--{{ style_variant }}"
+  style="
+    --cb-border-radius: {{ border_radius }}px;
+    --cb-aspect-ratio: {{ aspect_ratio }};
+    --cb-overlay-opacity: {{ overlay_opacity | divided_by: 100.0 }};
+  "
+  {{ block.shopify_attributes }}
+>
+  <a href="{{ collection_url }}" class="collection-block__link">
+    {%- comment -%} Image Container {%- endcomment -%}
+    <div class="collection-block__media">
+      {% if collection_img %}
+        {{-
+          collection_img
+          | image_url: width: 800
+          | image_tag:
+            loading: 'lazy',
+            class: 'collection-block__image',
+            widths: '240,380,460,600,800',
+            sizes: '(min-width: 768px) 400px, 100vw'
+        -}}
+      {% else %}
+        <div class="collection-block__placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
+          </svg>
+        </div>
+      {% endif %}
+
+      {%- comment -%} Overlay for 'overlay' variant {%- endcomment -%}
+      {% if style_variant == 'overlay' %}
+        <div class="collection-block__overlay"></div>
+      {% endif %}
+    </div>
+
+    {%- comment -%} Content Container {%- endcomment -%}
+    <div class="collection-block__content">
+      <div class="collection-block__text">
+        <h3 class="collection-block__title">{{ collection_title }}</h3>
+        {% if show_product_count and product_count > 0 %}
+          <p class="collection-block__count">
+            {{ product_count }}
+            {{ product_count | pluralize: 'item', 'items' }}
+          </p>
+        {% endif %}
+      </div>
+
+      {%- comment -%} Animated Icon {%- endcomment -%}
+      <div class="collection-block__icon">
+        <svg class="collection-block__circle" viewBox="0 0 48 48">
+          <circle cx="24" cy="24" r="22" />
+        </svg>
+        <svg class="collection-block__arrow" viewBox="0 0 24 24" fill="none">
+          <path d="M7 17L17 7M17 7H8M17 7V16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  </a>
+</div>
+
+{% stylesheet %}
+  .collection-block {
+    --cb-border-radius: 16px;
+    --cb-aspect-ratio: 4/5;
+    --cb-overlay-opacity: 0.4;
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--cb-border-radius);
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.4s ease, transform 0.4s ease;
+  }
+
+  .collection-block:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+  }
+
+  .collection-block__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* Media Container */
+  .collection-block__media {
+    position: relative;
+    aspect-ratio: var(--cb-aspect-ratio);
+    overflow: hidden;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  }
+
+  .collection-block__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .collection-block:hover .collection-block__image {
+    transform: scale(1.08);
+  }
+
+  .collection-block__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #bbb;
+  }
+
+  .collection-block__placeholder svg {
+    width: 48px;
+    height: 48px;
+  }
+
+  /* Overlay variant */
+  .collection-block__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, var(--cb-overlay-opacity)) 100%);
+    transition: opacity 0.4s ease;
+  }
+
+  .collection-block--overlay .collection-block__content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem;
+    color: #fff;
+  }
+
+  .collection-block--overlay .collection-block__title {
+    color: #fff;
+  }
+
+  .collection-block--overlay .collection-block__count {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .collection-block--overlay .collection-block__icon {
+    color: #fff;
+  }
+
+  .collection-block--overlay .collection-block__circle {
+    stroke: rgba(255, 255, 255, 0.6);
+  }
+
+  /* Content Container */
+  .collection-block__content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    gap: 1rem;
+  }
+
+  .collection-block__text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .collection-block__title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .collection-block__count {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.75rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Animated Icon */
+  .collection-block__icon {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    color: #666;
+  }
+
+  .collection-block__circle {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: #ddd;
+    stroke-width: 1.5;
+    stroke-dasharray: 138;
+    stroke-dashoffset: 138;
+    transform: rotate(-90deg);
+    transition: stroke-dashoffset 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .collection-block:hover .collection-block__circle {
+    stroke-dashoffset: 0;
+    stroke: currentColor;
+  }
+
+  .collection-block__arrow {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    transition: transform 0.35s ease;
+  }
+
+  .collection-block:hover .collection-block__arrow {
+    transform: translate(3px, -3px);
+  }
+
+  /* Minimal variant (default) */
+  .collection-block--minimal {
+    background: #fff;
+  }
+
+  /* Detailed variant */
+  .collection-block--detailed .collection-block__content {
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(180deg, #fafafa 0%, #fff 100%);
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .collection-block--detailed .collection-block__title {
+    font-size: 1.05rem;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 767px) {
+    .collection-block__content {
+      padding: 0.875rem 1rem;
+    }
+
+    .collection-block__title {
+      font-size: 0.875rem;
+    }
+
+    .collection-block__icon {
+      width: 36px;
+      height: 36px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Collection Card",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "style_variant",
+      "label": "Card style",
+      "options": [
+        { "value": "minimal", "label": "Minimal" },
+        { "value": "detailed", "label": "Detailed" },
+        { "value": "overlay", "label": "Overlay" }
+      ],
+      "default": "minimal"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Image aspect ratio",
+      "options": [
+        { "value": "1/1", "label": "Square (1:1)" },
+        { "value": "4/5", "label": "Portrait (4:5)" },
+        { "value": "3/4", "label": "Tall Portrait (3:4)" },
+        { "value": "16/9", "label": "Landscape (16:9)" }
+      ],
+      "default": "4/5"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 32,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "label": "Show product count",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "info": "Only applies to Overlay style",
+      "min": 20,
+      "max": 80,
+      "step": 10,
+      "default": 40,
+      "unit": "%"
+    }
+  ],
+  "presets": [{ "name": "Collection Card" }]
+}
+{% endschema %}

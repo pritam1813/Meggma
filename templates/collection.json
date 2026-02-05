@@ -12,9 +12,80 @@
     "main": {
       "type": "collection",
       "settings": {}
+    },
+    "zigzag_collections_HVjfJt": {
+      "type": "zigzag-collections",
+      "blocks": {
+        "collection_card_kzMhAe": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "style_variant": "minimal",
+            "aspect_ratio": "4/5",
+            "border_radius": 16,
+            "show_product_count": true,
+            "overlay_opacity": 40
+          }
+        },
+        "collection_card_rmHKMk": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "style_variant": "minimal",
+            "aspect_ratio": "4/5",
+            "border_radius": 16,
+            "show_product_count": true,
+            "overlay_opacity": 40
+          }
+        },
+        "collection_card_k3wwAr": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "style_variant": "minimal",
+            "aspect_ratio": "4/5",
+            "border_radius": 16,
+            "show_product_count": true,
+            "overlay_opacity": 40
+          }
+        },
+        "collection_card_3rPpp7": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "style_variant": "minimal",
+            "aspect_ratio": "4/5",
+            "border_radius": 16,
+            "show_product_count": true,
+            "overlay_opacity": 40
+          }
+        }
+      },
+      "block_order": [
+        "collection_card_kzMhAe",
+        "collection_card_rmHKMk",
+        "collection_card_k3wwAr",
+        "collection_card_3rPpp7"
+      ],
+      "name": "Zigzag Collections",
+      "settings": {
+        "title": "Shop Collections",
+        "subtitle": "",
+        "title_size": "text-3xl md:text-4xl",
+        "title_alignment": "center",
+        "columns_desktop": 4,
+        "columns_mobile": 2,
+        "gap": 24,
+        "zigzag_offset": 40,
+        "background_color": "#ffffff",
+        "text_color": "#1a1a1a",
+        "padding_top": 80,
+        "padding_bottom": 80
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "zigzag_collections_HVjfJt"
   ]
 }
