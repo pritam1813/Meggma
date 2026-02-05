@@ -1,24 +1,261 @@
-<div class="relative flex overflow-x-hidden">
-  <div class="animate-marquee py-12 whitespace-nowrap">
-    <span class="mx-4 text-4xl">Marquee Item 1</span>
-    <span class="mx-4 text-4xl">Marquee Item 2</span>
-    <span class="mx-4 text-4xl">Marquee Item 3</span>
-    <span class="mx-4 text-4xl">Marquee Item 4</span>
-    <span class="mx-4 text-4xl">Marquee Item 5</span>
-  </div>
+{% doc %}
+  Dynamic Marquee Block
+  - GSAP-powered infinite scrolling marquee
+  - Configurable font size, colors, and text items
+  - Toggle between continuous animation and scroll-based animation
 
-  <div class="absolute top-0 animate-marquee-alt py-12 whitespace-nowrap">
-    <span class="mx-4 text-4xl">Marquee Item 1</span>
-    <span class="mx-4 text-4xl">Marquee Item 2</span>
-    <span class="mx-4 text-4xl">Marquee Item 3</span>
-    <span class="mx-4 text-4xl">Marquee Item 4</span>
-    <span class="mx-4 text-4xl">Marquee Item 5</span>
+  @example
+  {% content_for 'block', type: 'marquee-block', id: 'marquee' %}
+{% enddoc %}
+
+{%- liquid
+  assign font_size = block.settings.font_size | default: 48
+  assign bg_color = block.settings.background_color | default: '#000000'
+  assign text_color = block.settings.text_color | default: '#ffffff'
+  assign speed = block.settings.animation_speed | default: 10
+  assign scroll_based = block.settings.scroll_based
+
+  assign text_items = ''
+  if block.settings.text_1 != blank
+    assign text_items = text_items | append: block.settings.text_1 | append: '|||'
+  endif
+  if block.settings.text_2 != blank
+    assign text_items = text_items | append: block.settings.text_2 | append: '|||'
+  endif
+  if block.settings.text_3 != blank
+    assign text_items = text_items | append: block.settings.text_3 | append: '|||'
+  endif
+  if block.settings.text_4 != blank
+    assign text_items = text_items | append: block.settings.text_4 | append: '|||'
+  endif
+  if block.settings.text_5 != blank
+    assign text_items = text_items | append: block.settings.text_5 | append: '|||'
+  endif
+
+  if text_items == ''
+    assign text_items = 'Marquee Item 1|||Marquee Item 2|||Marquee Item 3|||'
+  endif
+
+  assign texts = text_items | split: '|||'
+-%}
+
+<section
+  id="marquee-block-{{ block.id }}"
+  class="marquee-block-section"
+  style="
+    --marquee-font-size: {{ font_size }}px;
+    --marquee-bg: {{ bg_color }};
+    --marquee-text: {{ text_color }};
+  "
+  {{ block.shopify_attributes }}
+>
+  <div class="marquee-block-container">
+    <div class="marquee-block-main" data-marquee-main>
+      {%- for text in texts -%}
+        <span class="marquee-block-item">{{ text }}</span>
+      {%- endfor -%}
+      {%- comment -%} Duplicate for seamless loop {%- endcomment -%}
+      {%- for text in texts -%}
+        <span class="marquee-block-item" aria-hidden="true">{{ text }}</span>
+      {%- endfor -%}
+    </div>
+
+    <div class="marquee-block-alt" data-marquee-alt>
+      {%- for text in texts -%}
+        <span class="marquee-block-item" aria-hidden="true">{{ text }}</span>
+      {%- endfor -%}
+      {%- for text in texts -%}
+        <span class="marquee-block-item" aria-hidden="true">{{ text }}</span>
+      {%- endfor -%}
+    </div>
   </div>
-</div>
+</section>
+
+{% stylesheet %}
+  .marquee-block-section {
+    width: 100%;
+    overflow: hidden;
+    background-color: var(--marquee-bg);
+    color: var(--marquee-text);
+  }
+
+  .marquee-block-container {
+    position: relative;
+    display: flex;
+    overflow-x: hidden;
+  }
+
+  .marquee-block-main,
+  .marquee-block-alt {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem 0;
+    white-space: nowrap;
+    will-change: transform;
+  }
+
+  .marquee-block-alt {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .marquee-block-item {
+    display: inline-block;
+    margin: 0 1rem;
+    font-size: var(--marquee-font-size);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  @media (min-width: 768px) {
+    .marquee-block-item {
+      margin: 0 2rem;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  (function() {
+    const blockId = '{{ block.id }}';
+    const section = document.getElementById('marquee-block-' + blockId);
+    const scrollBased = {{ scroll_based | json }};
+    const speed = {{ speed }};
+
+    function initMarquee() {
+      if (!section || !window.gsap) return;
+
+      const marqueeMain = section.querySelector('[data-marquee-main]');
+      const marqueeAlt = section.querySelector('[data-marquee-alt]');
+
+      if (!marqueeMain || !marqueeAlt) return;
+
+      // Create GSAP timeline
+      const tl = gsap.timeline({
+        defaults: { ease: 'none', duration: speed }
+      });
+
+      // Animate both tracks
+      tl.fromTo(marqueeMain, { xPercent: 0 }, { xPercent: -50 })
+        .fromTo(marqueeAlt, { xPercent: 100 }, { xPercent: 50 }, '<');
+
+      if (scrollBased) {
+        // Scroll-based animation: scrub true, no repeat
+        if (window.ScrollTrigger) {
+          ScrollTrigger.create({
+            animation: tl,
+            trigger: section,
+            scrub: 1,
+            start: 'top bottom',
+            end: 'bottom top'
+          });
+        }
+      } else {
+        // Continuous animation: repeat infinite, no scrub
+        tl.repeat(-1);
+      }
+    }
+
+    // Initialize when DOM is ready and GSAP is loaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        // Small delay to ensure GSAP is loaded
+        setTimeout(initMarquee, 100);
+      });
+    } else {
+      setTimeout(initMarquee, 100);
+    }
+  })();
+</script>
 
 {% schema %}
 {
   "name": "Marquee Block",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Text Content"
+    },
+    {
+      "type": "text",
+      "id": "text_1",
+      "label": "Text 1",
+      "default": "Marquee Item 1"
+    },
+    {
+      "type": "text",
+      "id": "text_2",
+      "label": "Text 2",
+      "default": "Marquee Item 2"
+    },
+    {
+      "type": "text",
+      "id": "text_3",
+      "label": "Text 3",
+      "default": "Marquee Item 3"
+    },
+    {
+      "type": "text",
+      "id": "text_4",
+      "label": "Text 4",
+      "default": "Marquee Item 4"
+    },
+    {
+      "type": "text",
+      "id": "text_5",
+      "label": "Text 5",
+      "default": "Marquee Item 5"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font size",
+      "min": 16,
+      "max": 120,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "range",
+      "id": "animation_speed",
+      "label": "Animation speed",
+      "info": "Duration in seconds (lower = faster)",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "default": 10,
+      "unit": "s"
+    },
+    {
+      "type": "checkbox",
+      "id": "scroll_based",
+      "label": "Scroll-based animation",
+      "info": "When enabled, marquee animates based on scroll position instead of auto-playing",
+      "default": false
+    }
+  ],
   "presets": [{ "name": "Marquee Block" }]
 }
 {% endschema %}

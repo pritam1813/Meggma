@@ -1,0 +1,50 @@
+{%- comment -%}
+  Dynamic Marquee Section
+  - Container section for up to 2 marquee blocks
+  - One default block that cannot be removed
+  - Uses GSAP-powered marquee blocks with scroll-based animation option
+{%- endcomment -%}
+
+<section
+  id="dynamic-marquee-section-{{ section.id }}"
+  class="dynamic-marquee-section"
+>
+  {% content_for 'blocks' %}
+</section>
+
+{% stylesheet %}
+  .dynamic-marquee-section {
+    width: 100%;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dynamic Marquee",
+  "tag": "section",
+  "class": "dynamic-marquee-wrapper",
+  "blocks": [
+    {
+      "type": "marquee-block"
+    }
+  ],
+  "max_blocks": 2,
+  "presets": [
+    {
+      "name": "Dynamic Marquee",
+      "blocks": [
+        {
+          "type": "marquee-block",
+          "settings": {
+            "text_1": "GSAP MARQUEE ✦",
+            "text_2": "SMOOTH SCROLL ✦",
+            "text_3": "SHOPIFY THEME ✦",
+            "text_4": "DYNAMIC CONTENT ✦",
+            "text_5": "CUSTOM TEXT ✦"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
