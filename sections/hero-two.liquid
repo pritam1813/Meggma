@@ -149,6 +149,31 @@
   .img--border-radius-medium {
     border-radius: 16px;
   }
+
+  /* Collection card hover animation */
+  .collection-card-icon {
+    width: 40px;
+    height: 40px;
+    color: #9ca3af;
+  }
+
+  .collection-card-circle circle {
+    transition: stroke-dashoffset 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: rotate(-90deg);
+    transform-origin: center;
+  }
+
+  .collection-card-content:hover .collection-card-circle circle {
+    stroke-dashoffset: 0;
+  }
+
+  .collection-card-arrow {
+    transition: transform 0.3s ease;
+  }
+
+  .collection-card-content:hover .collection-card-arrow {
+    transform: translate(2px, -2px);
+  }
 </style>
 
 <hero-overlap
@@ -375,30 +400,52 @@
                   {% when 'collection' %}
                     {% if block.settings.collection != blank %}
                       {% assign collection = block.settings.collection %}
+                      {% assign collection_img = collection.image | default: collection.featured_image %}
                       <div class="card collection-card fade-in-up bg-white rounded-lg shadow-lg overflow-hidden">
                         <a href="{{ collection.url }}" class="block">
-                          {% if collection.image %}
+                          {% if collection_img %}
                             {{-
-                              collection.image
+                              collection_img
                               | image_url: width: 600
                               | image_tag:
                                 loading: 'lazy',
-                                class: 'w-full h-auto',
+                                class: 'w-full h-auto object-cover',
                                 widths: '240,380,460,600',
                                 style: 'aspect-ratio: 0.8;'
                             -}}
+                          {% else %}
+                            {{ 'collection-1' | placeholder_svg_tag: 'w-full h-auto object-cover' }}
                           {% endif %}
                         </a>
-                        <div class="p-4 flex justify-between items-center">
+                        <div class="collection-card-content p-4 flex justify-between items-center">
                           <div>
                             <h3 class="text-sm font-semibold">
                               <a href="{{ collection.url }}">{{ collection.title }}</a>
                             </h3>
                             <p class="text-xs text-gray-600">{{ collection.products_count }} items</p>
                           </div>
-                          <svg width="32" height="32" viewBox="0 0 32 32" class="text-gray-400">
-                            <path d="M19.772 19.773V12.23H12.23m0 7.54 7.543-7.543" stroke="currentColor" stroke-width="1.2" fill="none"/>
-                          </svg>
+                          <div class="collection-card-icon relative">
+                            <svg class="collection-card-circle" width="40" height="40" viewBox="0 0 40 40">
+                              <circle
+                                cx="20"
+                                cy="20"
+                                r="18"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-dasharray="113"
+                                stroke-dashoffset="113"
+                              />
+                            </svg>
+                            <svg
+                              class="collection-card-arrow absolute inset-0"
+                              width="40"
+                              height="40"
+                              viewBox="0 0 40 40"
+                            >
+                              <path d="M24.772 24.773V17.23H17.23m0 7.54 7.543-7.543" stroke="currentColor" stroke-width="1.2" fill="none"/>
+                            </svg>
+                          </div>
                         </div>
                       </div>
                     {% endif %}
