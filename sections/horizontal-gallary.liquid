@@ -42,15 +42,8 @@
         </div>
 
         <!-- Floating Image - positioned relative to image -->
-        <div class="absolute -right-6 -bottom-6 md:-right-10 md:-bottom-10">
-          <img
-            src="https://www.vandanafashion.in/cdn/shop/files/polotno_8_fa63eacc-1e67-49a3-84ec-00b77d1c8414.png"
-            alt=""
-            class="w-32 h-32 md:w-48 md:h-48 object-contain"
-            width="240"
-            height="240"
-            loading="lazy"
-          >
+        <div class="absolute -right-6 -bottom-6 md:-right-10 md:-bottom-10 w-32 h-32 md:w-48 md:h-48">
+          {{ 'image' | placeholder_svg_tag: 'w-full h-full object-contain' }}
         </div>
       </div>
     </div>

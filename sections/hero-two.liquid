@@ -198,7 +198,9 @@
                   preload="metadata"
                   class="parallax-hero-video w-full h-full object-cover"
                 >
+                  {%- # theme-check-disable RemoteAsset -%}
                   <source src="{{ section.settings.video_url }}" type="video/mp4">
+                  {%- # theme-check-enable RemoteAsset -%}
                 </video>
               {% elsif section.settings.image != blank %}
                 {{-
@@ -226,7 +228,9 @@
                   preload="metadata"
                   class="parallax-hero-video w-full h-full object-cover"
                 >
+                  {%- # theme-check-disable RemoteAsset -%}
                   <source src="{{ section.settings.video_url_mobile }}" type="video/mp4">
+                  {%- # theme-check-enable RemoteAsset -%}
                 </video>
               {% elsif section.settings.image_mobile != blank %}
                 {{-
@@ -248,7 +252,9 @@
                   preload="metadata"
                   class="parallax-hero-video w-full h-full object-cover"
                 >
+                  {%- # theme-check-disable RemoteAsset -%}
                   <source src="{{ section.settings.video_url }}" type="video/mp4">
+                  {%- # theme-check-enable RemoteAsset -%}
                 </video>
               {% elsif section.settings.image != blank %}
                 {{-
@@ -356,7 +362,9 @@
                           class="w-full h-full object-cover img--border-radius-small"
                         >
                           {% for source in block.settings.video.sources %}
+                            {%- # theme-check-disable RemoteAsset -%}
                             <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                            {%- # theme-check-enable RemoteAsset -%}
                           {% endfor %}
                         </video>
                       {% endif %}

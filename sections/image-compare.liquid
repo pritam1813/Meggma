@@ -91,27 +91,30 @@
           height="810"
         >
       {%- else -%}
+        {{ 'image' | placeholder_svg_tag: 'size-full object-cover absolute inset-0' }}
+      {%- endif -%}
+
+      {%- comment -%} Reveal Image (After) {%- endcomment -%}
+      {%- if section.settings.image_after != blank -%}
         <img
-          src="https://placehold.co/1440x810/e2e8f0/64748b?text=Before+Image"
-          alt="Before image placeholder"
-          class="size-full object-cover absolute inset-0"
+          id="reveal-image-{{ section.id }}"
+          class="size-full absolute inset-0 object-cover"
+          style="clip-path: inset(0px 50% 0px 0px);"
+          src="{{ section.settings.image_after | image_url: width: 1440 }}"
+          alt="{{ section.settings.image_after.alt | default: 'After image' | escape }}"
           loading="lazy"
           width="1440"
           height="810"
         >
+      {%- else -%}
+        <div
+          id="reveal-image-{{ section.id }}"
+          class="size-full absolute inset-0"
+          style="clip-path: inset(0px 50% 0px 0px);"
+        >
+          {{ 'image' | placeholder_svg_tag: 'size-full object-cover' }}
+        </div>
       {%- endif -%}
-
-      {%- comment -%} Reveal Image (After) {%- endcomment -%}
-      <img
-        id="reveal-image-{{ section.id }}"
-        class="size-full absolute inset-0 object-cover"
-        style="clip-path: inset(0px 50% 0px 0px);"
-        src="{%- if section.settings.image_after != blank -%}{{ section.settings.image_after | image_url: width: 1440 }}{%- else -%}https://placehold.co/1440x810/cbd5e1/475569?text=After+Image{%- endif -%}"
-        alt="{{ section.settings.image_after.alt | default: 'After image' | escape }}"
-        loading="lazy"
-        width="1440"
-        height="810"
-      >
 
       {%- comment -%} Dragger Handle {%- endcomment -%}
       <div id="dragger-{{ section.id }}" class="absolute h-full flex flex-col justify-center items-center touch-none">

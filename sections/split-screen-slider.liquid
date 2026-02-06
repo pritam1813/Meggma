@@ -87,14 +87,10 @@
                       loading="lazy"
                     >
                   {%- else -%}
-                    <img
-                      src="https://placehold.co/250x400/e2e8f0/64748b?text={{ product.title | truncate: 10 | url_encode }}"
-                      alt="{{ product.title | escape }}"
-                      width="250"
-                      height="400"
-                      class="object-contain aspect-3/4 transition-transform duration-700 group-hover:scale-105"
-                      loading="lazy"
-                    >
+                    {{
+                      'product-1'
+                      | placeholder_svg_tag: 'object-contain aspect-3/4 transition-transform duration-700 group-hover:scale-105'
+                    }}
                   {%- endif -%}
                 </a>
 
@@ -151,14 +147,10 @@
                 {%- endif -%}
 
                 <div class="z-0 flex-1 overflow-hidden transition-all duration-500 ease-in-out">
-                  <img
-                    src="https://placehold.co/250x400/e2e8f0/64748b?text=Product+{{ i }}"
-                    alt="Placeholder Product {{ i }}"
-                    width="250"
-                    height="400"
-                    class="object-contain aspect-3/4 transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
-                  >
+                  {{
+                    'product-1'
+                    | placeholder_svg_tag: 'object-contain aspect-3/4 transition-transform duration-700 group-hover:scale-105'
+                  }}
                 </div>
 
                 <div class="ml-2 space-y-2 z-10 flex flex-col" style="color: {{ section.settings.text_color }};">
