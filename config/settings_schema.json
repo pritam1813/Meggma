@@ -520,25 +520,25 @@
       },
       {
         "type": "image_picker",
-        "id": "checkout_logo",
+        "id": "custom_checkout_logo",
         "label": "Checkout logo",
         "info": "Shown on checkout page"
       },
       {
         "type": "image_picker",
-        "id": "checkout_banner",
+        "id": "custom_checkout_banner",
         "label": "Checkout banner",
         "info": "Background image for checkout header"
       },
       {
         "type": "color",
-        "id": "checkout_accent_color",
+        "id": "custom_checkout_accent_color",
         "default": "#5C6AC4",
         "label": "Accent color"
       },
       {
         "type": "color",
-        "id": "checkout_button_color",
+        "id": "custom_checkout_button_color",
         "default": "#333333",
         "label": "Button color"
       }

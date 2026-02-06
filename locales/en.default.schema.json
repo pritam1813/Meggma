@@ -94,10 +94,10 @@
     "show_share": "Show share buttons",
     "show_sku": "Show SKU",
     "enable_quantity": "Show quantity selector",
-    "checkout_logo": "Checkout logo",
-    "checkout_banner": "Checkout banner",
-    "checkout_accent": "Checkout accent color",
-    "checkout_button": "Checkout button color"
+    "custom_checkout_logo": "Checkout logo",
+    "custom_checkout_banner": "Checkout banner",
+    "custom_checkout_accent": "Checkout accent color",
+    "custom_checkout_button": "Checkout button color"
   },
   "options": {
     "alignment": {
