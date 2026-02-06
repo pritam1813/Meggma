@@ -126,8 +126,8 @@
 
   <div class="ml-2 space-y-2 z-10 flex flex-col">
     <!-- Star Rating -->
-    <div class="star-rating flex items-center gap-1">
-      <div class="flex">
+    <div class="star-rating flex items-center gap-1" role="img" aria-label="{{ product_rating }} out of 5 stars">
+      <div class="flex" aria-hidden="true">
         {%- for i in (1..5) -%}
           {%- if i <= product_rating -%}
             <!-- Filled star -->
@@ -142,7 +142,7 @@
           {%- endif -%}
         {%- endfor -%}
       </div>
-      <span class="text-sm text-gray-500">({{ rating_count }})</span>
+      <span class="text-sm text-gray-500" aria-hidden="true">({{ rating_count }})</span>
     </div>
 
     <!-- Product Title -->
