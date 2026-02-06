@@ -9,36 +9,28 @@
  */
 {
   "sections": {
-    "hero_VyqG73": {
+    "hero_p7tTk6": {
       "type": "hero",
-      "blocks": {
-        "media_card_V7ByMp": {
-          "type": "media_card",
-          "settings": {
-            "media_type": "video"
-          }
-        },
-        "media_card_GWVpgr": {
-          "type": "media_card",
-          "settings": {
-            "media_type": "video"
-          }
-        },
-        "media_card_RrQecg": {
-          "type": "media_card",
-          "settings": {
-            "media_type": "video"
-          }
-        }
-      },
-      "block_order": [
-        "media_card_V7ByMp",
-        "media_card_GWVpgr",
-        "media_card_RrQecg"
-      ],
-      "disabled": true,
-      "name": "Hero",
-      "settings": {}
+      "name": "Hero Banner",
+      "settings": {
+        "video_url": "",
+        "video_url_mobile": "",
+        "focal_point_x": 50,
+        "focal_point_y": 50,
+        "overlay_color": "#000000",
+        "overlay_opacity": 0.5,
+        "fade_color": "#f7f4f0",
+        "heading": "",
+        "subheading": "",
+        "text_color": "#ffffff",
+        "button_label": "",
+        "button_link": "",
+        "min_height_desktop": 350,
+        "min_height_mobile": 350,
+        "parallax_distance": 200,
+        "overlap_sections_above": 0,
+        "overlap_sections_below": 2
+      }
     },
     "carousel_fzJQLk": {
       "type": "carousel",
@@ -151,7 +143,9 @@
         },
         "image_yzVNt4": {
           "type": "image",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/the-man-in-the-hat.jpg"
+          }
         },
         "text_hJVHKW": {
           "type": "text",
@@ -161,7 +155,9 @@
         },
         "image_UqVNdM": {
           "type": "image",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/silver-lamp-on-a-white-table-next-to-books.jpg"
+          }
         },
         "text_XNPWAK": {
           "type": "text",
@@ -183,6 +179,7 @@
       ],
       "name": "Marquee Section",
       "settings": {
+        "background_image": "shopify://shop_images/rack-of-womens-clothing.jpg",
         "background_color": "#ffffff",
         "text_color": "#333333",
         "text_size": "text-3xl",
@@ -228,6 +225,8 @@
       "type": "image-compare",
       "name": "Image Compare",
       "settings": {
+        "image_before": "shopify://shop_images/woman-in-fur-under-neon.jpg",
+        "image_after": "shopify://shop_images/model-in-sunglasses-and-summer-clothes.jpg",
         "start_position": 50,
         "show_labels": true,
         "label_before": "Before",
@@ -266,6 +265,7 @@
       "type": "countdown-banner",
       "name": "Countdown Banner",
       "settings": {
+        "background_image": "shopify://shop_images/DSC07764.jpg",
         "heading": "Limited Time Offer",
         "subheading": "Don't miss out!",
         "countdown_hours": 5,
@@ -286,19 +286,27 @@
       "blocks": {
         "image_wzGCyY": {
           "type": "image",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/woman-infront-of-tree-with-berries.jpeg"
+          }
         },
         "image_rLaqqy": {
           "type": "image",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/northern-forest.jpg"
+          }
         },
         "image_9tJYeg": {
           "type": "image",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/shellfish-pasta-pizza-and-italian-food.jpg"
+          }
         },
         "image_KeyY9F": {
           "type": "image",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/rooibos-tea.jpg"
+          }
         }
       },
       "block_order": [
@@ -354,6 +362,7 @@
       "type": "scale-down-image-banner",
       "name": "Scale Down Banner",
       "settings": {
+        "image": "shopify://shop_images/biscotti-lays-in-a-monstera-leaf.jpg",
         "subheading": "Sub heading",
         "heading": "Heading",
         "text": "More Para",
@@ -397,7 +406,7 @@
     }
   },
   "order": [
-    "hero_VyqG73",
+    "hero_p7tTk6",
     "carousel_fzJQLk",
     "media_with_text_rn8tdq",
     "staggered_staircase_section_8MJ6Lf",
