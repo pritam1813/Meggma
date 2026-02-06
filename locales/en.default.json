@@ -68,7 +68,11 @@
   "general": {
     "header": "Header",
     "product": "Product",
+    "cart": {
+      "title": "Cart"
+    },
     "search": {
+      "title": "Search",
       "placeholder": "Search for products, collections...",
       "results": "Results",
       "products": "Products",
@@ -78,6 +82,12 @@
       "no_results_hint": "Try checking your spelling or use different keywords.",
       "esc_hint": "Press ESC to close",
       "view_all": "View all results"
+    },
+    "collections": {
+      "title": "Collections"
+    },
+    "breadcrumbs": {
+      "home": "Home"
     }
   },
   "labels": {

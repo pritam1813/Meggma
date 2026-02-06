@@ -9,6 +9,14 @@
  */
 {
   "sections": {
+    "page-title": {
+      "type": "page-title",
+      "settings": {
+        "show_title": true,
+        "show_breadcrumbs": true,
+        "show_description": true
+      }
+    },
     "main": {
       "type": "collection",
       "settings": {}
@@ -85,6 +93,7 @@
     }
   },
   "order": [
+    "page-title",
     "main",
     "zigzag_collections_HVjfJt"
   ]

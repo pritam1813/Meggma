@@ -9,12 +9,21 @@
  */
 {
   "sections": {
+    "page-title": {
+      "type": "page-title",
+      "settings": {
+        "show_title": true,
+        "show_breadcrumbs": true,
+        "show_description": false
+      }
+    },
     "main": {
       "type": "page",
       "settings": {}
     }
   },
   "order": [
+    "page-title",
     "main"
   ]
 }

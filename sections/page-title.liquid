@@ -1,0 +1,133 @@
+{%- comment -%}
+  Page Title Section
+  Provides proper spacing below the fixed/absolute header and displays the page title.
+  Use this as the first section on non-homepage templates.
+{%- endcomment -%}
+
+{%- liquid
+  # Determine the page title based on template
+  case template.name
+    when 'product'
+      assign page_title = product.title
+    when 'collection'
+      assign page_title = collection.title
+    when 'article'
+      assign page_title = article.title
+    when 'blog'
+      assign page_title = blog.title
+    when 'page'
+      assign page_title = page.title
+    when 'cart'
+      assign page_title = 'general.cart.title' | t | default: 'Cart'
+    when 'search'
+      assign page_title = 'general.search.title' | t | default: 'Search'
+    when 'list-collections'
+      assign page_title = 'general.collections.title' | t | default: 'Collections'
+    else
+      assign page_title = page_title | default: ''
+  endcase
+
+  # Use section setting if provided
+  if section.settings.custom_title != blank
+    assign page_title = section.settings.custom_title
+  endif
+-%}
+
+{%- comment -%}
+  Spacer div to push content below the header
+  Height accounts for announcement bar + header
+{%- endcomment -%}
+<div class="page-title-section pb-8 sm:pb-12 lg:pb-16">
+  <div class="max-w-7xl mx-auto px-6 md:px-12 lg:px-14">
+    {%- if section.settings.show_breadcrumbs -%}
+      <nav class="mb-4 text-sm text-gray-500" aria-label="Breadcrumb">
+        <ol class="flex flex-wrap items-center gap-2">
+          <li>
+            <a href="{{ routes.root_url }}" class="hover:text-black transition-colors">
+              {{ 'general.breadcrumbs.home' | t | default: 'Home' }}
+            </a>
+          </li>
+          {%- if template.name == 'product' and collection -%}
+            <li class="flex items-center gap-2">
+              <span class="text-gray-300">/</span>
+              <a href="{{ collection.url }}" class="hover:text-black transition-colors">
+                {{ collection.title }}
+              </a>
+            </li>
+          {%- elsif template.name == 'article' -%}
+            <li class="flex items-center gap-2">
+              <span class="text-gray-300">/</span>
+              <a href="{{ blog.url }}" class="hover:text-black transition-colors">
+                {{ blog.title }}
+              </a>
+            </li>
+          {%- endif -%}
+          {%- if page_title != blank -%}
+            <li class="flex items-center gap-2">
+              <span class="text-gray-300">/</span>
+              <span class="text-gray-900 font-medium" aria-current="page">{{ page_title }}</span>
+            </li>
+          {%- endif -%}
+        </ol>
+      </nav>
+    {%- endif -%}
+
+    {%- if section.settings.show_title and page_title != blank -%}
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+        {{ page_title }}
+      </h1>
+      {%- if section.settings.show_description -%}
+        {%- case template.name -%}
+          {%- when 'collection' -%}
+            {%- if collection.description != blank -%}
+              <div class="mt-4 text-gray-600 max-w-3xl">
+                {{ collection.description }}
+              </div>
+            {%- endif -%}
+          {%- when 'page' -%}
+            {%- comment -%} Page description if any {%- endcomment -%}
+        {%- endcase -%}
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Page Title",
+  "tag": "section",
+  "class": "page-title-wrapper",
+  "settings": [
+    {
+      "type": "text",
+      "id": "custom_title",
+      "label": "Custom title",
+      "info": "Leave blank to use the default page title"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show page title",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumbs",
+      "label": "Show breadcrumbs",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show description",
+      "default": true,
+      "info": "Shows collection or page description when available"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Page Title"
+    }
+  ]
+}
+{% endschema %}
