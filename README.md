@@ -70,13 +70,13 @@ None of the template types are required, and not all of them are included in the
 
 [Sections](https://shopify.dev/docs/storefronts/themes/architecture/sections) are Liquid files that allow you to create reusable modules of content that can be customized by merchants. They can also include blocks which allow merchants to add, remove, and reorder content within a section.
 
-Sections are made customizable by including a `{% schema %}` in the body. For more information, refer to the [section schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/sections/section-schema).
+Sections are made customizable by including a `{% raw %}{% schema %}{% endraw %}` in the body. For more information, refer to the [section schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/sections/section-schema).
 
 ### Blocks
 
 [Blocks](https://shopify.dev/docs/storefronts/themes/architecture/blocks) let developers create flexible layouts by breaking down sections into smaller, reusable pieces of Liquid. Each block has its own set of settings, and can be added, removed, and reordered within a section.
 
-Blocks are made customizable by including a `{% schema %}` in the body. For more information, refer to the [block schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/schema).
+Blocks are made customizable by including a `{% raw %}{% schema %}{% endraw %}` in the body. For more information, refer to the [block schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/schema).
 
 ## Schemas
 
@@ -85,6 +85,7 @@ When developing components defined by schema settings, we recommend these guidel
 - **Single property settings**: For settings that correspond to a single CSS property, use CSS variables:
 
   ```liquid
+  {% raw %}
   <div class="collection" style="--gap: {{ block.settings.gap }}px">
     ...
   </div>
@@ -108,11 +109,13 @@ When developing components defined by schema settings, we recommend these guidel
     }]
   }
   {% endschema %}
+  {% endraw %}
   ```
 
 - **Multiple property settings**: For settings that control multiple CSS properties, use CSS classes:
 
   ```liquid
+  {% raw %}
   <div class="collection {{ block.settings.layout }}">
     ...
   </div>
@@ -139,11 +142,12 @@ When developing components defined by schema settings, we recommend these guidel
     }]
   }
   {% endschema %}
+  {% endraw %}
   ```
 
 ## CSS & JavaScript
 
-For CSS and JavaScript, we recommend using the [`{% stylesheet %}`](https://shopify.dev/docs/api/liquid/tags#stylesheet) and [`{% javascript %}`](https://shopify.dev/docs/api/liquid/tags/javascript) tags. They can be included multiple times, but the code will only appear once.
+For CSS and JavaScript, we recommend using the [`{% raw %}{% stylesheet %}{% endraw %}`](https://shopify.dev/docs/api/liquid/tags#stylesheet) and [`{% raw %}{% javascript %}{% endraw %}`](https://shopify.dev/docs/api/liquid/tags/javascript) tags. They can be included multiple times, but the code will only appear once.
 
 ### `critical.css`
 

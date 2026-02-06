@@ -155,6 +155,9 @@
     }
   },
   "general": {
+    "accessibility": {
+      "skip_to_content": "Skip to content"
+    },
     "header": "Header",
     "product": "Product",
     "cart": {
@@ -178,6 +181,18 @@
     "breadcrumbs": {
       "home": "Home"
     }
+  },
+  "newsletter": {
+    "label": "Email address"
+  },
+  "social": {
+    "facebook": "Facebook",
+    "instagram": "Instagram",
+    "twitter": "X (Twitter)",
+    "youtube": "YouTube",
+    "tiktok": "TikTok",
+    "pinterest": "Pinterest",
+    "linkedin": "LinkedIn"
   },
   "labels": {
     "menu": "Menu"

@@ -35,7 +35,13 @@
     {{ content_for_header }}
   </head>
 
-  <body>
+  <body class="bg-settings text-settings font-primary">
+    <a
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-[9999] px-6 py-3 bg-white text-black border border-black"
+      href="#main-content"
+    >
+      {{ 'general.accessibility.skip_to_content' | t }}
+    </a>
     {% sections 'header-group' %}
 
     {%- comment -%}
