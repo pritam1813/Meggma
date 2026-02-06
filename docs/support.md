@@ -9,13 +9,15 @@ Before contacting support, please check:
 3.  Shopify's [Official Documentation](https://help.shopify.com/)
 
 ## Contact Support
-If you cannot find the answer in the documentation, please contact us via our **Support Page** on your store.
+If you cannot find the answer in the documentation, please contact our dedicated support team.
 
-**Theme Support URL:** [Support Page](https://pritam1813.github.io/Meggma/support)
+**Email Support:** [support@meggma.com](mailto:support@meggma.com)
+
+**Support Portal:** [Visit our Help Center](https://support.meggmatheme.com)
 
 ## Reporting Bugs
-If you find a bug, please report it on our [GitHub Issues](https://github.com/pritam1813/Meggma/issues) page.
-Include:
-- Description of the issue.
+If you encounter any issues or bugs, please reach out via email or our support portal with:
+- A description of the issue.
 - Steps to reproduce.
-- Screenshots (if applicable).
+- Screenshots or screen recordings.
+- Your store URL.
