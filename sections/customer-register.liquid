@@ -1,0 +1,205 @@
+{% comment %}
+  Customer Registration Page
+  Handles new customer account creation.
+{% endcomment %}
+
+{% style %}
+  .customer-register {
+    padding: 4rem 2rem;
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .customer-register__title {
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .customer-register__form {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 2rem;
+  }
+
+  .customer-register__field {
+    margin-bottom: 1.5rem;
+  }
+
+  .customer-register__label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .customer-register__input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .customer-register__input:focus {
+    outline: none;
+    border-color: #881337;
+    box-shadow: 0 0 0 3px rgba(136, 19, 55, 0.1);
+  }
+
+  .customer-register__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .customer-register__submit {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    background: #881337;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .customer-register__submit:hover {
+    background: #9f1239;
+  }
+
+  .customer-register__login {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e5e5;
+  }
+
+  .customer-register__login-link {
+    color: #881337;
+    text-decoration: underline;
+    font-weight: 500;
+  }
+
+  .customer-register__errors {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #dc2626;
+  }
+
+  .customer-register__errors li {
+    list-style: disc;
+    margin-left: 1.5rem;
+  }
+{% endstyle %}
+
+<section class="customer-register">
+  <h1 class="customer-register__title">{{ 'customer.register.title' | t }}</h1>
+
+  <div class="customer-register__form">
+    {% form 'create_customer' %}
+      {% if form.errors %}
+        <div class="customer-register__errors">
+          <ul>
+            {% for field in form.errors %}
+              <li>
+                {{ form.errors.translated_fields[field] }}
+                {{ form.errors.messages[field] }}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <div class="customer-register__row">
+        <div class="customer-register__field">
+          <label for="register-first-name" class="customer-register__label">
+            {{ 'customer.register.first_name' | t }}
+          </label>
+          <input
+            type="text"
+            id="register-first-name"
+            name="customer[first_name]"
+            class="customer-register__input"
+            autocomplete="given-name"
+            required
+          >
+        </div>
+
+        <div class="customer-register__field">
+          <label for="register-last-name" class="customer-register__label">
+            {{ 'customer.register.last_name' | t }}
+          </label>
+          <input
+            type="text"
+            id="register-last-name"
+            name="customer[last_name]"
+            class="customer-register__input"
+            autocomplete="family-name"
+            required
+          >
+        </div>
+      </div>
+
+      <div class="customer-register__field">
+        <label for="register-email" class="customer-register__label">
+          {{ 'customer.register.email' | t }}
+        </label>
+        <input
+          type="email"
+          id="register-email"
+          name="customer[email]"
+          class="customer-register__input"
+          autocomplete="email"
+          autocapitalize="off"
+          autocorrect="off"
+          required
+        >
+      </div>
+
+      <div class="customer-register__field">
+        <label for="register-password" class="customer-register__label">
+          {{ 'customer.register.password' | t }}
+        </label>
+        <input
+          type="password"
+          id="register-password"
+          name="customer[password]"
+          class="customer-register__input"
+          autocomplete="new-password"
+          required
+        >
+      </div>
+
+      <button type="submit" class="customer-register__submit">
+        {{ 'customer.register.submit' | t }}
+      </button>
+    {% endform %}
+  </div>
+
+  <div class="customer-register__login">
+    <p>{{ 'customer.register.already_have_account' | t }}</p>
+    <a href="{{ routes.account_login_url }}" class="customer-register__login-link">
+      {{ 'customer.register.login' | t }}
+    </a>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Customer Register",
+  "settings": []
+}
+{% endschema %}

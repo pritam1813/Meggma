@@ -28,12 +28,101 @@
     "update": "Update",
     "remove": "Remove"
   },
-  "customers": {
+  "customer": {
+    "account": {
+      "title": "My Account",
+      "welcome": "Welcome back, {{ name }}",
+      "logout": "Log out",
+      "details": "Account Details",
+      "email": "Email",
+      "back": "Back to Account"
+    },
     "login": {
+      "title": "Login",
       "email": "Email",
       "password": "Password",
       "submit": "Sign in",
-      "title": "Login"
+      "forgot_password": "Forgot your password?",
+      "back_to_login": "Back to login",
+      "new_customer": "New customer?",
+      "create_account": "Create an account"
+    },
+    "register": {
+      "title": "Create Account",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Create Account",
+      "already_have_account": "Already have an account?",
+      "login": "Log in"
+    },
+    "recover_password": {
+      "title": "Reset Password",
+      "subtext": "We will send you an email to reset your password.",
+      "submit": "Submit",
+      "success": "We've sent you an email with a link to update your password."
+    },
+    "reset_password": {
+      "title": "Reset Your Password",
+      "subtext": "Enter a new password for your account.",
+      "password": "New password",
+      "password_confirm": "Confirm new password",
+      "submit": "Reset Password"
+    },
+    "activate_account": {
+      "title": "Activate Your Account",
+      "subtext": "Create a password to activate your account.",
+      "password": "Password",
+      "password_confirm": "Confirm password",
+      "submit": "Activate Account",
+      "decline": "Decline invitation"
+    },
+    "orders": {
+      "title": "Order History",
+      "order_number": "Order",
+      "date": "Date",
+      "payment_status": "Payment Status",
+      "fulfillment_status": "Fulfillment Status",
+      "total": "Total",
+      "none": "You haven't placed any orders yet."
+    },
+    "order": {
+      "title": "Order {{ name }}",
+      "date_html": "Placed on {{ date }}",
+      "back_to_account": "Back to Account",
+      "items": "Order Items",
+      "quantity": "Quantity",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "shipping": "Shipping",
+      "total": "Total",
+      "shipping_address": "Shipping Address",
+      "billing_address": "Billing Address"
+    },
+    "addresses": {
+      "title": "Your Addresses",
+      "add_new": "Add New Address",
+      "edit_address": "Edit Address",
+      "default": "Default",
+      "manage": "View all addresses",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "company": "Company",
+      "address1": "Address",
+      "address2": "Apartment, suite, etc.",
+      "city": "City",
+      "province": "Province/State",
+      "zip": "Postal/ZIP code",
+      "country": "Country/Region",
+      "phone": "Phone",
+      "set_default": "Set as default address",
+      "add": "Add Address",
+      "update": "Update Address",
+      "edit": "Edit",
+      "delete": "Delete",
+      "delete_confirm": "Are you sure you want to delete this address?",
+      "no_addresses": "You haven't saved any addresses yet."
     }
   },
   "collections": {
@@ -96,7 +185,8 @@
   "templates": {
     "contact": {
       "form": {
-        "post_success": "Thanks for contacting us. We'll get back to you as soon as possible."
+        "post_success": "Thanks for contacting us. We'll get back to you as soon as possible.",
+        "send": "Send Message"
       }
     }
   }

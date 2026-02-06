@@ -1,0 +1,325 @@
+{% comment %}
+  Customer Order Details Page
+  Displays individual order details and status.
+{% endcomment %}
+
+{% style %}
+  .customer-order {
+    padding: 4rem 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .customer-order__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #881337;
+    text-decoration: none;
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .customer-order__back:hover {
+    text-decoration: underline;
+  }
+
+  .customer-order__header {
+    margin-bottom: 2rem;
+  }
+
+  .customer-order__title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .customer-order__date {
+    color: #666;
+  }
+
+  .customer-order__status {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .customer-order__badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .customer-order__badge--paid {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+
+  .customer-order__badge--pending {
+    background: #fef3c7;
+    color: #d97706;
+  }
+
+  .customer-order__badge--fulfilled {
+    background: #dbeafe;
+    color: #2563eb;
+  }
+
+  .customer-order__badge--unfulfilled {
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+
+  .customer-order__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .customer-order__grid {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+
+  .customer-order__section {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 1.5rem;
+  }
+
+  .customer-order__section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .customer-order__item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .customer-order__item:last-child {
+    border-bottom: none;
+  }
+
+  .customer-order__item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    background: #f3f4f6;
+  }
+
+  .customer-order__item-details {
+    flex: 1;
+  }
+
+  .customer-order__item-title {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+
+  .customer-order__item-variant {
+    font-size: 0.875rem;
+    color: #666;
+  }
+
+  .customer-order__item-quantity {
+    font-size: 0.875rem;
+    color: #666;
+  }
+
+  .customer-order__item-price {
+    text-align: right;
+    font-weight: 500;
+  }
+
+  .customer-order__summary {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e5e5;
+  }
+
+  .customer-order__summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  .customer-order__summary-row--total {
+    font-weight: 600;
+    font-size: 1.125rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #e5e5e5;
+  }
+
+  .customer-order__address {
+    line-height: 1.6;
+  }
+
+  .customer-order__address-label {
+    font-size: 0.75rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+{% endstyle %}
+
+<section class="customer-order">
+  <a href="{{ routes.account_url }}" class="customer-order__back"> ← {{ 'customer.order.back_to_account' | t }} </a>
+
+  <header class="customer-order__header">
+    <h1 class="customer-order__title">{{ 'customer.order.title' | t: name: order.name }}</h1>
+    <p class="customer-order__date">
+      {{ 'customer.order.date_html' | t: date: order.created_at | date: format: 'date' }}
+    </p>
+    <div class="customer-order__status">
+      <span class="customer-order__badge customer-order__badge--{% if order.financial_status == 'paid' %}paid{% else %}pending{% endif %}">
+        {{ order.financial_status_label }}
+      </span>
+      <span class="customer-order__badge customer-order__badge--{% if order.fulfillment_status == 'fulfilled' %}fulfilled{% else %}unfulfilled{% endif %}">
+        {{ order.fulfillment_status_label | default: 'Unfulfilled' }}
+      </span>
+    </div>
+  </header>
+
+  <div class="customer-order__grid">
+    <!-- Order Items -->
+    <div class="customer-order__section">
+      <h2 class="customer-order__section-title">{{ 'customer.order.items' | t }}</h2>
+
+      {% for line_item in order.line_items %}
+        <div class="customer-order__item">
+          {% if line_item.image %}
+            <img
+              src="{{ line_item.image | image_url: width: 160 }}"
+              alt="{{ line_item.title | escape }}"
+              class="customer-order__item-image"
+              width="80"
+              height="80"
+              loading="lazy"
+            >
+          {% else %}
+            <div class="customer-order__item-image"></div>
+          {% endif %}
+
+          <div class="customer-order__item-details">
+            <p class="customer-order__item-title">{{ line_item.title }}</p>
+            {% if line_item.variant.title != 'Default Title' %}
+              <p class="customer-order__item-variant">{{ line_item.variant.title }}</p>
+            {% endif %}
+            <p class="customer-order__item-quantity">{{ 'customer.order.quantity' | t }}: {{ line_item.quantity }}</p>
+          </div>
+
+          <div class="customer-order__item-price">
+            {{ line_item.final_line_price | money }}
+          </div>
+        </div>
+      {% endfor %}
+
+      <div class="customer-order__summary">
+        <div class="customer-order__summary-row">
+          <span>{{ 'customer.order.subtotal' | t }}</span>
+          <span>{{ order.line_items_subtotal_price | money }}</span>
+        </div>
+
+        {% for discount_application in order.discount_applications %}
+          <div class="customer-order__summary-row">
+            <span>{{ 'customer.order.discount' | t }} ({{ discount_application.title }})</span>
+            <span>-{{ discount_application.total_allocated_amount | money }}</span>
+          </div>
+        {% endfor %}
+
+        {% for shipping_method in order.shipping_methods %}
+          <div class="customer-order__summary-row">
+            <span>{{ 'customer.order.shipping' | t }} ({{ shipping_method.title }})</span>
+            <span>{{ shipping_method.price | money }}</span>
+          </div>
+        {% endfor %}
+
+        {% for tax_line in order.tax_lines %}
+          <div class="customer-order__summary-row">
+            <span>{{ tax_line.title }}</span>
+            <span>{{ tax_line.price | money }}</span>
+          </div>
+        {% endfor %}
+
+        <div class="customer-order__summary-row customer-order__summary-row--total">
+          <span>{{ 'customer.order.total' | t }}</span>
+          <span>{{ order.total_price | money }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Address Information -->
+    <div>
+      <div class="customer-order__section" style="margin-bottom: 1rem;">
+        <h2 class="customer-order__section-title">{{ 'customer.order.shipping_address' | t }}</h2>
+        <div class="customer-order__address">
+          <p>
+            {{ order.shipping_address.first_name }}
+            {{ order.shipping_address.last_name -}}
+            <br>
+            {% if order.shipping_address.company != blank %}
+              {{ order.shipping_address.company -}}
+              <br>
+            {% endif %}
+            {{ order.shipping_address.address1 -}}
+            <br>
+            {% if order.shipping_address.address2 != blank %}
+              {{ order.shipping_address.address2 -}}
+              <br>
+            {% endif %}
+            {{ order.shipping_address.city }}, {{ order.shipping_address.province_code }}
+            {{ order.shipping_address.zip -}}
+            <br>
+            {{ order.shipping_address.country }}
+          </p>
+        </div>
+      </div>
+
+      <div class="customer-order__section">
+        <h2 class="customer-order__section-title">{{ 'customer.order.billing_address' | t }}</h2>
+        <div class="customer-order__address">
+          <p>
+            {{ order.billing_address.first_name }}
+            {{ order.billing_address.last_name -}}
+            <br>
+            {% if order.billing_address.company != blank %}
+              {{ order.billing_address.company -}}
+              <br>
+            {% endif %}
+            {{ order.billing_address.address1 -}}
+            <br>
+            {% if order.billing_address.address2 != blank %}
+              {{ order.billing_address.address2 -}}
+              <br>
+            {% endif %}
+            {{ order.billing_address.city }}, {{ order.billing_address.province_code }}
+            {{ order.billing_address.zip -}}
+            <br>
+            {{ order.billing_address.country }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Customer Order",
+  "settings": []
+}
+{% endschema %}

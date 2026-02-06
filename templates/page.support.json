@@ -1,0 +1,11 @@
+{
+    "sections": {
+        "main": {
+            "type": "support-form",
+            "settings": {}
+        }
+    },
+    "order": [
+        "main"
+    ]
+}

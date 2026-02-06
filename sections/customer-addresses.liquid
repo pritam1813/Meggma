@@ -1,0 +1,639 @@
+{% comment %}
+  Customer Addresses Page
+  Manages customer shipping addresses.
+{% endcomment %}
+
+{% style %}
+  .customer-addresses {
+    padding: 4rem 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .customer-addresses__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #881337;
+    text-decoration: none;
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .customer-addresses__back:hover {
+    text-decoration: underline;
+  }
+
+  .customer-addresses__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .customer-addresses__title {
+    font-size: 2rem;
+    font-weight: 600;
+  }
+
+  .customer-addresses__add-btn {
+    padding: 0.75rem 1.5rem;
+    background: #881337;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .customer-addresses__add-btn:hover {
+    background: #9f1239;
+  }
+
+  .customer-addresses__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .customer-address-card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 1.5rem;
+  }
+
+  .customer-address-card--default {
+    border-color: #881337;
+  }
+
+  .customer-address-card__badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background: #881337;
+    color: #fff;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+  }
+
+  .customer-address-card__content {
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .customer-address-card__actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .customer-address-card__btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .customer-address-card__btn--edit {
+    background: transparent;
+    border: 1px solid #881337;
+    color: #881337;
+  }
+
+  .customer-address-card__btn--edit:hover {
+    background: #881337;
+    color: #fff;
+  }
+
+  .customer-address-card__btn--delete {
+    background: transparent;
+    border: 1px solid #dc2626;
+    color: #dc2626;
+  }
+
+  .customer-address-card__btn--delete:hover {
+    background: #dc2626;
+    color: #fff;
+  }
+
+  /* Address Form Modal */
+  .customer-address-form {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    padding: 2rem;
+    overflow-y: auto;
+  }
+
+  .customer-address-form.is-open {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .customer-address-form__inner {
+    background: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .customer-address-form__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .customer-address-form__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .customer-address-form__close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+  }
+
+  .customer-address-form__field {
+    margin-bottom: 1rem;
+  }
+
+  .customer-address-form__label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .customer-address-form__input,
+  .customer-address-form__select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+
+  .customer-address-form__input:focus,
+  .customer-address-form__select:focus {
+    outline: none;
+    border-color: #881337;
+    box-shadow: 0 0 0 3px rgba(136, 19, 55, 0.1);
+  }
+
+  .customer-address-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .customer-address-form__checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .customer-address-form__submit {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    background: #881337;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .customer-address-form__submit:hover {
+    background: #9f1239;
+  }
+{% endstyle %}
+
+<section class="customer-addresses">
+  <a href="{{ routes.account_url }}" class="customer-addresses__back"> ← {{ 'customer.account.back' | t }} </a>
+
+  <header class="customer-addresses__header">
+    <h1 class="customer-addresses__title">{{ 'customer.addresses.title' | t }}</h1>
+    <button type="button" class="customer-addresses__add-btn" data-open-form="new">
+      {{ 'customer.addresses.add_new' | t }}
+    </button>
+  </header>
+
+  <div class="customer-addresses__grid">
+    {% for address in customer.addresses %}
+      <div class="customer-address-card {% if address == customer.default_address %}customer-address-card--default{% endif %}">
+        {% if address == customer.default_address %}
+          <span class="customer-address-card__badge">{{ 'customer.addresses.default' | t }}</span>
+        {% endif %}
+
+        <div class="customer-address-card__content">
+          <p>
+            {{ address.first_name }}
+            {{ address.last_name -}}
+            <br>
+            {% if address.company != blank %}
+              {{ address.company -}}
+              <br>
+            {% endif %}
+            {{ address.address1 -}}
+            <br>
+            {% if address.address2 != blank %}
+              {{ address.address2 -}}
+              <br>
+            {% endif %}
+            {{ address.city }}, {{ address.province_code }}
+            {{ address.zip -}}
+            <br>
+            {{ address.country -}}
+            <br>
+            {% if address.phone != blank %}
+              {{ address.phone }}
+            {% endif %}
+          </p>
+        </div>
+
+        <div class="customer-address-card__actions">
+          <button
+            type="button"
+            class="customer-address-card__btn customer-address-card__btn--edit"
+            data-open-form="{{ address.id }}"
+          >
+            {{ 'customer.addresses.edit' | t }}
+          </button>
+          <button
+            type="button"
+            class="customer-address-card__btn customer-address-card__btn--delete"
+            data-delete-address="{{ address.id }}"
+            data-confirm-message="{{ 'customer.addresses.delete_confirm' | t }}"
+          >
+            {{ 'customer.addresses.delete' | t }}
+          </button>
+        </div>
+      </div>
+    {% else %}
+      <p>{{ 'customer.addresses.no_addresses' | t }}</p>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- New Address Form -->
+<div class="customer-address-form" id="address-form-new">
+  <div class="customer-address-form__inner">
+    <div class="customer-address-form__header">
+      <h2 class="customer-address-form__title">{{ 'customer.addresses.add_new' | t }}</h2>
+      <button type="button" class="customer-address-form__close" data-close-form>&times;</button>
+    </div>
+
+    {% form 'customer_address', customer.new_address %}
+      <div class="customer-address-form__row">
+        <div class="customer-address-form__field">
+          <label for="new-first-name" class="customer-address-form__label">
+            {{- 'customer.addresses.first_name' | t -}}
+          </label>
+          <input
+            type="text"
+            id="new-first-name"
+            name="address[first_name]"
+            class="customer-address-form__input"
+            autocomplete="given-name"
+          >
+        </div>
+        <div class="customer-address-form__field">
+          <label for="new-last-name" class="customer-address-form__label">
+            {{- 'customer.addresses.last_name' | t -}}
+          </label>
+          <input
+            type="text"
+            id="new-last-name"
+            name="address[last_name]"
+            class="customer-address-form__input"
+            autocomplete="family-name"
+          >
+        </div>
+      </div>
+
+      <div class="customer-address-form__field">
+        <label for="new-company" class="customer-address-form__label">{{ 'customer.addresses.company' | t }}</label>
+        <input
+          type="text"
+          id="new-company"
+          name="address[company]"
+          class="customer-address-form__input"
+          autocomplete="organization"
+        >
+      </div>
+
+      <div class="customer-address-form__field">
+        <label for="new-address1" class="customer-address-form__label">{{ 'customer.addresses.address1' | t }}</label>
+        <input
+          type="text"
+          id="new-address1"
+          name="address[address1]"
+          class="customer-address-form__input"
+          autocomplete="address-line1"
+        >
+      </div>
+
+      <div class="customer-address-form__field">
+        <label for="new-address2" class="customer-address-form__label">{{ 'customer.addresses.address2' | t }}</label>
+        <input
+          type="text"
+          id="new-address2"
+          name="address[address2]"
+          class="customer-address-form__input"
+          autocomplete="address-line2"
+        >
+      </div>
+
+      <div class="customer-address-form__row">
+        <div class="customer-address-form__field">
+          <label for="new-city" class="customer-address-form__label">{{ 'customer.addresses.city' | t }}</label>
+          <input
+            type="text"
+            id="new-city"
+            name="address[city]"
+            class="customer-address-form__input"
+            autocomplete="address-level2"
+          >
+        </div>
+        <div class="customer-address-form__field">
+          <label for="new-zip" class="customer-address-form__label">{{ 'customer.addresses.zip' | t }}</label>
+          <input
+            type="text"
+            id="new-zip"
+            name="address[zip]"
+            class="customer-address-form__input"
+            autocomplete="postal-code"
+          >
+        </div>
+      </div>
+
+      <div class="customer-address-form__field">
+        <label for="new-country" class="customer-address-form__label">{{ 'customer.addresses.country' | t }}</label>
+        <select
+          id="new-country"
+          name="address[country]"
+          class="customer-address-form__select"
+          data-default="{{ customer.default_address.country }}"
+        >
+          {{ all_country_option_tags }}
+        </select>
+      </div>
+
+      <div class="customer-address-form__field" id="new-province-container">
+        <label for="new-province" class="customer-address-form__label">{{ 'customer.addresses.province' | t }}</label>
+        <select
+          id="new-province"
+          name="address[province]"
+          class="customer-address-form__select"
+          data-default="{{ customer.default_address.province }}"
+        ></select>
+      </div>
+
+      <div class="customer-address-form__field">
+        <label for="new-phone" class="customer-address-form__label">{{ 'customer.addresses.phone' | t }}</label>
+        <input type="tel" id="new-phone" name="address[phone]" class="customer-address-form__input" autocomplete="tel">
+      </div>
+
+      <div class="customer-address-form__checkbox">
+        <input type="checkbox" id="new-default" name="address[default]" value="1">
+        <label for="new-default">{{ 'customer.addresses.set_default' | t }}</label>
+      </div>
+
+      <button type="submit" class="customer-address-form__submit">{{ 'customer.addresses.add' | t }}</button>
+    {% endform %}
+  </div>
+</div>
+
+<!-- Edit Address Forms -->
+{% for address in customer.addresses %}
+  <div class="customer-address-form" id="address-form-{{ address.id }}">
+    <div class="customer-address-form__inner">
+      <div class="customer-address-form__header">
+        <h2 class="customer-address-form__title">{{ 'customer.addresses.edit_address' | t }}</h2>
+        <button type="button" class="customer-address-form__close" data-close-form>&times;</button>
+      </div>
+
+      {% form 'customer_address', address %}
+        <div class="customer-address-form__row">
+          <div class="customer-address-form__field">
+            <label for="edit-first-name-{{ address.id }}" class="customer-address-form__label">
+              {{- 'customer.addresses.first_name' | t -}}
+            </label>
+            <input
+              type="text"
+              id="edit-first-name-{{ address.id }}"
+              name="address[first_name]"
+              class="customer-address-form__input"
+              value="{{ address.first_name }}"
+            >
+          </div>
+          <div class="customer-address-form__field">
+            <label for="edit-last-name-{{ address.id }}" class="customer-address-form__label">
+              {{- 'customer.addresses.last_name' | t -}}
+            </label>
+            <input
+              type="text"
+              id="edit-last-name-{{ address.id }}"
+              name="address[last_name]"
+              class="customer-address-form__input"
+              value="{{ address.last_name }}"
+            >
+          </div>
+        </div>
+
+        <div class="customer-address-form__field">
+          <label for="edit-company-{{ address.id }}" class="customer-address-form__label">
+            {{- 'customer.addresses.company' | t -}}
+          </label>
+          <input
+            type="text"
+            id="edit-company-{{ address.id }}"
+            name="address[company]"
+            class="customer-address-form__input"
+            value="{{ address.company }}"
+          >
+        </div>
+
+        <div class="customer-address-form__field">
+          <label for="edit-address1-{{ address.id }}" class="customer-address-form__label">
+            {{- 'customer.addresses.address1' | t -}}
+          </label>
+          <input
+            type="text"
+            id="edit-address1-{{ address.id }}"
+            name="address[address1]"
+            class="customer-address-form__input"
+            value="{{ address.address1 }}"
+          >
+        </div>
+
+        <div class="customer-address-form__field">
+          <label for="edit-address2-{{ address.id }}" class="customer-address-form__label">
+            {{- 'customer.addresses.address2' | t -}}
+          </label>
+          <input
+            type="text"
+            id="edit-address2-{{ address.id }}"
+            name="address[address2]"
+            class="customer-address-form__input"
+            value="{{ address.address2 }}"
+          >
+        </div>
+
+        <div class="customer-address-form__row">
+          <div class="customer-address-form__field">
+            <label for="edit-city-{{ address.id }}" class="customer-address-form__label">
+              {{- 'customer.addresses.city' | t -}}
+            </label>
+            <input
+              type="text"
+              id="edit-city-{{ address.id }}"
+              name="address[city]"
+              class="customer-address-form__input"
+              value="{{ address.city }}"
+            >
+          </div>
+          <div class="customer-address-form__field">
+            <label for="edit-zip-{{ address.id }}" class="customer-address-form__label">
+              {{- 'customer.addresses.zip' | t -}}
+            </label>
+            <input
+              type="text"
+              id="edit-zip-{{ address.id }}"
+              name="address[zip]"
+              class="customer-address-form__input"
+              value="{{ address.zip }}"
+            >
+          </div>
+        </div>
+
+        <div class="customer-address-form__field">
+          <label for="edit-country-{{ address.id }}" class="customer-address-form__label">
+            {{- 'customer.addresses.country' | t -}}
+          </label>
+          <select
+            id="edit-country-{{ address.id }}"
+            name="address[country]"
+            class="customer-address-form__select"
+            data-default="{{ address.country }}"
+          >
+            {{ all_country_option_tags }}
+          </select>
+        </div>
+
+        <div class="customer-address-form__field" id="edit-province-container-{{ address.id }}">
+          <label for="edit-province-{{ address.id }}" class="customer-address-form__label">
+            {{- 'customer.addresses.province' | t -}}
+          </label>
+          <select
+            id="edit-province-{{ address.id }}"
+            name="address[province]"
+            class="customer-address-form__select"
+            data-default="{{ address.province }}"
+          ></select>
+        </div>
+
+        <div class="customer-address-form__field">
+          <label for="edit-phone-{{ address.id }}" class="customer-address-form__label">
+            {{- 'customer.addresses.phone' | t -}}
+          </label>
+          <input
+            type="tel"
+            id="edit-phone-{{ address.id }}"
+            name="address[phone]"
+            class="customer-address-form__input"
+            value="{{ address.phone }}"
+          >
+        </div>
+
+        <div class="customer-address-form__checkbox">
+          <input
+            type="checkbox"
+            id="edit-default-{{ address.id }}"
+            name="address[default]"
+            value="1"
+            {% if address == customer.default_address %}
+              checked
+            {% endif %}
+          >
+          <label for="edit-default-{{ address.id }}">{{ 'customer.addresses.set_default' | t }}</label>
+        </div>
+
+        <button type="submit" class="customer-address-form__submit">{{ 'customer.addresses.update' | t }}</button>
+      {% endform %}
+    </div>
+  </div>
+{% endfor %}
+
+<!-- Delete Forms (hidden) -->
+{% for address in customer.addresses %}
+  {% form 'customer_address', address, id: 'delete-form-' | append: address.id %}
+    <input type="hidden" name="_method" value="delete">
+  {% endform %}
+{% endfor %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Open form buttons
+    document.querySelectorAll('[data-open-form]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const formId = this.dataset.openForm;
+        const form = document.getElementById('address-form-' + formId);
+        if (form) {
+          form.classList.add('is-open');
+        }
+      });
+    });
+
+    // Close form buttons
+    document.querySelectorAll('[data-close-form]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        this.closest('.customer-address-form').classList.remove('is-open');
+      });
+    });
+
+    // Close on backdrop click
+    document.querySelectorAll('.customer-address-form').forEach(function (form) {
+      form.addEventListener('click', function (e) {
+        if (e.target === this) {
+          this.classList.remove('is-open');
+        }
+      });
+    });
+
+    // Delete buttons
+    document.querySelectorAll('[data-delete-address]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (confirm(this.dataset.confirmMessage)) {
+          const addressId = this.dataset.deleteAddress;
+          const form = document.getElementById('delete-form-' + addressId);
+          if (form) {
+            form.submit();
+          }
+        }
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Customer Addresses",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,164 @@
+{% comment %}
+  Customer Activate Account Page
+  Allows customers to activate their account and set password.
+{% endcomment %}
+
+{% style %}
+  .customer-activate {
+    padding: 4rem 2rem;
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .customer-activate__title {
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .customer-activate__subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  .customer-activate__form {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 2rem;
+  }
+
+  .customer-activate__field {
+    margin-bottom: 1.5rem;
+  }
+
+  .customer-activate__label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .customer-activate__input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .customer-activate__input:focus {
+    outline: none;
+    border-color: #881337;
+    box-shadow: 0 0 0 3px rgba(136, 19, 55, 0.1);
+  }
+
+  .customer-activate__submit {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    background: #881337;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .customer-activate__submit:hover {
+    background: #9f1239;
+  }
+
+  .customer-activate__decline {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    color: #666;
+    text-decoration: underline;
+    font-size: 0.875rem;
+  }
+
+  .customer-activate__errors {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #dc2626;
+  }
+
+  .customer-activate__errors li {
+    list-style: disc;
+    margin-left: 1.5rem;
+  }
+{% endstyle %}
+
+<section class="customer-activate">
+  <h1 class="customer-activate__title">{{ 'customer.activate_account.title' | t }}</h1>
+  <p class="customer-activate__subtitle">{{ 'customer.activate_account.subtext' | t }}</p>
+
+  <div class="customer-activate__form">
+    {% form 'activate_customer_password' %}
+      {% if form.errors %}
+        <div class="customer-activate__errors">
+          <ul>
+            {% for field in form.errors %}
+              <li>{{ form.errors.messages[field] }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <div class="customer-activate__field">
+        <label for="password" class="customer-activate__label">
+          {{ 'customer.activate_account.password' | t }}
+        </label>
+        <input
+          type="password"
+          id="password"
+          name="customer[password]"
+          class="customer-activate__input"
+          autocomplete="new-password"
+          required
+        >
+      </div>
+
+      <div class="customer-activate__field">
+        <label for="password_confirmation" class="customer-activate__label">
+          {{ 'customer.activate_account.password_confirm' | t }}
+        </label>
+        <input
+          type="password"
+          id="password_confirmation"
+          name="customer[password_confirmation]"
+          class="customer-activate__input"
+          autocomplete="new-password"
+          required
+        >
+      </div>
+
+      <button type="submit" class="customer-activate__submit" name="submit" value="submit">
+        {{ 'customer.activate_account.submit' | t }}
+      </button>
+
+      <button type="submit" class="customer-activate__decline" name="submit" value="decline">
+        {{ 'customer.activate_account.decline' | t }}
+      </button>
+    {% endform %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Customer Activate Account",
+  "settings": []
+}
+{% endschema %}

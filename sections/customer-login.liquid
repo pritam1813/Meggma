@@ -1,0 +1,309 @@
+{% comment %}
+  Customer Login Page
+  Handles customer authentication with login form.
+{% endcomment %}
+
+{% style %}
+  .customer-login {
+    padding: 4rem 2rem;
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .customer-login__title {
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .customer-login__form {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 2rem;
+  }
+
+  .customer-login__field {
+    margin-bottom: 1.5rem;
+  }
+
+  .customer-login__label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .customer-login__input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .customer-login__input:focus {
+    outline: none;
+    border-color: #881337;
+    box-shadow: 0 0 0 3px rgba(136, 19, 55, 0.1);
+  }
+
+  .customer-login__submit {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    background: #881337;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .customer-login__submit:hover {
+    background: #9f1239;
+  }
+
+  .customer-login__forgot {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    color: #881337;
+    text-decoration: underline;
+    font-size: 0.875rem;
+  }
+
+  .customer-login__register {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e5e5;
+  }
+
+  .customer-login__register-link {
+    color: #881337;
+    text-decoration: underline;
+    font-weight: 500;
+  }
+
+  .customer-login__errors {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #dc2626;
+  }
+
+  .customer-login__errors li {
+    list-style: disc;
+    margin-left: 1.5rem;
+  }
+
+  /* Recover Password Form */
+  .customer-recover {
+    display: none;
+  }
+
+  .customer-recover.is-visible {
+    display: block;
+  }
+
+  .customer-login__form.is-hidden {
+    display: none;
+  }
+
+  .customer-recover__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #881337;
+    text-decoration: none;
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .customer-recover__back:hover {
+    text-decoration: underline;
+  }
+
+  .customer-recover__message {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #16a34a;
+  }
+{% endstyle %}
+
+<section class="customer-login" id="customer-login">
+  <h1 class="customer-login__title">{{ 'customer.login.title' | t }}</h1>
+
+  <!-- Login Form -->
+  <div class="customer-login__form" id="login-form">
+    {% form 'customer_login' %}
+      {% if form.errors %}
+        <div class="customer-login__errors">
+          <ul>
+            {% for field in form.errors %}
+              <li>
+                {% if field == 'form' %}
+                  {{ form.errors.messages[field] }}
+                {% else %}
+                  {{ form.errors.translated_fields[field] }}
+                  {{ form.errors.messages[field] }}
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <div class="customer-login__field">
+        <label for="customer-email" class="customer-login__label">
+          {{ 'customer.login.email' | t }}
+        </label>
+        <input
+          type="email"
+          id="customer-email"
+          name="customer[email]"
+          class="customer-login__input"
+          autocomplete="email"
+          autocapitalize="off"
+          autocorrect="off"
+          required
+        >
+      </div>
+
+      <div class="customer-login__field">
+        <label for="customer-password" class="customer-login__label">
+          {{ 'customer.login.password' | t }}
+        </label>
+        <input
+          type="password"
+          id="customer-password"
+          name="customer[password]"
+          class="customer-login__input"
+          autocomplete="current-password"
+          required
+        >
+      </div>
+
+      <button type="submit" class="customer-login__submit">
+        {{ 'customer.login.submit' | t }}
+      </button>
+
+      <a href="#recover" class="customer-login__forgot" id="recover-link">
+        {{ 'customer.login.forgot_password' | t }}
+      </a>
+    {% endform %}
+  </div>
+
+  <!-- Recover Password Form -->
+  <div class="customer-recover" id="recover-form">
+    <a href="#login" class="customer-recover__back" id="back-to-login"> ← {{ 'customer.login.back_to_login' | t }} </a>
+
+    <div class="customer-login__form">
+      <h2 class="customer-login__title" style="font-size: 1.5rem; margin-bottom: 1rem;">
+        {{ 'customer.recover_password.title' | t }}
+      </h2>
+      <p style="text-align: center; color: #666; margin-bottom: 1.5rem;">
+        {{ 'customer.recover_password.subtext' | t }}
+      </p>
+
+      {% form 'recover_customer_password' %}
+        {% if form.posted_successfully? %}
+          <div class="customer-recover__message">
+            {{ 'customer.recover_password.success' | t }}
+          </div>
+        {% endif %}
+
+        {% if form.errors %}
+          <div class="customer-login__errors">
+            <ul>
+              {% for field in form.errors %}
+                <li>{{ form.errors.messages[field] }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <div class="customer-login__field">
+          <label for="recover-email" class="customer-login__label">
+            {{ 'customer.login.email' | t }}
+          </label>
+          <input
+            type="email"
+            id="recover-email"
+            name="email"
+            class="customer-login__input"
+            autocomplete="email"
+            autocapitalize="off"
+            autocorrect="off"
+            required
+          >
+        </div>
+
+        <button type="submit" class="customer-login__submit">
+          {{ 'customer.recover_password.submit' | t }}
+        </button>
+      {% endform %}
+    </div>
+  </div>
+
+  <div class="customer-login__register">
+    <p>{{ 'customer.login.new_customer' | t }}</p>
+    <a href="{{ routes.account_register_url }}" class="customer-login__register-link">
+      {{ 'customer.login.create_account' | t }}
+    </a>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const loginForm = document.getElementById('login-form');
+    const recoverForm = document.getElementById('recover-form');
+    const recoverLink = document.getElementById('recover-link');
+    const backToLogin = document.getElementById('back-to-login');
+
+    function showRecover() {
+      loginForm.classList.add('is-hidden');
+      recoverForm.classList.add('is-visible');
+    }
+
+    function showLogin() {
+      loginForm.classList.remove('is-hidden');
+      recoverForm.classList.remove('is-visible');
+    }
+
+    recoverLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      showRecover();
+    });
+
+    backToLogin.addEventListener('click', function (e) {
+      e.preventDefault();
+      showLogin();
+    });
+
+    // Check URL hash
+    if (window.location.hash === '#recover') {
+      showRecover();
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Customer Login",
+  "settings": []
+}
+{% endschema %}

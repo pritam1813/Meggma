@@ -1,0 +1,304 @@
+{% comment %}
+  Support Form Section
+  A dedicated contact form for customer support requests.
+{% endcomment %}
+
+{% style %}
+  .support-form-section {
+    padding: 4rem 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .support-form__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .support-form__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+  }
+
+  .support-form__text {
+    font-size: 1.125rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .support-form {
+    background: #ffffff;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e5e5e5;
+  }
+
+  .support-form__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .support-form__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .support-form__field {
+    margin-bottom: 1.5rem;
+  }
+
+  .support-form__label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #374151;
+  }
+
+  .support-form__input,
+  .support-form__textarea,
+  .support-form__select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.2s;
+    background-color: #f9fafb;
+  }
+
+  .support-form__input:focus,
+  .support-form__textarea:focus,
+  .support-form__select:focus {
+    outline: none;
+    border-color: #881337;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(136, 19, 55, 0.1);
+  }
+
+  .support-form__textarea {
+    resize: vertical;
+    min-height: 150px;
+  }
+
+  .support-form__submit {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 1rem 2rem;
+    background: #881337;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 1rem;
+  }
+
+  .support-form__submit:hover {
+    background: #9f1239;
+  }
+
+  .support-form__success {
+    background: #ecfdf5;
+    border: 1px solid #d1fae5;
+    color: #047857;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .support-form__error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+
+  .support-info {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e5e5;
+    text-align: center;
+  }
+
+  .support-info__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .support-info__links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .support-info__link {
+    color: #881337;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .support-info__link:hover {
+    text-decoration: underline;
+  }
+{% endstyle %}
+
+<div class="support-form-section">
+  <div class="support-form__header">
+    <h1 class="support-form__title">{{ section.settings.title }}</h1>
+    {% if section.settings.text != blank %}
+      <p class="support-form__text">{{ section.settings.text }}</p>
+    {% endif %}
+  </div>
+
+  <div class="support-form">
+    {% form 'contact' %}
+      {% if form.posted_successfully? %}
+        <div class="support-form__success">
+          <p>{{ 'templates.contact.form.post_success' | t }}</p>
+        </div>
+      {% elsif form.errors %}
+        <div class="support-form__error">
+          {{ form.errors | default_errors }}
+        </div>
+      {% endif %}
+
+      <div class="support-form__grid">
+        <div class="support-form__field">
+          <label for="ContactForm-name" class="support-form__label">Name</label>
+          <input
+            class="support-form__input"
+            autocomplete="name"
+            type="text"
+            id="ContactForm-name"
+            name="contact[Name]"
+            value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+            placeholder="John Doe"
+            required
+          >
+        </div>
+        <div class="support-form__field">
+          <label for="ContactForm-email" class="support-form__label">Email</label>
+          <input
+            autocomplete="email"
+            type="email"
+            id="ContactForm-email"
+            class="support-form__input"
+            name="contact[email]"
+            spellcheck="false"
+            autocapitalize="off"
+            value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+            placeholder="john@example.com"
+            required
+          >
+        </div>
+      </div>
+
+      <div class="support-form__field">
+        <label for="ContactForm-order" class="support-form__label">Order Number (Optional)</label>
+        <input
+          type="text"
+          id="ContactForm-order"
+          class="support-form__input"
+          name="contact[Order Number]"
+          placeholder="#1001"
+        >
+      </div>
+
+      <div class="support-form__field">
+        <label for="ContactForm-topic" class="support-form__label">Topic</label>
+        <select id="ContactForm-topic" name="contact[Topic]" class="support-form__select">
+          <option value="General Inquiry">General Inquiry</option>
+          <option value="Order Status">Order Status</option>
+          <option value="Returns & Refunds">Returns & Refunds</option>
+          <option value="Product Question">Product Question</option>
+          <option value="Technical Support">Technical Support</option>
+        </select>
+      </div>
+
+      <div class="support-form__field">
+        <label for="ContactForm-body" class="support-form__label">Message</label>
+        <textarea
+          rows="10"
+          id="ContactForm-body"
+          class="support-form__textarea"
+          name="contact[body]"
+          placeholder="How can we help you?"
+          required
+        >
+          {{- form.body -}}
+        </textarea>
+      </div>
+
+      <button type="submit" class="support-form__submit">
+        {{ 'templates.contact.form.send' | t | default: 'Send Message' }}
+      </button>
+    {% endform %}
+  </div>
+
+  {% if section.settings.show_socials %}
+    <div class="support-info">
+      <h3 class="support-info__title">Other ways to reach us</h3>
+      <div class="support-info__links">
+        {% if settings.social_twitter_link != blank %}
+          <a href="{{ settings.social_twitter_link }}" class="support-info__link" target="_blank">Twitter</a>
+        {% endif %}
+        {% if settings.social_facebook_link != blank %}
+          <a href="{{ settings.social_facebook_link }}" class="support-info__link" target="_blank">Facebook</a>
+        {% endif %}
+        {% if settings.social_instagram_link != blank %}
+          <a href="{{ settings.social_instagram_link }}" class="support-info__link" target="_blank">Instagram</a>
+        {% endif %}
+        <a href="mailto:{{ shop.email }}" class="support-info__link">{{ shop.email }}</a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Support Form",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "default": "Contact Support",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "Need help with your order or have a question about our products? Fill out the form below and we'll get back to you as soon as possible.",
+      "label": "Description"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_socials",
+      "default": true,
+      "label": "Show social links"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Support Form"
+    }
+  ]
+}
+{% endschema %}

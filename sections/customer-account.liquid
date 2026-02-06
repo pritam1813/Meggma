@@ -1,0 +1,215 @@
+{% comment %}
+  Customer Account Page
+  Displays customer's account overview with order history and account details.
+{% endcomment %}
+
+{% style %}
+  .customer-account {
+    padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .customer-account__header {
+    margin-bottom: 2rem;
+  }
+
+  .customer-account__title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .customer-account__welcome {
+    color: #666;
+  }
+
+  .customer-account__logout {
+    color: #881337;
+    text-decoration: underline;
+    font-size: 0.875rem;
+  }
+
+  .customer-account__logout:hover {
+    color: #9f1239;
+  }
+
+  .customer-account__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .customer-account__grid {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+
+  .customer-account__section {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 1.5rem;
+  }
+
+  .customer-account__section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .customer-orders__table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .customer-orders__table th,
+  .customer-orders__table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .customer-orders__table th {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #666;
+  }
+
+  .customer-orders__link {
+    color: #881337;
+    text-decoration: underline;
+  }
+
+  .customer-orders__empty {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+  }
+
+  .customer-address__item {
+    margin-bottom: 1rem;
+  }
+
+  .customer-address__label {
+    font-size: 0.75rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .customer-address__link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: #881337;
+    text-decoration: underline;
+    font-size: 0.875rem;
+  }
+{% endstyle %}
+
+<section class="customer-account">
+  <header class="customer-account__header">
+    <h1 class="customer-account__title">{{ 'customer.account.title' | t }}</h1>
+    <p class="customer-account__welcome">
+      {{ 'customer.account.welcome' | t: name: customer.first_name }}
+    </p>
+    <a href="{{ routes.account_logout_url }}" class="customer-account__logout">
+      {{ 'customer.account.logout' | t }}
+    </a>
+  </header>
+
+  <div class="customer-account__grid">
+    <!-- Order History -->
+    <div class="customer-account__section">
+      <h2 class="customer-account__section-title">{{ 'customer.orders.title' | t }}</h2>
+
+      {% paginate customer.orders by 10 %}
+        {% if customer.orders.size > 0 %}
+          <table class="customer-orders__table">
+            <thead>
+              <tr>
+                <th>{{ 'customer.orders.order_number' | t }}</th>
+                <th>{{ 'customer.orders.date' | t }}</th>
+                <th>{{ 'customer.orders.payment_status' | t }}</th>
+                <th>{{ 'customer.orders.fulfillment_status' | t }}</th>
+                <th>{{ 'customer.orders.total' | t }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in customer.orders %}
+                <tr>
+                  <td>
+                    <a href="{{ order.customer_url }}" class="customer-orders__link">
+                      {{ order.name }}
+                    </a>
+                  </td>
+                  <td>{{ order.created_at | date: format: 'abbreviated_date' }}</td>
+                  <td>{{ order.financial_status_label }}</td>
+                  <td>{{ order.fulfillment_status_label }}</td>
+                  <td>{{ order.total_price | money }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          {% if paginate.pages > 1 %}
+            <nav class="pagination" aria-label="Pagination">
+              {{ paginate | default_pagination }}
+            </nav>
+          {% endif %}
+        {% else %}
+          <p class="customer-orders__empty">{{ 'customer.orders.none' | t }}</p>
+        {% endif %}
+      {% endpaginate %}
+    </div>
+
+    <!-- Account Details -->
+    <div class="customer-account__section">
+      <h2 class="customer-account__section-title">{{ 'customer.account.details' | t }}</h2>
+
+      <div class="customer-address__item">
+        <span class="customer-address__label">{{ 'customer.account.email' | t }}</span>
+        <p>{{ customer.email }}</p>
+      </div>
+
+      {% if customer.default_address %}
+        <div class="customer-address__item">
+          <span class="customer-address__label">{{ 'customer.addresses.default' | t }}</span>
+          <p>
+            {{ customer.default_address.first_name }}
+            {{ customer.default_address.last_name -}}
+            <br>
+            {% if customer.default_address.company != blank %}
+              {{ customer.default_address.company -}}
+              <br>
+            {% endif %}
+            {{ customer.default_address.address1 -}}
+            <br>
+            {% if customer.default_address.address2 != blank %}
+              {{ customer.default_address.address2 -}}
+              <br>
+            {% endif %}
+            {{ customer.default_address.city }}, {{ customer.default_address.province_code }}
+            {{ customer.default_address.zip -}}
+            <br>
+            {{ customer.default_address.country }}
+          </p>
+        </div>
+      {% endif %}
+
+      <a href="{{ routes.account_addresses_url }}" class="customer-address__link">
+        {{ 'customer.addresses.manage' | t }}
+      </a>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Customer Account",
+  "settings": []
+}
+{% endschema %}
