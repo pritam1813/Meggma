@@ -56,11 +56,16 @@
         "promo_message": "<p>⭐️ End of season <strong>sale</strong> now on! ⭐️</p>",
         "suggestion_collection": ""
       }
+    },
+    "predictive-search": {
+      "type": "predictive-search",
+      "settings": {}
     }
   },
   "order": [
     "announcement-bar",
     "header",
-    "cart-drawer"
+    "cart-drawer",
+    "predictive-search"
   ]
 }

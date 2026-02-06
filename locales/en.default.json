@@ -67,7 +67,18 @@
   },
   "general": {
     "header": "Header",
-    "product": "Product"
+    "product": "Product",
+    "search": {
+      "placeholder": "Search for products, collections...",
+      "results": "Results",
+      "products": "Products",
+      "collections": "Collections",
+      "articles": "Articles",
+      "no_results": "No results found",
+      "no_results_hint": "Try checking your spelling or use different keywords.",
+      "esc_hint": "Press ESC to close",
+      "view_all": "View all results"
+    }
   },
   "labels": {
     "menu": "Menu"
