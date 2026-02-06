@@ -78,13 +78,13 @@
       {
         "type": "color",
         "id": "background_color",
-        "default": "#FFFFFF",
+        "default": "#FAF8F5",
         "label": "Background"
       },
       {
         "type": "color",
         "id": "foreground_color",
-        "default": "#333333",
+        "default": "#1A1A1A",
         "label": "Text"
       },
       {
@@ -94,14 +94,16 @@
       {
         "type": "color",
         "id": "accent_color",
-        "default": "#4554A4",
-        "label": "Primary accent"
+        "default": "#B76E79",
+        "label": "Primary accent",
+        "info": "Rose Gold - used for links, CTAs"
       },
       {
         "type": "color",
         "id": "accent_color_secondary",
-        "default": "#D48806",
-        "label": "Secondary accent"
+        "default": "#D4AF37",
+        "label": "Secondary accent",
+        "info": "Champagne Gold - used for highlights"
       },
       {
         "type": "header",
@@ -116,7 +118,7 @@
       {
         "type": "color",
         "id": "input_border",
-        "default": "#E5E5E5",
+        "default": "#E8E4DF",
         "label": "Input border"
       },
       {
@@ -136,51 +138,51 @@
     "settings": [
       {
         "type": "header",
-        "content": "Scheme 1 (Default)"
+        "content": "Scheme 1 - Elegant Light (Default)"
       },
       {
         "type": "color",
         "id": "scheme1_background",
-        "default": "#FFFFFF",
+        "default": "#FAF8F5",
         "label": "Background"
       },
       {
         "type": "color",
         "id": "scheme1_text",
-        "default": "#333333",
+        "default": "#1A1A1A",
         "label": "Text"
       },
       {
         "type": "color",
         "id": "scheme1_accent",
-        "default": "#5C6AC4",
+        "default": "#B76E79",
         "label": "Accent"
       },
       {
         "type": "header",
-        "content": "Scheme 2 (Alternate)"
+        "content": "Scheme 2 - Warm Stone"
       },
       {
         "type": "color",
         "id": "scheme2_background",
-        "default": "#F7F4F0",
+        "default": "#F5F1EC",
         "label": "Background"
       },
       {
         "type": "color",
         "id": "scheme2_text",
-        "default": "#333333",
+        "default": "#1A1A1A",
         "label": "Text"
       },
       {
         "type": "color",
         "id": "scheme2_accent",
-        "default": "#4554A4",
+        "default": "#D4AF37",
         "label": "Accent"
       },
       {
         "type": "header",
-        "content": "Scheme 3 (Dark)"
+        "content": "Scheme 3 - Luxe Dark"
       },
       {
         "type": "color",
@@ -191,13 +193,13 @@
       {
         "type": "color",
         "id": "scheme3_text",
-        "default": "#FFFFFF",
+        "default": "#FAF8F5",
         "label": "Text"
       },
       {
         "type": "color",
         "id": "scheme3_accent",
-        "default": "#F5A623",
+        "default": "#D4AF37",
         "label": "Accent"
       }
     ]
@@ -212,19 +214,19 @@
       {
         "type": "color",
         "id": "button_primary_background",
-        "default": "#333333",
+        "default": "#1A1A1A",
         "label": "Background"
       },
       {
         "type": "color",
         "id": "button_primary_text",
-        "default": "#FFFFFF",
+        "default": "#FAF8F5",
         "label": "Text"
       },
       {
         "type": "color",
         "id": "button_primary_hover",
-        "default": "#555555",
+        "default": "#4A4A4A",
         "label": "Hover background"
       },
       {
@@ -240,13 +242,13 @@
       {
         "type": "color",
         "id": "button_secondary_text",
-        "default": "#333333",
+        "default": "#1A1A1A",
         "label": "Text"
       },
       {
         "type": "color",
         "id": "button_secondary_border",
-        "default": "#333333",
+        "default": "#1A1A1A",
         "label": "Border"
       },
       {

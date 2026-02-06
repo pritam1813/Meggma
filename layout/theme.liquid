@@ -26,6 +26,7 @@
     {% endcomment %}
 
     {% # Load and preload the critical CSS %}
+    {{ 'color-palette.css' | asset_url | stylesheet_tag: preload: true }}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
     {{ 'tailwind.output.css' | asset_url | stylesheet_tag: preload: true }}
 

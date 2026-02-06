@@ -141,22 +141,10 @@
             "text": "MARQUEE TEXT ✦"
           }
         },
-        "image_yzVNt4": {
-          "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/the-man-in-the-hat.jpg"
-          }
-        },
         "text_hJVHKW": {
           "type": "text",
           "settings": {
             "text": "MARQUEE TEXT ✦"
-          }
-        },
-        "image_UqVNdM": {
-          "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/silver-lamp-on-a-white-table-next-to-books.jpg"
           }
         },
         "text_XNPWAK": {
@@ -172,14 +160,12 @@
         "text_p9DeR8",
         "text_fPJn6e",
         "text_QrGAkk",
-        "image_yzVNt4",
         "text_hJVHKW",
-        "image_UqVNdM",
         "text_XNPWAK"
       ],
       "name": "Marquee Section",
       "settings": {
-        "background_image": "shopify://shop_images/rack-of-womens-clothing.jpg",
+        "background_image": "",
         "background_color": "#ffffff",
         "text_color": "#333333",
         "text_size": "text-3xl",
@@ -225,8 +211,8 @@
       "type": "image-compare",
       "name": "Image Compare",
       "settings": {
-        "image_before": "shopify://shop_images/woman-in-fur-under-neon.jpg",
-        "image_after": "shopify://shop_images/model-in-sunglasses-and-summer-clothes.jpg",
+        "image_before": "",
+        "image_after": "",
         "start_position": 50,
         "show_labels": true,
         "label_before": "Before",
@@ -265,7 +251,7 @@
       "type": "countdown-banner",
       "name": "Countdown Banner",
       "settings": {
-        "background_image": "shopify://shop_images/DSC07764.jpg",
+        "background_image": "",
         "heading": "Limited Time Offer",
         "subheading": "Don't miss out!",
         "countdown_hours": 5,
@@ -283,38 +269,8 @@
     },
     "split_screen_slider_GPDTeB": {
       "type": "split-screen-slider",
-      "blocks": {
-        "image_wzGCyY": {
-          "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/woman-infront-of-tree-with-berries.jpeg"
-          }
-        },
-        "image_rLaqqy": {
-          "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/northern-forest.jpg"
-          }
-        },
-        "image_9tJYeg": {
-          "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/shellfish-pasta-pizza-and-italian-food.jpg"
-          }
-        },
-        "image_KeyY9F": {
-          "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/rooibos-tea.jpg"
-          }
-        }
-      },
-      "block_order": [
-        "image_wzGCyY",
-        "image_rLaqqy",
-        "image_9tJYeg",
-        "image_KeyY9F"
-      ],
+      "blocks": {},
+      "block_order": [],
       "name": "Split Screen Slider",
       "settings": {
         "background_color": "#f9fafb",
@@ -362,7 +318,7 @@
       "type": "scale-down-image-banner",
       "name": "Scale Down Banner",
       "settings": {
-        "image": "shopify://shop_images/biscotti-lays-in-a-monstera-leaf.jpg",
+        "image": "",
         "subheading": "Sub heading",
         "heading": "Heading",
         "text": "More Para",

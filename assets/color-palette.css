@@ -1,0 +1,194 @@
+/*
+ * Fashion Theme Color Palette - "Elegant Noir"
+ * A sophisticated, luxury fashion-inspired color system
+ */
+
+:root {
+  /* === Core Fashion Palette === */
+  
+  /* Neutrals */
+  --color-noir: #1A1A1A;          /* Primary dark - text, buttons */
+  --color-charcoal: #4A4A4A;      /* Secondary text */
+  --color-graphite: #6B6B6B;      /* Muted text */
+  --color-silver: #9A9A9A;        /* Placeholders */
+  --color-pearl: #E8E4DF;         /* Borders, dividers */
+  --color-stone: #F5F1EC;         /* Alternate backgrounds */
+  --color-ivory: #FAF8F5;         /* Primary light background */
+  --color-white: #FFFFFF;         /* Pure white */
+  
+  /* Accents */
+  --color-rose-gold: #B76E79;     /* Primary accent - CTAs, links */
+  --color-rose-gold-light: #D4A5AC; /* Hover states */
+  --color-rose-gold-dark: #8F4F5A;  /* Active states */
+  --color-champagne: #D4AF37;     /* Secondary accent - highlights */
+  --color-champagne-light: #E8D08E; /* Soft gold */
+  --color-blush: #F8E8E6;         /* Soft pink accents */
+  
+  /* Semantic Colors */
+  --color-sage: #9CAF88;          /* Success */
+  --color-sage-light: #C5D4B8;    /* Success light */
+  --color-rust: #C65D3B;          /* Sale, error, urgency */
+  --color-rust-light: #E8A58E;    /* Error light */
+  --color-sand: #C9B896;          /* Warning, info */
+  
+  /* === Semantic Mappings === */
+  
+  /* Text */
+  --color-text-primary: var(--color-noir);
+  --color-text-secondary: var(--color-charcoal);
+  --color-text-muted: var(--color-graphite);
+  --color-text-inverse: var(--color-ivory);
+  --color-text-link: var(--color-rose-gold);
+  --color-text-link-hover: var(--color-rose-gold-dark);
+  
+  /* Backgrounds */
+  --color-background: var(--color-ivory);
+  --color-background-alt: var(--color-stone);
+  --color-surface: var(--color-white);
+  --color-surface-elevated: var(--color-white);
+  --color-overlay: rgba(26, 26, 26, 0.6);
+  
+  /* Borders */
+  --color-border: var(--color-pearl);
+  --color-border-focus: var(--color-rose-gold);
+  --color-border-muted: rgba(26, 26, 26, 0.1);
+  
+  /* Buttons - Primary */
+  --color-button-primary-bg: var(--color-noir);
+  --color-button-primary-text: var(--color-ivory);
+  --color-button-primary-hover-bg: var(--color-charcoal);
+  --color-button-primary-active-bg: var(--color-noir);
+  
+  /* Buttons - Secondary */
+  --color-button-secondary-bg: transparent;
+  --color-button-secondary-text: var(--color-noir);
+  --color-button-secondary-border: var(--color-noir);
+  --color-button-secondary-hover-bg: var(--color-noir);
+  --color-button-secondary-hover-text: var(--color-ivory);
+  
+  /* Buttons - Accent */
+  --color-button-accent-bg: var(--color-rose-gold);
+  --color-button-accent-text: var(--color-white);
+  --color-button-accent-hover-bg: var(--color-rose-gold-dark);
+  
+  /* Forms */
+  --color-input-bg: var(--color-white);
+  --color-input-border: var(--color-pearl);
+  --color-input-focus-border: var(--color-rose-gold);
+  --color-input-placeholder: var(--color-silver);
+  --color-input-text: var(--color-noir);
+  
+  /* Status */
+  --color-success: var(--color-sage);
+  --color-success-bg: var(--color-sage-light);
+  --color-error: var(--color-rust);
+  --color-error-bg: var(--color-rust-light);
+  --color-warning: var(--color-champagne);
+  --color-info: var(--color-sand);
+  
+  /* Badges */
+  --color-badge-sale: var(--color-rust);
+  --color-badge-sale-text: var(--color-white);
+  --color-badge-new: var(--color-noir);
+  --color-badge-new-text: var(--color-ivory);
+  --color-badge-soldout: var(--color-graphite);
+  --color-badge-soldout-text: var(--color-white);
+  
+  /* === Color Schemes (Applied via data attributes) === */
+}
+
+/* Scheme 1: Elegant Light (Default) */
+[data-color-scheme="light"],
+.color-scheme-light {
+  --scheme-background: var(--color-ivory);
+  --scheme-text: var(--color-noir);
+  --scheme-accent: var(--color-rose-gold);
+  --scheme-surface: var(--color-white);
+  --scheme-border: var(--color-pearl);
+}
+
+/* Scheme 2: Warm Stone */
+[data-color-scheme="warm"],
+.color-scheme-warm {
+  --scheme-background: var(--color-stone);
+  --scheme-text: var(--color-noir);
+  --scheme-accent: var(--color-champagne);
+  --scheme-surface: var(--color-ivory);
+  --scheme-border: var(--color-pearl);
+}
+
+/* Scheme 3: Luxe Dark */
+[data-color-scheme="dark"],
+.color-scheme-dark {
+  --scheme-background: var(--color-noir);
+  --scheme-text: var(--color-ivory);
+  --scheme-accent: var(--color-champagne);
+  --scheme-surface: var(--color-charcoal);
+  --scheme-border: rgba(255, 255, 255, 0.15);
+}
+
+/* === Utility Classes === */
+
+/* Text colors */
+.text-primary { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-muted { color: var(--color-text-muted); }
+.text-accent { color: var(--color-rose-gold); }
+.text-champagne { color: var(--color-champagne); }
+.text-success { color: var(--color-success); }
+.text-error { color: var(--color-error); }
+
+/* Background colors */
+.bg-ivory { background-color: var(--color-ivory); }
+.bg-stone { background-color: var(--color-stone); }
+.bg-noir { background-color: var(--color-noir); }
+.bg-surface { background-color: var(--color-surface); }
+.bg-accent { background-color: var(--color-rose-gold); }
+.bg-blush { background-color: var(--color-blush); }
+
+/* Border colors */
+.border-pearl { border-color: var(--color-pearl); }
+.border-accent { border-color: var(--color-rose-gold); }
+
+/* === Base Element Styling === */
+
+/* Links */
+a {
+  color: var(--color-text-link);
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-text-link-hover);
+}
+
+/* Focus states */
+:focus-visible {
+  outline: 2px solid var(--color-rose-gold);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background-color: var(--color-blush);
+  color: var(--color-noir);
+}
+
+/* Scrollbar (Webkit) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-stone);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-silver);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-charcoal);
+}

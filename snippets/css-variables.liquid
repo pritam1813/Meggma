@@ -7,14 +7,84 @@
     {{ settings.type_primary_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
   {% endif %}
 
+  {% if settings.type_header_font.family %}
+    {{ settings.type_header_font | font_face: font_display: 'swap' }}
+    {{ settings.type_header_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
+  {% endif %}
+
   :root {
+    /* Typography */
     --font-primary--family: {{ settings.type_primary_font.family }}, {{ settings.type_primary_font.fallback_families }};
     --font-primary--style: {{ settings.type_primary_font.style }};
     --font-primary--weight: {{ settings.type_primary_font.weight }};
+    --font-header--family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
+    --font-header--style: {{ settings.type_header_font.style }};
+    --font-header--weight: {{ settings.type_header_font.weight }};
+
+    /* Layout */
     --page-width: {{ settings.max_page_width }};
     --page-margin: {{ settings.min_page_margin }}px;
+    --section-spacing: {{ settings.section_spacing }}px;
+
+    /* Primary Colors (from theme settings) */
     --color-background: {{ settings.background_color }};
     --color-foreground: {{ settings.foreground_color }};
+    --color-accent: {{ settings.accent_color }};
+    --color-accent-secondary: {{ settings.accent_color_secondary }};
+
+    /* Form Elements */
+    --color-input-background: {{ settings.input_background }};
+    --color-input-border: {{ settings.input_border }};
     --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
+
+    /* Buttons - Primary */
+    --color-button-primary-bg: {{ settings.button_primary_background }};
+    --color-button-primary-text: {{ settings.button_primary_text }};
+    --color-button-primary-hover: {{ settings.button_primary_hover }};
+
+    /* Buttons - Secondary */
+    --color-button-secondary-bg: {{ settings.button_secondary_background }};
+    --color-button-secondary-text: {{ settings.button_secondary_text }};
+    --color-button-secondary-border: {{ settings.button_secondary_border }};
+    --style-border-radius-buttons: {{ settings.button_corner_radius }}px;
+
+    /* Color Schemes */
+    --scheme1-background: {{ settings.scheme1_background }};
+    --scheme1-text: {{ settings.scheme1_text }};
+    --scheme1-accent: {{ settings.scheme1_accent }};
+
+    --scheme2-background: {{ settings.scheme2_background }};
+    --scheme2-text: {{ settings.scheme2_text }};
+    --scheme2-accent: {{ settings.scheme2_accent }};
+
+    --scheme3-background: {{ settings.scheme3_background }};
+    --scheme3-text: {{ settings.scheme3_text }};
+    --scheme3-accent: {{ settings.scheme3_accent }};
+
+    /* Checkout */
+    --color-checkout-accent: {{ settings.custom_checkout_accent_color }};
+    --color-checkout-button: {{ settings.custom_checkout_button_color }};
+  }
+
+  /* Body styling with theme colors */
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  /* Link styling with accent color */
+  a:not([class]) {
+    color: var(--color-accent);
+    transition: color 0.2s ease;
+  }
+
+  a:not([class]):hover {
+    opacity: 0.8;
+  }
+
+  /* Selection styling */
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-background);
   }
 {% endstyle %}
