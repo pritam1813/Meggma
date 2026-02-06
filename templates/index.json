@@ -15,22 +15,19 @@
         "media_card_V7ByMp": {
           "type": "media_card",
           "settings": {
-            "media_type": "video",
-            "video": "shopify://files/videos/reels 3.mp4"
+            "media_type": "video"
           }
         },
         "media_card_GWVpgr": {
           "type": "media_card",
           "settings": {
-            "media_type": "video",
-            "video": "shopify://files/videos/reels 6.mp4"
+            "media_type": "video"
           }
         },
         "media_card_RrQecg": {
           "type": "media_card",
           "settings": {
-            "media_type": "video",
-            "video": "shopify://files/videos/reels 5.mp4"
+            "media_type": "video"
           }
         }
       },
@@ -42,122 +39,6 @@
       "disabled": true,
       "name": "Hero",
       "settings": {}
-    },
-    "hero_two_XWDfbc": {
-      "type": "hero-two",
-      "blocks": {
-        "collection_dtjryW": {
-          "type": "collection",
-          "settings": {
-            "collection": "printed",
-            "top_desktop": 78,
-            "left_desktop": 12,
-            "width_desktop": 240,
-            "top_mobile": 78,
-            "left_mobile": 50,
-            "width_mobile": 240,
-            "parallax_speed": 0.5,
-            "z_index": 5,
-            "mobile_hidden": false,
-            "desktop_hidden": true
-          }
-        },
-        "video_jCNfGz": {
-          "type": "video",
-          "settings": {
-            "video": "shopify://files/videos/reels 6.mp4",
-            "aspect_ratio": "0.563",
-            "top_desktop": 45,
-            "left_desktop": 15,
-            "width_desktop": 380,
-            "top_mobile": 28,
-            "left_mobile": 15,
-            "width_mobile": 120,
-            "parallax_speed": 0.5,
-            "z_index": 5,
-            "mobile_hidden": false,
-            "desktop_hidden": false
-          }
-        },
-        "video_dKQJcP": {
-          "type": "video",
-          "settings": {
-            "video": "shopify://files/videos/reels 3.mp4",
-            "aspect_ratio": "0.563",
-            "top_desktop": 45,
-            "left_desktop": 50,
-            "width_desktop": 380,
-            "top_mobile": 28,
-            "left_mobile": 50,
-            "width_mobile": 120,
-            "parallax_speed": 0.5,
-            "z_index": 5,
-            "mobile_hidden": false,
-            "desktop_hidden": false
-          }
-        },
-        "video_khnMyB": {
-          "type": "video",
-          "settings": {
-            "video": "shopify://files/videos/reels 5.mp4",
-            "aspect_ratio": "0.563",
-            "top_desktop": 45,
-            "left_desktop": 85,
-            "width_desktop": 380,
-            "top_mobile": 28,
-            "left_mobile": 85,
-            "width_mobile": 120,
-            "parallax_speed": 0.5,
-            "z_index": 5,
-            "mobile_hidden": true,
-            "desktop_hidden": false
-          }
-        },
-        "product_G7WD8w": {
-          "type": "product",
-          "settings": {
-            "product": "",
-            "top_desktop": 30,
-            "left_desktop": 12,
-            "width_desktop": 240,
-            "top_mobile": 51,
-            "left_mobile": 50,
-            "width_mobile": 280,
-            "parallax_speed": 0.5,
-            "z_index": 5,
-            "mobile_hidden": false,
-            "desktop_hidden": false
-          }
-        }
-      },
-      "block_order": [
-        "collection_dtjryW",
-        "video_jCNfGz",
-        "video_dKQJcP",
-        "video_khnMyB",
-        "product_G7WD8w"
-      ],
-      "name": "Parallax Hero Two",
-      "settings": {
-        "image": "shopify://shop_images/Picsart_25-10-08_16-44-13-775.jpg",
-        "video_url": "",
-        "video_url_mobile": "",
-        "focal_point_x": 50,
-        "focal_point_y": 50,
-        "overlay_color": "#000000",
-        "overlay_opacity": 0,
-        "fade_color": "#f7f4f0",
-        "heading": "",
-        "subheading": "",
-        "text_color": "#ffffff",
-        "button_label": "",
-        "button_link": "",
-        "min_height_desktop": 350,
-        "min_height_mobile": 350,
-        "parallax_distance": 200,
-        "overlap_sections_above": 0,
-        "overlap_sections_below": 2
-      }
     },
     "carousel_fzJQLk": {
       "type": "carousel",
@@ -270,9 +151,7 @@
         },
         "image_yzVNt4": {
           "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/the-man-in-the-hat.jpg"
-          }
+          "settings": {}
         },
         "text_hJVHKW": {
           "type": "text",
@@ -282,9 +161,7 @@
         },
         "image_UqVNdM": {
           "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/silver-lamp-on-a-white-table-next-to-books.jpg"
-          }
+          "settings": {}
         },
         "text_XNPWAK": {
           "type": "text",
@@ -306,7 +183,6 @@
       ],
       "name": "Marquee Section",
       "settings": {
-        "background_image": "shopify://shop_images/rack-of-womens-clothing.jpg",
         "background_color": "#ffffff",
         "text_color": "#333333",
         "text_size": "text-3xl",
@@ -352,8 +228,6 @@
       "type": "image-compare",
       "name": "Image Compare",
       "settings": {
-        "image_before": "shopify://shop_images/woman-in-fur-under-neon.jpg",
-        "image_after": "shopify://shop_images/model-in-sunglasses-and-summer-clothes.jpg",
         "start_position": 50,
         "show_labels": true,
         "label_before": "Before",
@@ -392,7 +266,6 @@
       "type": "countdown-banner",
       "name": "Countdown Banner",
       "settings": {
-        "background_image": "shopify://shop_images/DSC07764.jpg",
         "heading": "Limited Time Offer",
         "subheading": "Don't miss out!",
         "countdown_hours": 5,
@@ -413,27 +286,19 @@
       "blocks": {
         "image_wzGCyY": {
           "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/woman-infront-of-tree-with-berries.jpeg"
-          }
+          "settings": {}
         },
         "image_rLaqqy": {
           "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/northern-forest.jpg"
-          }
+          "settings": {}
         },
         "image_9tJYeg": {
           "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/shellfish-pasta-pizza-and-italian-food.jpg"
-          }
+          "settings": {}
         },
         "image_KeyY9F": {
           "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/rooibos-tea.jpg"
-          }
+          "settings": {}
         }
       },
       "block_order": [
@@ -489,7 +354,6 @@
       "type": "scale-down-image-banner",
       "name": "Scale Down Banner",
       "settings": {
-        "image": "shopify://shop_images/biscotti-lays-in-a-monstera-leaf.jpg",
         "subheading": "Sub heading",
         "heading": "Heading",
         "text": "More Para",
@@ -534,7 +398,6 @@
   },
   "order": [
     "hero_VyqG73",
-    "hero_two_XWDfbc",
     "carousel_fzJQLk",
     "media_with_text_rn8tdq",
     "staggered_staircase_section_8MJ6Lf",
