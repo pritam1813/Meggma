@@ -43,21 +43,21 @@
 {%- liquid
   assign card_id = 'product-card-' | append: product.id | append: '-' | append: 'now' | date: '%s%L'
 
-  assign card_bg = card_bg | default: '#e5e7eb'
+  assign card_bg = card_bg | default: '#FAF8F5'
   assign offer_text = offer_text | default: ''
-  assign offer_text_color = offer_text_color | default: '#dc2626'
-  assign offer_border_color = offer_border_color | default: '#fca5a5'
+  assign offer_text_color = offer_text_color | default: '#C65D3B'
+  assign offer_border_color = offer_border_color | default: '#C65D3B'
   assign info_title_size = info_title_size | default: 20
-  assign info_title_color = info_title_color | default: '#111827'
+  assign info_title_color = info_title_color | default: '#1A1A1A'
   assign info_price_size = info_price_size | default: 16
-  assign info_price_color = info_price_color | default: '#374151'
-  assign info_rating_color = info_rating_color | default: '#fbbf24'
+  assign info_price_color = info_price_color | default: '#B76E79'
+  assign info_rating_color = info_rating_color | default: '#D4AF37'
   assign button_text = button_text | default: 'Buy Now'
-  assign button_bg = button_bg | default: 'transparent'
-  assign button_text_color = button_text_color | default: '#fef08a'
-  assign button_border_color = button_border_color | default: '#fef08a'
-  assign button_hover_bg = button_hover_bg | default: '#fef08a'
-  assign button_hover_text = button_hover_text | default: '#dc2626'
+  assign button_bg = button_bg | default: '#1A1A1A'
+  assign button_text_color = button_text_color | default: '#FAF8F5'
+  assign button_border_color = button_border_color | default: '#1A1A1A'
+  assign button_hover_bg = button_hover_bg | default: '#B76E79'
+  assign button_hover_text = button_hover_text | default: '#FFFFFF'
 
   assign product_rating = product.metafields.reviews.rating.value | default: 0
   assign rating_count = product.metafields.reviews.rating_count | default: 0

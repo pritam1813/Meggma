@@ -1,0 +1,295 @@
+/*
+ * Unified Button System - Elegant Noir
+ * 3 Button Types: Primary, Secondary, Accent
+ */
+
+/* === Base Button Styles === */
+.btn,
+[class*="btn-"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: var(--style-border-radius-buttons, 8px);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.btn:focus-visible,
+[class*="btn-"]:focus-visible {
+    outline: 2px solid var(--color-rose-gold, #B76E79);
+    outline-offset: 2px;
+}
+
+/* === Button Type 1: Primary (Solid Noir) === */
+.btn-primary {
+    background-color: var(--color-noir, #1A1A1A);
+    color: var(--color-ivory, #FAF8F5);
+    border-color: var(--color-noir, #1A1A1A);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-charcoal, #4A4A4A);
+    border-color: var(--color-charcoal, #4A4A4A);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 26, 26, 0.25);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Primary on dark backgrounds */
+.btn-primary--inverse {
+    background-color: var(--color-ivory, #FAF8F5);
+    color: var(--color-noir, #1A1A1A);
+    border-color: var(--color-ivory, #FAF8F5);
+}
+
+.btn-primary--inverse:hover {
+    background-color: var(--color-stone, #F5F1EC);
+    border-color: var(--color-stone, #F5F1EC);
+}
+
+/* === Button Type 2: Secondary (Outlined) === */
+.btn-secondary {
+    background-color: transparent;
+    color: var(--color-noir, #1A1A1A);
+    border-color: var(--color-noir, #1A1A1A);
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-noir, #1A1A1A);
+    color: var(--color-ivory, #FAF8F5);
+    transform: translateY(-2px);
+}
+
+.btn-secondary:active {
+    transform: translateY(0);
+}
+
+/* Secondary on dark backgrounds */
+.btn-secondary--inverse {
+    color: var(--color-ivory, #FAF8F5);
+    border-color: var(--color-ivory, #FAF8F5);
+}
+
+.btn-secondary--inverse:hover {
+    background-color: var(--color-ivory, #FAF8F5);
+    color: var(--color-noir, #1A1A1A);
+}
+
+/* === Button Type 3: Accent (Rose Gold) === */
+.btn-accent {
+    background-color: var(--color-rose-gold, #B76E79);
+    color: var(--color-white, #FFFFFF);
+    border-color: var(--color-rose-gold, #B76E79);
+}
+
+.btn-accent:hover {
+    background-color: var(--color-rose-gold-dark, #8F4F5A);
+    border-color: var(--color-rose-gold-dark, #8F4F5A);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(183, 110, 121, 0.35);
+}
+
+.btn-accent:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Accent outlined variant */
+.btn-accent--outline {
+    background-color: transparent;
+    color: var(--color-rose-gold, #B76E79);
+    border-color: var(--color-rose-gold, #B76E79);
+}
+
+.btn-accent--outline:hover {
+    background-color: var(--color-rose-gold, #B76E79);
+    color: var(--color-white, #FFFFFF);
+}
+
+/* === Button Sizes === */
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+}
+
+.btn-xl {
+    padding: 1.25rem 2.5rem;
+    font-size: 1.125rem;
+}
+
+/* Full width */
+.btn-full {
+    width: 100%;
+}
+
+/* === Link Styles === */
+.link {
+    color: var(--color-rose-gold, #B76E79);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.link:hover {
+    color: var(--color-rose-gold-dark, #8F4F5A);
+}
+
+/* Underline link */
+.link-underline {
+    color: var(--color-noir, #1A1A1A);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+}
+
+.link-underline:hover {
+    color: var(--color-rose-gold, #B76E79);
+    text-decoration-thickness: 2px;
+}
+
+/* Animated underline link */
+.link-animated {
+    color: var(--color-noir, #1A1A1A);
+}
+
+.link-animated::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-rose-gold, #B76E79);
+    transition: width 0.3s ease;
+}
+
+.link-animated:hover::after {
+    width: 100%;
+}
+
+/* Arrow link */
+.link-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-noir, #1A1A1A);
+    font-weight: 600;
+}
+
+.link-arrow::after {
+    content: '→';
+    transition: transform 0.2s ease;
+}
+
+.link-arrow:hover {
+    color: var(--color-rose-gold, #B76E79);
+}
+
+.link-arrow:hover::after {
+    transform: translateX(4px);
+}
+
+/* === Disabled State === */
+.btn:disabled,
+.btn[disabled],
+[class*="btn-"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* === Icon Support === */
+.btn svg,
+.btn-icon {
+    width: 1em;
+    height: 1em;
+}
+
+/* Icon only button */
+.btn-icon-only {
+    padding: 0.75rem;
+    border-radius: 50%;
+}
+
+.btn-icon-only.btn-sm {
+    padding: 0.5rem;
+}
+
+.btn-icon-only.btn-lg {
+    padding: 1rem;
+}
+
+/* === Loading State === */
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: btn-spin 0.6s linear infinite;
+}
+
+@keyframes btn-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* === Add to Cart Button === */
+.btn-add-to-cart {
+    background-color: var(--color-noir, #1A1A1A);
+    color: var(--color-ivory, #FAF8F5);
+    border-color: var(--color-noir, #1A1A1A);
+    width: 100%;
+    padding: 1rem 1.5rem;
+}
+
+.btn-add-to-cart:hover {
+    background-color: var(--color-rose-gold, #B76E79);
+    border-color: var(--color-rose-gold, #B76E79);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(183, 110, 121, 0.25);
+}
+
+/* === Buy Now Button === */
+.btn-buy-now {
+    background-color: var(--color-rose-gold, #B76E79);
+    color: var(--color-white, #FFFFFF);
+    border-color: var(--color-rose-gold, #B76E79);
+    width: 100%;
+    padding: 1rem 1.5rem;
+}
+
+.btn-buy-now:hover {
+    background-color: var(--color-champagne, #D4AF37);
+    border-color: var(--color-champagne, #D4AF37);
+    transform: translateY(-2px);
+}
