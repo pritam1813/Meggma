@@ -1783,6 +1783,9 @@
   .\[scrollbar-width\:none\] {
     scrollbar-width: none;
   }
+  .\[xml\:lang\] {
+    xml: lang;
+  }
   .group-open\:block {
     &:is(:where(.group):is([open], :popover-open, :open) *) {
       display: block;
