@@ -40,7 +40,13 @@
     "sidebar": "Sidebar",
     "text": "Text",
     "theme": "Theme",
-    "typography": "Typography"
+    "typography": "Typography",
+    "logo": "Logo",
+    "social_media": "Social media",
+    "buttons": "Buttons",
+    "checkout": "Checkout",
+    "products": "Products",
+    "color_schemes": "Color schemes"
   },
   "labels": {
     "alignment": "Alignment",
@@ -56,7 +62,42 @@
     "page_width": "Page width",
     "show_payment_icons": "Show payment icons",
     "text_style": "Text style",
-    "text": "Text"
+    "text": "Text",
+    "logo_image": "Logo image",
+    "logo_width": "Logo width",
+    "favicon": "Favicon image",
+    "heading_font": "Heading font",
+    "body_font": "Body font",
+    "base_font_size": "Base font size",
+    "accent_color": "Accent color",
+    "primary_accent": "Primary accent",
+    "secondary_accent": "Secondary accent",
+    "input_background": "Input background",
+    "input_border": "Input border",
+    "button_background": "Button background",
+    "button_text": "Button text",
+    "button_hover": "Hover background",
+    "button_border": "Button border",
+    "corner_radius": "Corner radius",
+    "button_style": "Button style",
+    "section_spacing": "Section spacing",
+    "cart_type": "Cart type",
+    "show_vendor": "Show vendor",
+    "enable_cart_notes": "Enable cart notes",
+    "show_recommendations": "Show product recommendations",
+    "empty_cart_message": "Empty cart message",
+    "continue_shopping_link": "Continue shopping link",
+    "show_secondary_image": "Show second image on hover",
+    "show_badge": "Show sale/sold out badge",
+    "image_ratio": "Image ratio",
+    "enable_zoom": "Enable image zoom",
+    "show_share": "Show share buttons",
+    "show_sku": "Show SKU",
+    "enable_quantity": "Show quantity selector",
+    "checkout_logo": "Checkout logo",
+    "checkout_banner": "Checkout banner",
+    "checkout_accent": "Checkout accent color",
+    "checkout_button": "Checkout button color"
   },
   "options": {
     "alignment": {
@@ -70,7 +111,8 @@
     },
     "page_width": {
       "narrow": "Narrow",
-      "wide": "Wide"
+      "wide": "Wide",
+      "full": "Full width"
     },
     "size": {
       "large": "Large",
@@ -81,5 +123,40 @@
       "subtitle": "Subtitle",
       "normal": "Normal text"
     },
+    "cart_type": {
+      "drawer": "Slide-out drawer",
+      "page": "Cart page",
+      "popup": "Popup notification"
+    },
+    "button_style": {
+      "solid": "Solid",
+      "outlined": "Outlined",
+      "soft": "Soft shadow"
+    },
+    "image_ratio": {
+      "adapt": "Adapt to image",
+      "portrait": "Portrait (2:3)",
+      "square": "Square (1:1)"
+    }
+  },
+  "social": {
+    "facebook": "Facebook",
+    "instagram": "Instagram",
+    "twitter": "X (Twitter)",
+    "youtube": "YouTube",
+    "tiktok": "TikTok",
+    "pinterest": "Pinterest",
+    "linkedin": "LinkedIn"
+  },
+  "color_schemes": {
+    "scheme1": "Scheme 1 (Default)",
+    "scheme2": "Scheme 2 (Alternate)",
+    "scheme3": "Scheme 3 (Dark)"
+  },
+  "info": {
+    "favicon_info": "32 x 32px .png recommended",
+    "checkout_logo_info": "Shown on checkout page",
+    "checkout_banner_info": "Background image for checkout header",
+    "recommendations_info": "Show related products in cart"
   }
 }
