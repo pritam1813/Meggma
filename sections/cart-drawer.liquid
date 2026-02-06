@@ -184,6 +184,39 @@
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
+
+  /* Cart item layout fixes */
+  #cart-drawer-{{ section.id }} .cart-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #cart-drawer-{{ section.id }} .cart-item > .flex {
+    width: 100%;
+  }
+
+  #cart-drawer-{{ section.id }} .cart-item .cart-item__image-link {
+    flex-shrink: 0;
+    width: 64px;
+  }
+
+  @media (min-width: 768px) {
+    #cart-drawer-{{ section.id }} .cart-item .cart-item__image-link {
+      width: 80px;
+    }
+  }
+
+  #cart-drawer-{{ section.id }} .cart-item .cart-item__details {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  /* Ensure image doesn't grow beyond its container */
+  #cart-drawer-{{ section.id }} .cart-item img {
+    max-width: 100%;
+    height: auto;
+  }
 {%- endstyle -%}
 
 <section id="cart-drawer-{{ section.id }}" class="cart-drawer" data-section-id="{{ section.id }}">
@@ -230,12 +263,19 @@
           {%- comment -%} Cart Items {%- endcomment -%}
           <div class="cart-items px-4 md:px-6 py-4 space-y-3" data-cart-items>
             {%- for item in cart.items -%}
+              {%- assign item_inventory = item.variant.inventory_quantity | default: 9999 -%}
+              {%- assign at_limit = false -%}
+              {%- if item.variant.inventory_management and item.quantity >= item_inventory -%}
+                {%- assign at_limit = true -%}
+              {%- endif -%}
               <div
                 class="cart-item relative p-3 flex"
                 data-cart-item
                 data-line-index="{{ forloop.index }}"
                 data-key="{{ item.key }}"
                 data-variant-id="{{ item.variant_id }}"
+                data-inventory-quantity="{{ item_inventory }}"
+                data-inventory-managed="{{ item.variant.inventory_management | default: false }}"
               >
                 {%- comment -%} Loading overlay {%- endcomment -%}
                 <div class="cart-item__loader">
@@ -246,7 +286,7 @@
                   {%- comment -%} Image and Details {%- endcomment -%}
                   <div class="flex gap-4">
                     {%- comment -%} Product Image {%- endcomment -%}
-                    <a href="{{ item.url }}" class="shrink-0 block">
+                    <a href="{{ item.url }}" class="cart-item__image-link shrink-0 block">
                       {%- if item.image != blank -%}
                         <img
                           src="{{ item.image | image_url: width: 256 }}"
@@ -254,12 +294,12 @@
                           alt="{{ item.image.alt | default: item.product.title }}"
                           width="256"
                           height="341"
-                          sizes="(min-width: 768px) 128px, 64px"
-                          class="w-16 md:w-[128px] aspect-[3/4] object-cover rounded"
+                          sizes="(min-width: 768px) 80px, 64px"
+                          class="w-full aspect-[3/4] object-cover rounded"
                           loading="lazy"
                         >
                       {%- else -%}
-                        <div class="w-16 md:w-[128px] aspect-[3/4] bg-gray-100 rounded flex items-center justify-center">
+                        <div class="w-full aspect-[3/4] bg-gray-100 rounded flex items-center justify-center">
                           <svg
                             width="32"
                             height="32"
@@ -278,7 +318,7 @@
                     </a>
 
                     {%- comment -%} Item Details {%- endcomment -%}
-                    <div class="flex-1 min-w-0">
+                    <div class="cart-item__details min-w-0">
                       <div class="flex gap-4 justify-between">
                         <a
                           href="{{ item.url }}"
@@ -367,6 +407,9 @@
                         aria-label="Increase quantity"
                         data-qty-change="1"
                         data-key="{{ item.key }}"
+                        {% if at_limit %}
+                          disabled
+                        {% endif %}
                       >
                         <svg
                           width="12"
@@ -714,6 +757,17 @@
       }
     });
 
+    // Listen for cart updates from cart page or product page
+    document.addEventListener('cart:updated', async (e) => {
+      const cart = e.detail?.cart;
+      if (cart) {
+        // Update header cart count
+        updateHeaderCartCount(cart.item_count);
+        // Refresh the drawer content
+        await refreshCartDrawer();
+      }
+    });
+
     // ==========================================
     // SHOPIFY CART AJAX API
     // ==========================================
@@ -922,7 +976,15 @@
           const item = btn.closest('[data-cart-item]');
           const qtyEl = item.querySelector('[data-qty-value]');
           const currentQty = parseInt(qtyEl.textContent);
+          const inventoryQty = parseInt(item?.dataset.inventoryQuantity) || 9999;
+          const isManaged = item?.dataset.inventoryManaged === 'true';
           const newQty = currentQty + change;
+
+          // Check inventory limit before increasing
+          if (change > 0 && isManaged && currentQty >= inventoryQty) {
+            showDrawerNotification(`Only ${inventoryQty} available in stock`, 'error');
+            return;
+          }
 
           if (newQty >= 1) {
             updateCartItem(key, newQty);
@@ -971,6 +1033,53 @@
       if (closeDiscount) {
         closeDiscount.addEventListener('click', closePanels);
       }
+    }
+
+    // Notification for cart drawer
+    function showDrawerNotification(message, type) {
+      // Remove existing notifications
+      const existing = document.querySelector('.cart-drawer-notification');
+      if (existing) existing.remove();
+
+      const notification = document.createElement('div');
+      notification.className = `cart-drawer-notification cart-drawer-notification--${type}`;
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        z-index: 9999;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        max-width: 400px;
+        animation: slideInRight 0.3s ease;
+        background: ${type === 'error' ? '#dc2626' : '#16a34a'};
+        color: white;
+      `;
+      notification.innerHTML = `
+        <span>${message}</span>
+        <button style="background:transparent;border:none;color:inherit;font-size:1.5rem;cursor:pointer;opacity:0.8;line-height:1;" aria-label="Close">&times;</button>
+      `;
+
+      document.body.appendChild(notification);
+
+      // Add close button functionality
+      notification.querySelector('button').addEventListener('click', () => {
+        notification.remove();
+      });
+
+      // Auto-remove after 4 seconds
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.style.opacity = '0';
+          notification.style.transform = 'translateX(100%)';
+          notification.style.transition = 'all 0.3s ease';
+          setTimeout(() => notification.remove(), 300);
+        }
+      }, 4000);
     }
 
     // Initialize

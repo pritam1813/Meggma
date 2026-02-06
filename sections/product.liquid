@@ -19,6 +19,72 @@
     display: none;
     content: '';
   }
+
+  /* Product notification styles */
+  .product-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 9999;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s ease;
+    max-width: 400px;
+  }
+
+  .product-notification--success {
+    background: #16a34a;
+    color: white;
+  }
+
+  .product-notification--error {
+    background: #dc2626;
+    color: white;
+  }
+
+  .product-notification__close {
+    background: transparent;
+    border: none;
+    color: inherit;
+    font-size: 1.5rem;
+    cursor: pointer;
+    opacity: 0.8;
+    line-height: 1;
+  }
+
+  .product-notification__close:hover {
+    opacity: 1;
+  }
+
+  .product-notification--hide {
+    animation: slideOut 0.3s ease forwards;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideOut {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
 {% endstyle %}
 
 <section class="py-12 px-16 w-full">
@@ -226,6 +292,7 @@
           const quantityBtns = document.querySelectorAll('.quantity-btn');
           const buyNowBtn = document.getElementById('buy-now-btn');
           const productForm = document.getElementById('product-form');
+          const addToCartBtn = productForm.querySelector('button[name="add"]');
 
           // Quantity +/- buttons
           quantityBtns.forEach(btn => {
@@ -241,9 +308,53 @@
             });
           });
 
+          // Async Add to Cart
+          productForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(productForm);
+            const originalText = addToCartBtn.textContent;
+
+            // Show loading state
+            addToCartBtn.disabled = true;
+            addToCartBtn.textContent = 'Adding...';
+
+            fetch('/cart/add.js', {
+              method: 'POST',
+              body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+              // Fetch the updated cart and dispatch event for drawer/header sync
+              fetch('/cart.js')
+                .then(res => res.json())
+                .then(cart => {
+                  document.dispatchEvent(new CustomEvent('cart:updated', {
+                    detail: { cart: cart }
+                  }));
+                });
+
+              // Show success notification
+              showNotification(`${data.title} added to cart!`, 'success');
+
+              // Reset button
+              addToCartBtn.disabled = false;
+              addToCartBtn.textContent = originalText;
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              showNotification('Failed to add to cart. Please try again.', 'error');
+              addToCartBtn.disabled = false;
+              addToCartBtn.textContent = originalText;
+            });
+          });
+
           // Buy Now - add to cart and redirect to checkout
           buyNowBtn.addEventListener('click', function() {
             const formData = new FormData(productForm);
+
+            buyNowBtn.disabled = true;
+            buyNowBtn.textContent = 'Processing...';
 
             fetch('/cart/add.js', {
               method: 'POST',
@@ -255,6 +366,9 @@
             })
             .catch(error => {
               console.error('Error:', error);
+              showNotification('Failed to process. Please try again.', 'error');
+              buyNowBtn.disabled = false;
+              buyNowBtn.textContent = 'Buy It Now';
             });
           });
 
@@ -292,6 +406,51 @@
                 buyBtn.disabled = true;
               }
             }
+          }
+
+          // Update header cart count
+          function updateHeaderCartCount() {
+            fetch('/cart.js')
+            .then(response => response.json())
+            .then(cart => {
+              // Try to update cart count elements (common selectors)
+              const cartCountElements = document.querySelectorAll('[data-cart-count], .cart-count, .cart-item-count, #cart-count');
+              cartCountElements.forEach(el => {
+                el.textContent = cart.item_count;
+              });
+            })
+            .catch(error => {
+              console.error('Error updating cart count:', error);
+            });
+          }
+
+          // Success/Error notification
+          function showNotification(message, type) {
+            // Remove existing notifications
+            const existing = document.querySelector('.product-notification');
+            if (existing) existing.remove();
+
+            const notification = document.createElement('div');
+            notification.className = `product-notification product-notification--${type}`;
+            notification.innerHTML = `
+              <span>${message}</span>
+              <button class="product-notification__close" aria-label="Close">&times;</button>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Add close button functionality
+            notification.querySelector('.product-notification__close').addEventListener('click', () => {
+              notification.remove();
+            });
+
+            // Auto-remove after 4 seconds
+            setTimeout(() => {
+              if (notification.parentNode) {
+                notification.classList.add('product-notification--hide');
+                setTimeout(() => notification.remove(), 300);
+              }
+            }, 4000);
           }
         });
       </script>
