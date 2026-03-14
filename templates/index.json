@@ -38,19 +38,19 @@
       "settings": {
         "collection": "printed",
         "show_rating": true,
-        "background_color": "#1A1A1A",
-        "card_background_color": "#FAF8F5",
-        "card_border_color": "#E8E4DF",
-        "card_focus_border_color": "#B76E79",
-        "card_text_color": "#1A1A1A",
-        "card_price_color": "#B76E79",
-        "card_compare_price_color": "#6B6B6B",
+        "background_color": "#1a1a1a",
+        "card_background_color": "#faf8f5",
+        "card_border_color": "#e8e4df",
+        "card_focus_border_color": "#b76e79",
+        "card_text_color": "#1a1a1a",
+        "card_price_color": "#b76e79",
+        "card_compare_price_color": "#6b6b6b",
         "prev_button_text": "← Previous",
         "next_button_text": "Next →",
-        "button_text_color": "#FAF8F5",
+        "button_text_color": "#faf8f5",
         "button_background_color": "",
-        "button_border_color": "#FAF8F5",
-        "button_hover_color": "#B76E79"
+        "button_border_color": "#faf8f5",
+        "button_hover_color": "#b76e79"
       }
     },
     "media_with_text_rn8tdq": {
@@ -61,12 +61,12 @@
         "description": "<p>We believe elegance should leave a lighter footprint. Our products are crafted with ethical artistry and sustainable practices, offering comfort and style. Each piece is thoughtfully made and beautifully finished with care.</p>",
         "button_label": "Shop Now",
         "button_link": "",
-        "bg_color_outer": "#F5F1EC",
-        "bg_color_inner": "#FAF8F5",
-        "text_color_heading": "#1A1A1A",
-        "text_color_body": "#4A4A4A",
-        "btn_bg_color": "#1A1A1A",
-        "btn_text_color": "#FAF8F5"
+        "bg_color_outer": "#f5f1ec",
+        "bg_color_inner": "#faf8f5",
+        "text_color_heading": "#1a1a1a",
+        "text_color_body": "#4a4a4a",
+        "btn_bg_color": "#1a1a1a",
+        "btn_text_color": "#faf8f5"
       }
     },
     "staggered_staircase_section_8MJ6Lf": {
@@ -102,10 +102,10 @@
       "name": "Staircase Section",
       "settings": {
         "image_size": 128,
-        "background_color": "#FAF8F5",
-        "card_background_color": "#FFFFFF",
-        "heading_color": "#1A1A1A",
-        "text_color": "#4A4A4A"
+        "background_color": "#faf8f5",
+        "card_background_color": "#ffffff",
+        "heading_color": "#1a1a1a",
+        "text_color": "#4a4a4a"
       }
     },
     "marquee_section_64xBPH": {
@@ -165,9 +165,8 @@
       ],
       "name": "Marquee Section",
       "settings": {
-        "background_image": "",
-        "background_color": "#1A1A1A",
-        "text_color": "#FAF8F5",
+        "background_color": "#1a1a1a",
+        "text_color": "#faf8f5",
         "text_size": "text-3xl",
         "speed": 11,
         "show_overlay": true,
@@ -188,14 +187,14 @@
         "heading_font_size": 36,
         "subheading_font_size": 36,
         "description_font_size": 14,
-        "section_bg_color": "#FAF8F5",
-        "heading_text_color": "#1A1A1A",
-        "subheading_text_color": "#1A1A1A",
-        "description_text_color": "#4A4A4A",
-        "primary_button_bg": "#1A1A1A",
-        "primary_button_text_color": "#FAF8F5",
-        "secondary_button_bg": "#FAF8F5",
-        "secondary_button_text_color": "#1A1A1A",
+        "section_bg_color": "#faf8f5",
+        "heading_text_color": "#1a1a1a",
+        "subheading_text_color": "#1a1a1a",
+        "description_text_color": "#4a4a4a",
+        "primary_button_bg": "#1a1a1a",
+        "primary_button_text_color": "#faf8f5",
+        "secondary_button_bg": "#faf8f5",
+        "secondary_button_text_color": "#1a1a1a",
         "show_rotating_circle": true,
         "circle_center_line1": "Main",
         "circle_center_line2": "Text",
@@ -203,47 +202,45 @@
         "circle_size": 200,
         "circle_center_font_size": 30,
         "circle_text_font_size": 14,
-        "circle_center_color": "#1A1A1A",
-        "circle_text_color": "#B76E79"
+        "circle_center_color": "#1a1a1a",
+        "circle_text_color": "#b76e79"
       }
     },
     "image_compare_Y8MYgp": {
       "type": "image-compare",
       "name": "Image Compare",
       "settings": {
-        "image_before": "",
-        "image_after": "",
         "start_position": 50,
         "show_labels": true,
         "label_before": "Before",
         "label_after": "After",
-        "label_bg_color": "#FAF8F5",
-        "label_text_color": "#1A1A1A",
+        "label_bg_color": "#faf8f5",
+        "label_text_color": "#1a1a1a",
         "heading": "Build Once, Scale Everywhere",
         "description": "This layout keeps the image at the top and content below on all screen sizes. It's perfect for feature sections, blog highlights, or product showcases where vertical flow matters.",
         "button_text": "Shop All Products",
         "button_link": "",
-        "section_bg_color": "#F8E8E6",
+        "section_bg_color": "#f8e8e6",
         "padding_top": 64,
         "padding_bottom": 64,
         "padding_x": 32,
-        "container_bg_color": "#FAF8F5",
+        "container_bg_color": "#faf8f5",
         "container_radius": 16,
         "container_padding_mobile": 32,
         "container_padding_desktop": 64,
         "gallery_radius": 24,
-        "dragger_color": "#FAF8F5",
-        "dragger_icon_color": "#1A1A1A",
-        "heading_color": "#1A1A1A",
+        "dragger_color": "#faf8f5",
+        "dragger_icon_color": "#1a1a1a",
+        "heading_color": "#1a1a1a",
         "heading_size_mobile": 24,
         "heading_size_tablet": 30,
         "heading_size_desktop": 36,
-        "description_color": "#4A4A4A",
+        "description_color": "#4a4a4a",
         "description_size": 18,
-        "button_bg_color": "#1A1A1A",
-        "button_text_color": "#FAF8F5",
-        "button_hover_bg": "#B76E79",
-        "button_hover_text": "#FFFFFF",
+        "button_bg_color": "#1a1a1a",
+        "button_text_color": "#faf8f5",
+        "button_hover_bg": "#b76e79",
+        "button_hover_text": "#ffffff",
         "button_radius": 8
       }
     },
@@ -251,7 +248,6 @@
       "type": "countdown-banner",
       "name": "Countdown Banner",
       "settings": {
-        "background_image": "",
         "heading": "Limited Time Offer",
         "subheading": "Don't miss out!",
         "countdown_hours": 5,
@@ -269,24 +265,54 @@
     },
     "split_screen_slider_GPDTeB": {
       "type": "split-screen-slider",
-      "blocks": {},
-      "block_order": [],
+      "blocks": {
+        "image_fdyrNq": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/DSC07764.jpg"
+          }
+        },
+        "image_LpM4BW": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/BarsaraniKVN564-01.png"
+          }
+        },
+        "image_wTypWX": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/DSC_4528_1.jpg"
+          }
+        },
+        "image_T88mbx": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/DSC07996.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "image_fdyrNq",
+        "image_LpM4BW",
+        "image_wTypWX",
+        "image_T88mbx"
+      ],
       "name": "Split Screen Slider",
       "settings": {
-        "background_color": "#FAF8F5",
+        "background_color": "#faf8f5",
         "collection": "printed",
-        "products_to_show": 4,
-        "card_background_color": "#FFFFFF",
-        "text_color": "#1A1A1A",
-        "star_color": "#D4AF37",
+        "products_to_show": 3,
+        "card_background_color": "#ffffff",
+        "text_color": "#1a1a1a",
+        "star_color": "#d4af37",
         "show_offer_badge": true,
         "offer_text": "Sale",
-        "offer_badge_color": "#C65D3B",
+        "offer_badge_color": "#c65d3b",
         "button_text": "View Product",
-        "button_border_color": "#1A1A1A",
-        "button_text_color": "#1A1A1A",
-        "button_hover_bg": "#1A1A1A",
-        "button_hover_text": "#FAF8F5"
+        "button_border_color": "#1a1a1a",
+        "button_text_color": "#1a1a1a",
+        "button_hover_bg": "#1a1a1a",
+        "button_hover_text": "#faf8f5"
       }
     },
     "background_video_h6G3k6": {
@@ -298,19 +324,19 @@
         "heading": "Heading",
         "button_text": "Shop All",
         "button_link": "",
-        "section_bg_color": "#F5F1EC",
+        "section_bg_color": "#f5f1ec",
         "padding_x": 40,
         "padding_y": 40,
-        "container_bg_color": "#F8E8E6",
+        "container_bg_color": "#f8e8e6",
         "border_radius": 24,
-        "subheading_color": "#4A4A4A",
+        "subheading_color": "#4a4a4a",
         "subheading_font_size": 18,
         "subheading_margin": 24,
-        "heading_color": "#1A1A1A",
+        "heading_color": "#1a1a1a",
         "heading_font_size": 36,
         "heading_margin": 16,
-        "button_bg_color": "#1A1A1A",
-        "button_text_color": "#FAF8F5",
+        "button_bg_color": "#1a1a1a",
+        "button_text_color": "#faf8f5",
         "button_margin": 16
       }
     },
@@ -318,19 +344,18 @@
       "type": "scale-down-image-banner",
       "name": "Scale Down Banner",
       "settings": {
-        "image": "",
         "subheading": "Sub heading",
         "heading": "Heading",
         "text": "More Para",
-        "section_bg_color": "#F5F1EC",
+        "section_bg_color": "#f5f1ec",
         "padding": 56,
-        "container_bg_color": "#FAF8F5",
+        "container_bg_color": "#faf8f5",
         "border_radius": 24,
-        "subheading_color": "#4A4A4A",
+        "subheading_color": "#4a4a4a",
         "subheading_font_size": 20,
-        "heading_color": "#1A1A1A",
+        "heading_color": "#1a1a1a",
         "heading_font_size": 36,
-        "text_color": "#4A4A4A",
+        "text_color": "#4a4a4a",
         "text_font_size": 18
       }
     },
@@ -346,8 +371,8 @@
             "text_4": "DYNAMIC CONTENT ✦",
             "text_5": "CUSTOM TEXT ✦",
             "font_size": 48,
-            "background_color": "#F8E8E6",
-            "text_color": "#1A1A1A",
+            "background_color": "#f8e8e6",
+            "text_color": "#1a1a1a",
             "animation_speed": 10,
             "scroll_based": true
           },
