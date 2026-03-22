@@ -16,6 +16,16 @@
 -%}
 
 {%- style -%}
+  .cart-drawer-section {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    overflow: visible;
+    z-index: 2000000 !important;
+  }
+
   #cart-drawer-{{ section.id }} {
     --drawer-bg: {{ drawer_bg }};
     --drawer-text: {{ text_color }};
@@ -25,12 +35,14 @@
   #cart-drawer-{{ section.id }} .cart-drawer-panel {
     background-color: var(--drawer-bg);
     color: var(--drawer-text);
+    z-index: 2000001 !important;
   }
 
   #cart-drawer-{{ section.id }} .cart-drawer-overlay {
     background-color: rgba(0, 0, 0, 0.5);
     opacity: 0;
     pointer-events: none;
+    z-index: 2000000 !important;
   }
 
   #cart-drawer-{{ section.id }} .cart-drawer-overlay.active {
@@ -221,10 +233,10 @@
 
 <section id="cart-drawer-{{ section.id }}" class="cart-drawer" data-section-id="{{ section.id }}">
   {%- comment -%} Overlay {%- endcomment -%}
-  <div class="cart-drawer-overlay fixed inset-0 z-40 transition-opacity duration-300" data-cart-overlay></div>
+  <div class="cart-drawer-overlay fixed inset-0 transition-opacity duration-300" data-cart-overlay style="z-index: 2000000 !important;"></div>
 
   {%- comment -%} Drawer Panel {%- endcomment -%}
-  <div class="cart-drawer-panel fixed top-0 right-0 w-full sm:w-[420px] md:w-[480px] h-full z-50 flex flex-col shadow-2xl">
+  <div class="cart-drawer-panel fixed top-0 right-0 w-full sm:w-[420px] md:w-[480px] h-full flex flex-col shadow-2xl" style="z-index: 2000001 !important;">
     {%- comment -%} Header {%- endcomment -%}
     <header class="flex items-center justify-between px-4 md:px-6 py-4 border-b border-black/10">
       <div class="flex items-center justify-between flex-1 gap-4">
@@ -295,7 +307,7 @@
                           width="256"
                           height="341"
                           sizes="(min-width: 768px) 80px, 64px"
-                          class="w-full aspect-[3/4] object-cover rounded"
+                          class="w-full aspect-[3/4] object-contain bg-gray-50 rounded"
                           loading="lazy"
                         >
                       {%- else -%}
@@ -482,7 +494,7 @@
                           alt="{{ product.featured_image.alt | default: product.title }}"
                           width="156"
                           height="208"
-                          class="w-full h-full object-cover"
+                          class="w-full h-full object-contain bg-gray-50"
                           loading="lazy"
                         >
                       {%- else -%}
@@ -536,24 +548,43 @@
 
     {%- comment -%} Footer {%- endcomment -%}
     {%- if cart.item_count > 0 -%}
-      <footer class="border-t border-black/10">
-        {%- comment -%} Note & Discount Actions {%- endcomment -%}
+      <footer class="border-t border-black/10" id="cart-drawer-footer-{{ section.id }}">
+
+        {%- comment -%} Applied Discount Badge (always visible) {%- endcomment -%}
+        {%- assign footer_discounts = cart.cart_level_discount_applications -%}
+        {%- if footer_discounts.size > 0 -%}
+          <div class="px-4 py-2.5 border-b border-black/10 bg-green-50" data-discount-badge-row>
+            {%- for discount in footer_discounts -%}
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="text-green-700 shrink-0">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+                  </svg>
+                  <span class="text-sm font-semibold text-green-800 uppercase tracking-wide truncate">{{ discount.title }}</span>
+                  <span class="text-xs text-green-700 shrink-0">— saved {{ discount.total_allocated_amount | money }}</span>
+                </div>
+                <button
+                  type="button"
+                  class="shrink-0 text-green-700 hover:text-red-600 transition-colors ml-1"
+                  data-remove-discount="{{ discount.title | escape }}"
+                  aria-label="Remove {{ discount.title }}"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Note & Discount Buttons {%- endcomment -%}
         <div class="flex items-center divide-x divide-black/10 border-b border-black/10">
           <button
             type="button"
             class="flex-1 py-3 px-4 flex items-center justify-center gap-2 text-sm hover:bg-black/5 transition-colors"
             data-toggle-note
+            aria-expanded="false"
           >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 20h9M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5Z"/>
             </svg>
             Note
@@ -562,30 +593,100 @@
             type="button"
             class="flex-1 py-3 px-4 flex items-center justify-center gap-2 text-sm hover:bg-black/5 transition-colors"
             data-toggle-discount
+            aria-expanded="false"
           >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M19 5 5 19M6.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM17.5 20a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
             </svg>
             Discount
           </button>
         </div>
 
+        {%- comment -%} Inline Note Panel {%- endcomment -%}
+        <div
+          id="note-panel-{{ section.id }}"
+          style="max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s ease;"
+          data-note-panel
+        >
+          <div class="px-4 pt-3 pb-4 border-b border-black/10">
+            <textarea
+              class="box-border w-full h-24 p-3 border !border-black/15 rounded-lg text-sm resize-none focus:outline-none focus:!border-black/40 block"
+              placeholder="Add a note to your order..."
+              data-cart-note-input
+            >{{ cart.note }}</textarea>
+            <p class="text-xs opacity-50 mt-1" data-note-status></p>
+          </div>
+        </div>
+
+        {%- comment -%} Inline Discount Panel {%- endcomment -%}
+        {%- liquid
+          assign applied_discounts = cart.cart_level_discount_applications | where: 'type', 'discount_code' | map: 'title'
+        -%}
+        <div
+          id="discount-panel-{{ section.id }}"
+          style="max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s ease;"
+          data-discount-panel
+        >
+          <div class="px-4 pt-3 pb-4 border-b border-black/10">
+            <form data-discount-form class="flex w-full gap-3 items-stretch box-border">
+              <input
+                type="text"
+                name="discount"
+                class="box-border flex-1 w-full min-w-0 py-3 px-4 border !border-black/15 rounded-lg text-sm focus:outline-none focus:!border-black/40"
+                placeholder="Code"
+                autocomplete="off"
+                data-discount-code-input
+              >
+              <button type="submit" class="checkout-btn shrink-0 flex items-center justify-center py-3 px-6 rounded-lg font-semibold text-sm whitespace-nowrap" data-discount-submit>
+                Apply
+              </button>
+            </form>
+            <p class="text-xs text-red-600 mt-1.5 hidden" data-discount-error-msg></p>
+            {%- if applied_discounts.size > 0 -%}
+              <ul class="flex flex-wrap gap-1.5 mt-2" data-discount-pills>
+                {%- for code in applied_discounts -%}
+                  <li class="flex items-center gap-1 bg-black/5 text-xs font-mono px-2 py-1 rounded uppercase" data-discount-pill="{{ code | escape }}">
+                    {{ code }}
+                    <button type="button" class="opacity-50 hover:opacity-100 ml-0.5" data-remove-discount="{{ code | escape }}" aria-label="Remove {{ code }}">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                    </button>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </div>
+        </div>
+
         {%- comment -%} Totals & Checkout {%- endcomment -%}
         <div class="px-4 md:px-6 py-4">
+
+          {%- comment -%} Applied discounts display {%- endcomment -%}
+          {%- assign all_discounts = cart.cart_level_discount_applications -%}
+          {%- if all_discounts.size > 0 -%}
+            <div class="mb-3 space-y-1" data-applied-discounts-display>
+              {%- for discount in all_discounts -%}
+                <div class="flex items-center justify-between text-sm">
+                  <span class="flex items-center gap-1.5 text-green-700 font-medium">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                    {{ discount.title }}
+                  </span>
+                  <span class="text-green-700 font-semibold">-{{ discount.total_allocated_amount | money }}</span>
+                </div>
+              {%- endfor -%}
+              <p class="text-xs text-green-600 mt-1">✓ Discount will be applied at checkout</p>
+            </div>
+          {%- endif -%}
+
           <div class="flex justify-between items-baseline mb-2">
             <span class="text-lg font-bold">Estimated total</span>
             <span class="text-lg font-bold" data-cart-subtotal>{{ cart.total_price | money }}</span>
           </div>
           <p class="text-xs opacity-60 mb-4">Taxes and shipping calculated at checkout.</p>
+
+          {%- comment -%} Hidden discount input passes code to checkout {%- endcomment -%}
+          {%- if all_discounts.size > 0 -%}
+            {%- assign first_discount_code = all_discounts.first.title -%}
+          {%- endif -%}
 
           <div class="grid grid-cols-2 gap-3">
             <a
@@ -594,117 +695,46 @@
             >
               View cart
             </a>
-            <button
-              type="submit"
-              name="checkout"
-              form="cart-drawer-form"
+            <a
+              href="/checkout{% if all_discounts.size > 0 %}?discount={{ first_discount_code | url_encode }}{% endif %}"
               class="checkout-btn py-3 px-4 rounded-lg text-center font-semibold text-sm"
+              data-checkout-btn
             >
               Checkout
-            </button>
+            </a>
           </div>
         </div>
       </footer>
     {%- endif -%}
   </div>
-
-  {%- comment -%} Note Panel (Hidden by default) {%- endcomment -%}
-  <div
-    class="note-panel fixed bottom-0 right-0 w-full sm:w-[420px] md:w-[480px] bg-white z-[60] transform translate-y-full transition-transform duration-300 shadow-2xl rounded-t-2xl"
-    data-note-panel
-    hidden
-  >
-    <div class="p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-bold">Note</h3>
-        <button type="button" class="p-2 hover:opacity-70" data-close-note>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 6 6 18M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-      <textarea
-        class="w-full h-32 p-3 border border-black/15 rounded-lg text-sm resize-none focus:outline-none focus:border-black/30"
-        placeholder="Add a note to your order"
-        data-cart-note
-      >{{ cart.note }}</textarea>
-      <button type="button" class="checkout-btn w-full py-3 rounded-lg font-semibold mt-4" data-save-note>
-        Save note
-      </button>
-    </div>
-  </div>
-
-  {%- comment -%} Discount Panel (Hidden by default) {%- endcomment -%}
-  <div
-    class="discount-panel fixed bottom-0 right-0 w-full sm:w-[420px] md:w-[480px] bg-white z-[60] transform translate-y-full transition-transform duration-300 shadow-2xl rounded-t-2xl"
-    data-discount-panel
-    hidden
-  >
-    <div class="p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-bold">Discount</h3>
-        <button type="button" class="p-2 hover:opacity-70" data-close-discount>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 6 6 18M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-      <div class="flex gap-2">
-        <input
-          type="text"
-          class="flex-1 p-3 border border-black/15 rounded-lg text-sm focus:outline-none focus:border-black/30"
-          placeholder="Enter discount code"
-          data-discount-input
-        >
-        <button type="button" class="checkout-btn py-3 px-6 rounded-lg font-semibold" data-apply-discount>Apply</button>
-      </div>
-      <p class="text-xs text-red-600 mt-2 hidden" data-discount-error></p>
-    </div>
-  </div>
 </section>
-
 <script>
   (function () {
     const sectionId = '{{ section.id }}';
     const section = document.getElementById('cart-drawer-' + sectionId);
-
     if (!section) return;
 
     const panel = section.querySelector('.cart-drawer-panel');
     const overlay = section.querySelector('[data-cart-overlay]');
-    const closeButtons = section.querySelectorAll('[data-cart-close]');
-    const notePanel = section.querySelector('[data-note-panel]');
-    const discountPanel = section.querySelector('[data-discount-panel]');
 
     let isOpen = false;
     let isUpdating = false;
+    let noteDebounceTimer = null;
 
     // ==========================================
-    // DRAWER OPEN/CLOSE FUNCTIONALITY
+    // DRAWER OPEN/CLOSE
     // ==========================================
 
     function openDrawer() {
       if (isOpen) return;
       isOpen = true;
-
       document.body.style.overflow = 'hidden';
       overlay.classList.add('active');
-
       if (window.gsap) {
-        gsap.to(panel, {
-          x: 0,
-          duration: 0.4,
-          ease: 'power3.out',
-        });
+        gsap.to(panel, { x: 0, duration: 0.4, ease: 'power3.out' });
         gsap.to(overlay, { opacity: 1, duration: 0.3, ease: 'power2.out' });
-
         gsap.from(section.querySelectorAll('.cart-item'), {
-          opacity: 0,
-          x: 30,
-          duration: 0.4,
-          stagger: 0.05,
-          ease: 'power2.out',
-          delay: 0.2,
+          opacity: 0, x: 30, duration: 0.4, stagger: 0.05, ease: 'power2.out', delay: 0.2,
         });
       } else {
         panel.style.transform = 'translateX(0)';
@@ -714,19 +744,10 @@
     function closeDrawer() {
       if (!isOpen) return;
       isOpen = false;
-
-      // Close any open panels first
-      closePanels();
-
       if (window.gsap) {
         gsap.to(panel, {
-          x: '100%',
-          duration: 0.35,
-          ease: 'power3.in',
-          onComplete: () => {
-            document.body.style.overflow = '';
-            overlay.classList.remove('active');
-          },
+          x: '100%', duration: 0.35, ease: 'power3.in',
+          onComplete: () => { document.body.style.overflow = ''; overlay.classList.remove('active'); },
         });
         gsap.to(overlay, { opacity: 0, duration: 0.25, ease: 'power2.in' });
       } else {
@@ -736,95 +757,218 @@
       }
     }
 
-    // Event listeners for open/close
-    document.addEventListener('click', (e) => {
-      const trigger = e.target.closest('[data-cart-drawer-trigger]');
-      if (trigger) {
-        e.preventDefault();
-        openDrawer();
+    // ==========================================
+    // PANEL TOGGLES (Note & Discount)
+    // ==========================================
+
+    function initPanelToggles() {
+      const noteBtn = section.querySelector('[data-toggle-note]');
+      const discountBtn = section.querySelector('[data-toggle-discount]');
+      const notePanelEl = section.querySelector('[data-note-panel]');
+      const discountPanelEl = section.querySelector('[data-discount-panel]');
+
+      function openPanel(panelEl, toggleBtn, otherPanelEl, otherBtn) {
+        const isOpen = panelEl.style.maxHeight && panelEl.style.maxHeight !== '0px';
+        // Close both first
+        if (notePanelEl) notePanelEl.style.maxHeight = '0px';
+        if (discountPanelEl) discountPanelEl.style.maxHeight = '0px';
+        if (noteBtn) noteBtn.setAttribute('aria-expanded', 'false');
+        if (discountBtn) discountBtn.setAttribute('aria-expanded', 'false');
+        // Open target if it was closed
+        if (!isOpen && panelEl) {
+          panelEl.style.maxHeight = panelEl.scrollHeight + 300 + 'px';
+          toggleBtn.setAttribute('aria-expanded', 'true');
+          // Focus first input
+          const input = panelEl.querySelector('input, textarea');
+          if (input) setTimeout(() => input.focus(), 320);
+        }
       }
-    });
 
-    closeButtons.forEach((btn) => {
-      btn.addEventListener('click', closeDrawer);
-    });
-
-    overlay.addEventListener('click', closeDrawer);
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && isOpen) {
-        closeDrawer();
+      if (noteBtn && notePanelEl) {
+        noteBtn.addEventListener('click', () => openPanel(notePanelEl, noteBtn, discountPanelEl, discountBtn));
       }
-    });
-
-    // Listen for cart updates from cart page or product page
-    document.addEventListener('cart:updated', async (e) => {
-      const cart = e.detail?.cart;
-      if (cart) {
-        // Update header cart count
-        updateHeaderCartCount(cart.item_count);
-        // Refresh the drawer content
-        await refreshCartDrawer();
+      if (discountBtn && discountPanelEl) {
+        discountBtn.addEventListener('click', () => openPanel(discountPanelEl, discountBtn, notePanelEl, noteBtn));
       }
-    });
+    }
 
     // ==========================================
-    // SHOPIFY CART AJAX API
+    // HORIZON-STYLE NOTE: auto-save on input
+    // ==========================================
+
+    function initNoteAutoSave() {
+      const noteInput = section.querySelector('[data-cart-note-input]');
+      const noteStatus = section.querySelector('[data-note-status]');
+      if (!noteInput) return;
+      noteInput.addEventListener('input', () => {
+        if (noteStatus) noteStatus.textContent = 'Saving...';
+        clearTimeout(noteDebounceTimer);
+        noteDebounceTimer = setTimeout(async () => {
+          try {
+            await fetch('/cart/update.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+              body: JSON.stringify({ note: noteInput.value }),
+            });
+            if (noteStatus) { noteStatus.textContent = 'Saved ✓'; setTimeout(() => { noteStatus.textContent = ''; }, 2000); }
+          } catch (e) {
+            if (noteStatus) noteStatus.textContent = 'Error saving';
+          }
+        }, 400);
+      });
+    }
+
+    // ==========================================
+    // DISCOUNT: unified code collection (Horizon pattern)
+    // ==========================================
+
+    // Collects ALL currently applied discount codes from both
+    // the always-visible badge row AND the pills inside the panel
+    function getAllDiscountCodes() {
+      const codes = new Set();
+      // From badge row (data-remove-discount on each badge button)
+      section.querySelectorAll('[data-remove-discount]').forEach(btn => {
+        const c = btn.dataset.removeDiscount;
+        if (c) codes.add(c);
+      });
+      // From inside the discount panel pills
+      section.querySelectorAll('[data-discount-pill]').forEach(pill => {
+        const c = pill.dataset.discountPill;
+        if (c) codes.add(c);
+      });
+      return Array.from(codes);
+    }
+
+    function initDiscountForm() {
+      const discountForm = section.querySelector('[data-discount-form]');
+      if (!discountForm) return;
+
+      discountForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const input = discountForm.querySelector('[data-discount-code-input]');
+        const submitBtn = discountForm.querySelector('[data-discount-submit]');
+        const errorMsg = section.querySelector('[data-discount-error-msg]');
+        if (!input || !input.value.trim()) return;
+
+        const code = input.value.trim().toUpperCase();
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Applying...'; }
+        if (errorMsg) errorMsg.classList.add('hidden');
+
+        try {
+          const existingCodes = getAllDiscountCodes();
+
+          if (existingCodes.map(c => c.toUpperCase()).includes(code)) {
+            if (errorMsg) { errorMsg.textContent = 'This discount is already applied.'; errorMsg.classList.remove('hidden'); }
+            return;
+          }
+
+          const newCodes = [...existingCodes, code];
+
+          const response = await fetch('/cart/update.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ discount: newCodes.join(',') }),
+          });
+
+          const data = await response.json();
+
+          // Validate: Horizon checks applicable === false
+          const rejected = data.discount_codes
+            ? data.discount_codes.find(d => d.code.toUpperCase() === code && d.applicable === false)
+            : null;
+
+          if (rejected) {
+            // Revert to previous codes
+            await fetch('/cart/update.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+              body: JSON.stringify({ discount: existingCodes.join(',') }),
+            });
+            if (errorMsg) { errorMsg.textContent = 'This discount code is not valid or has expired.'; errorMsg.classList.remove('hidden'); }
+            return;
+          }
+
+          // Check Horizon shipping discount case:
+          // if applied_applicable=true but cart didn't add savings → shipping-only discount (no cart save)
+          const applicable = data.discount_codes
+            ? data.discount_codes.find(d => d.code.toUpperCase() === code && d.applicable === true)
+            : null;
+          if (!applicable) {
+            if (errorMsg) { errorMsg.textContent = 'This code applies to shipping only and will be applied at checkout.'; errorMsg.classList.remove('hidden'); }
+          }
+
+          input.value = '';
+          showDrawerNotification('Discount \'\'' + code + '\'\' applied!', 'success');
+          await refreshCartDrawer();
+
+        } catch (err) {
+          console.error('Discount error:', err);
+          if (errorMsg) { errorMsg.textContent = 'Could not apply discount. Please try again.'; errorMsg.classList.remove('hidden'); }
+        } finally {
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Apply'; }
+        }
+      });
+    }
+
+    function initDiscountRemove() {
+      section.addEventListener('click', async (e) => {
+        const removeBtn = e.target.closest('[data-remove-discount]');
+        if (!removeBtn) return;
+        e.preventDefault();
+        const codeToRemove = removeBtn.dataset.removeDiscount;
+        // Use the unified helper — gets codes from badge row + pills
+        const remainingCodes = getAllDiscountCodes().filter(c => c !== codeToRemove);
+        try {
+          await fetch('/cart/update.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ discount: remainingCodes.join(',') }),
+          });
+          if (remainingCodes.length === 0) sessionStorage.removeItem('active_discount');
+          await refreshCartDrawer();
+        } catch (err) {
+          console.error('Remove discount error:', err);
+        }
+      });
+    }
+
+    // ==========================================
+    // CART AJAX: update/remove items
     // ==========================================
 
     async function updateCartItem(key, quantity) {
       if (isUpdating) return;
       isUpdating = true;
-
       const item = section.querySelector(`[data-key="${key}"]`);
       if (item) item.classList.add('is-loading');
-
       try {
-        const response = await fetch('/cart/change.js', {
+        const response = await fetch('/cart/update.js', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify({
-            id: key,
-            quantity: quantity,
-          }),
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ updates: { [key]: quantity } }),
         });
-
-        if (!response.ok) {
-          throw new Error('Failed to update cart');
-        }
-
+        if (!response.ok) throw new Error('Failed');
         const cart = await response.json();
-
-        // Refresh the entire cart drawer
         await refreshCartDrawer();
-
-        // Update header cart count
         updateHeaderCartCount(cart.item_count);
-      } catch (error) {
-        console.error('Error updating cart:', error);
-        if (item) item.classList.remove('is-loading');
+        // Re-apply active discount to checkout button
+        applyActiveDiscountToForm();
+      } catch (err) {
+        console.error('Cart update error:', err);
       } finally {
+        if (item) item.classList.remove('is-loading');
+        const updatedItem = section.querySelector(`[data-key="${key}"]`);
+        if (updatedItem) updatedItem.classList.remove('is-loading');
         isUpdating = false;
       }
     }
 
     async function removeCartItem(key) {
       const item = section.querySelector(`[data-key="${key}"]`);
-
       if (window.gsap && item) {
         gsap.to(item, {
-          opacity: 0,
-          x: -30,
-          height: 0,
-          paddingTop: 0,
-          paddingBottom: 0,
-          marginBottom: 0,
-          duration: 0.3,
-          ease: 'power2.in',
-          onComplete: () => updateCartItem(key, 0),
+          opacity: 0, x: -30, height: 0, paddingTop: 0, paddingBottom: 0, marginBottom: 0,
+          duration: 0.3, ease: 'power2.in', onComplete: () => updateCartItem(key, 0),
         });
       } else {
         updateCartItem(key, 0);
@@ -833,65 +977,52 @@
 
     async function refreshCartDrawer() {
       try {
-        const response = await fetch(window.location.pathname + '?sections=cart-drawer-' + sectionId);
-
-        if (!response.ok) {
-          // Fallback: fetch the full page and extract the section
-          const fullResponse = await fetch(window.location.pathname);
-          const html = await fullResponse.text();
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(html, 'text/html');
-
-          const newDrawer = doc.getElementById('cart-drawer-' + sectionId);
-          if (newDrawer) {
-            const content = section.querySelector('[data-cart-content]');
-            const newContent = newDrawer.querySelector('[data-cart-content]');
-            if (content && newContent) {
-              content.innerHTML = newContent.innerHTML;
-            }
-
-            // Update footer
-            const footer = section.querySelector('footer');
-            const newFooter = newDrawer.querySelector('footer');
-            if (footer && newFooter) {
-              footer.outerHTML = newFooter.outerHTML;
-            } else if (!footer && newFooter) {
-              panel.appendChild(newFooter.cloneNode(true));
-            } else if (footer && !newFooter) {
-              footer.remove();
-            }
-          }
-        } else {
+        const response = await fetch(window.location.pathname + '?sections=' + sectionId);
+        let html = '';
+        if (response.ok) {
           const data = await response.json();
-          const sectionKey = 'cart-drawer-' + sectionId;
-
-          if (data[sectionKey]) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(data[sectionKey], 'text/html');
-
-            const newDrawer = doc.getElementById('cart-drawer-' + sectionId);
-            if (newDrawer) {
-              const content = section.querySelector('[data-cart-content]');
-              const newContent = newDrawer.querySelector('[data-cart-content]');
-              if (content && newContent) {
-                content.innerHTML = newContent.innerHTML;
-              }
-
-              // Update footer
-              const footer = section.querySelector('footer');
-              const newFooter = newDrawer.querySelector('footer');
-              if (footer && newFooter) {
-                footer.outerHTML = newFooter.outerHTML;
-              }
-            }
-          }
+          html = data[sectionId];
+        } else {
+          const fullRes = await fetch(window.location.pathname);
+          const fullHtml = await fullRes.text();
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(fullHtml, 'text/html');
+          const el = doc.getElementById('cart-drawer-' + sectionId);
+          html = el ? el.outerHTML : '';
         }
 
-        // Re-initialize event listeners
-        initCartItemListeners();
-        initFooterListeners();
-      } catch (error) {
-        console.error('Error refreshing cart drawer:', error);
+        if (!html) return;
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newDrawer = doc.getElementById('cart-drawer-' + sectionId);
+        if (!newDrawer) return;
+
+        const content = section.querySelector('[data-cart-content]');
+        const newContent = newDrawer.querySelector('[data-cart-content]');
+        if (content && newContent) content.innerHTML = newContent.innerHTML;
+
+        const footer = section.querySelector('footer');
+        const newFooter = newDrawer.querySelector('footer');
+        if (footer && newFooter) {
+          footer.innerHTML = newFooter.innerHTML;
+        } else if (!footer && newFooter) {
+          panel.appendChild(newFooter.cloneNode(true));
+        } else if (footer && !newFooter) {
+          footer.remove();
+        }
+
+        // Re-initialize after DOM update
+        initNoteAutoSave();
+        initDiscountForm();
+        applyActiveDiscountToForm();
+
+        // Update subtotal display
+        const subtotalEl = section.querySelector('[data-cart-subtotal]');
+        const newSubtotal = newDrawer.querySelector('[data-cart-subtotal]');
+        if (subtotalEl && newSubtotal) subtotalEl.textContent = newSubtotal.textContent;
+
+      } catch (err) {
+        console.error('Refresh error:', err);
         window.location.reload();
       }
     }
@@ -902,198 +1033,105 @@
         headerCount.textContent = count;
         headerCount.style.display = count > 0 ? 'flex' : 'none';
       }
-
       const drawerCount = section.querySelector('[data-cart-item-count]');
-      if (drawerCount) {
-        drawerCount.textContent = `${count} ${count === 1 ? 'item' : 'items'}`;
-      }
+      if (drawerCount) drawerCount.textContent = `${count} ${count === 1 ? 'item' : 'items'}`;
     }
 
     // ==========================================
-    // NOTE & DISCOUNT PANELS
+    // DISCOUNT PERSISTENCE: applies to form/checkout link
     // ==========================================
 
-    function closePanels() {
-      if (notePanel) {
-        notePanel.style.transform = 'translateY(100%)';
-        notePanel.hidden = true;
-      }
-      if (discountPanel) {
-        discountPanel.style.transform = 'translateY(100%)';
-        discountPanel.hidden = true;
-      }
-    }
-
-    function openNotePanel() {
-      if (!notePanel) return;
-      closePanels();
-      notePanel.hidden = false;
-      setTimeout(() => {
-        notePanel.style.transform = 'translateY(0)';
-      }, 10);
-    }
-
-    function openDiscountPanel() {
-      if (!discountPanel) return;
-      closePanels();
-      discountPanel.hidden = false;
-      setTimeout(() => {
-        discountPanel.style.transform = 'translateY(0)';
-      }, 10);
-    }
-
-    async function saveNote() {
-      const textarea = notePanel.querySelector('[data-cart-note]');
-      if (!textarea) return;
-
-      try {
-        await fetch('/cart/update.js', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify({
-            note: textarea.value,
-          }),
-        });
-        closePanels();
-      } catch (error) {
-        console.error('Error saving note:', error);
-      }
-    }
-
-    // ==========================================
-    // EVENT LISTENERS
-    // ==========================================
-
-    function initCartItemListeners() {
-      // Quantity change buttons
-      section.querySelectorAll('[data-qty-change]').forEach((btn) => {
-        btn.addEventListener('click', (e) => {
-          const key = btn.dataset.key;
-          const change = parseInt(btn.dataset.qtyChange);
-          const item = btn.closest('[data-cart-item]');
-          const qtyEl = item.querySelector('[data-qty-value]');
-          const currentQty = parseInt(qtyEl.textContent);
-          const inventoryQty = parseInt(item?.dataset.inventoryQuantity) || 9999;
-          const isManaged = item?.dataset.inventoryManaged === 'true';
-          const newQty = currentQty + change;
-
-          // Check inventory limit before increasing
-          if (change > 0 && isManaged && currentQty >= inventoryQty) {
-            showDrawerNotification(`Only ${inventoryQty} available in stock`, 'error');
-            return;
-          }
-
-          if (newQty >= 1) {
-            updateCartItem(key, newQty);
-          } else if (newQty === 0) {
-            removeCartItem(key);
-          }
-        });
-      });
-
-      // Remove buttons
-      section.querySelectorAll('[data-remove-item]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const key = btn.dataset.key;
-          removeCartItem(key);
-        });
-      });
-    }
-
-    function initFooterListeners() {
-      // Note toggle
-      const noteToggle = section.querySelector('[data-toggle-note]');
-      if (noteToggle) {
-        noteToggle.addEventListener('click', openNotePanel);
-      }
-
-      // Discount toggle
-      const discountToggle = section.querySelector('[data-toggle-discount]');
-      if (discountToggle) {
-        discountToggle.addEventListener('click', openDiscountPanel);
-      }
-
-      // Close note
-      const closeNote = section.querySelector('[data-close-note]');
-      if (closeNote) {
-        closeNote.addEventListener('click', closePanels);
-      }
-
-      // Save note
-      const saveNoteBtn = section.querySelector('[data-save-note]');
-      if (saveNoteBtn) {
-        saveNoteBtn.addEventListener('click', saveNote);
-      }
-
-      // Close discount
-      const closeDiscount = section.querySelector('[data-close-discount]');
-      if (closeDiscount) {
-        closeDiscount.addEventListener('click', closePanels);
-      }
-    }
-
-    // Notification for cart drawer
-    function showDrawerNotification(message, type) {
-      // Remove existing notifications
-      const existing = document.querySelector('.cart-drawer-notification');
-      if (existing) existing.remove();
-
-      const notification = document.createElement('div');
-      notification.className = `cart-drawer-notification cart-drawer-notification--${type}`;
-      notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 1rem 1.5rem;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        z-index: 9999;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        max-width: 400px;
-        animation: slideInRight 0.3s ease;
-        background: ${type === 'error' ? '#dc2626' : '#16a34a'};
-        color: white;
-      `;
-      notification.innerHTML = `
-        <span>${message}</span>
-        <button style="background:transparent;border:none;color:inherit;font-size:1.5rem;cursor:pointer;opacity:0.8;line-height:1;" aria-label="Close">&times;</button>
-      `;
-
-      document.body.appendChild(notification);
-
-      // Add close button functionality
-      notification.querySelector('button').addEventListener('click', () => {
-        notification.remove();
-      });
-
-      // Auto-remove after 4 seconds
-      setTimeout(() => {
-        if (notification.parentNode) {
-          notification.style.opacity = '0';
-          notification.style.transform = 'translateX(100%)';
-          notification.style.transition = 'all 0.3s ease';
-          setTimeout(() => notification.remove(), 300);
+    function applyActiveDiscountToForm() {
+      const saved = sessionStorage.getItem('active_discount');
+      if (!saved) return;
+      const form = section.querySelector('#cart-drawer-form');
+      if (form) {
+        form.action = '/cart?discount=' + encodeURIComponent(saved);
+        let hidden = form.querySelector('input[name="discount"]');
+        if (!hidden) {
+          hidden = document.createElement('input');
+          hidden.type = 'hidden'; hidden.name = 'discount';
+          form.appendChild(hidden);
         }
-      }, 4000);
+        hidden.value = saved;
+      }
     }
 
-    // Initialize
-    initCartItemListeners();
-    initFooterListeners();
+    // ==========================================
+    // NOTIFICATIONS
+    // ==========================================
 
-    // Expose global functions
+    function showDrawerNotification(message, type) {
+      document.querySelectorAll('.cart-drawer-notification').forEach(n => n.remove());
+      const n = document.createElement('div');
+      n.className = 'cart-drawer-notification';
+      n.style.cssText = `position:fixed;top:20px;right:20px;padding:1rem 1.5rem;border-radius:8px;display:flex;align-items:center;gap:1rem;z-index:9999999;box-shadow:0 4px 20px rgba(0,0,0,.15);max-width:400px;background:${type==='error'?'#dc2626':'#16a34a'};color:white;`;
+      n.innerHTML = `<span>${message}</span><button style="background:transparent;border:none;color:inherit;font-size:1.5rem;cursor:pointer;line-height:1;">&times;</button>`;
+      document.body.appendChild(n);
+      n.querySelector('button').addEventListener('click', () => n.remove());
+      setTimeout(() => { if (n.parentNode) { n.style.transition='all .3s'; n.style.opacity='0'; setTimeout(()=>n.remove(),300); } }, 4000);
+    }
+
+    // ==========================================
+    // EVENT DELEGATION (drawer-level)
+    // ==========================================
+
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('[data-cart-drawer-trigger]')) { e.preventDefault(); openDrawer(); }
+    });
+
+    section.addEventListener('click', (e) => {
+      // Close drawer
+      if (e.target === overlay || e.target.closest('[data-cart-close]')) { e.preventDefault(); closeDrawer(); return; }
+
+      // Qty change
+      const qtyBtn = e.target.closest('[data-qty-change]');
+      if (qtyBtn) {
+        e.preventDefault();
+        const key = qtyBtn.dataset.key;
+        const change = parseInt(qtyBtn.dataset.qtyChange);
+        const item = qtyBtn.closest('[data-cart-item]');
+        if (!item) return;
+        const qtyEl = item.querySelector('[data-qty-value]');
+        const currentQty = parseInt(qtyEl.textContent);
+        const inventoryQty = parseInt(item.dataset.inventoryQuantity) || 9999;
+        const isManaged = item.dataset.inventoryManaged === 'true';
+        const newQty = currentQty + change;
+        if (change > 0 && isManaged && currentQty >= inventoryQty) {
+          showDrawerNotification(`Only ${inventoryQty} available in stock`, 'error'); return;
+        }
+        if (newQty >= 1) updateCartItem(key, newQty);
+        else if (newQty === 0) removeCartItem(key);
+        return;
+      }
+
+      // Remove item
+      const removeBtn = e.target.closest('[data-remove-item]');
+      if (removeBtn) { e.preventDefault(); removeCartItem(removeBtn.dataset.key); return; }
+    });
+
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isOpen) closeDrawer(); });
+
+    document.addEventListener('cart:updated', async (e) => {
+      const cart = e.detail?.cart;
+      if (cart) { updateHeaderCartCount(cart.item_count); await refreshCartDrawer(); }
+    });
+
+    // ==========================================
+    // INITIALIZE
+    // ==========================================
+    initPanelToggles();
+    initNoteAutoSave();
+    initDiscountForm();
+    initDiscountRemove();
+    applyActiveDiscountToForm();
+
     window.CartDrawer = window.CartDrawer || {};
     window.CartDrawer.open = openDrawer;
     window.CartDrawer.close = closeDrawer;
     window.CartDrawer.refresh = refreshCartDrawer;
   })();
 </script>
-
 {% schema %}
 {
   "name": "Cart Drawer",
