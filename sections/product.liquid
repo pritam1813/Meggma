@@ -315,10 +315,8 @@
       {%- render 'available-offers', product: product -%}
 
       <script>
-        (function() {
-          const sectionId = 'MainProduct-{{ section.id }}';
-          const section = document.getElementById(sectionId);
-          if (!section) return; // safety
+
+        document.addEventListener('DOMContentLoaded', function() {
           // Mobile Slider & Thumbnails Logic
           const slider = document.getElementById('slider');
           const prevBtn = document.getElementById('prev');
@@ -369,9 +367,10 @@
             });
           }
 
-          }
-
           // Existing Product Form Logic
+          const section = document.getElementById('MainProduct-{{ section.id }}');
+          if (!section) return;
+
           const quantityInput = section.querySelector('#quantity-input') || document.getElementById('quantity-input');
           const quantityBtns = section.querySelectorAll('.quantity-btn').length > 0 ? section.querySelectorAll('.quantity-btn') : document.querySelectorAll('.quantity-btn');
           const buyNowBtn = section.querySelector('#buy-now-btn') || document.getElementById('buy-now-btn');
@@ -457,13 +456,8 @@
               method: 'POST',
               body: formData
             })
+            .then(response => response.json())
             .then(data => {
-              if (data.status === 422 || data.description) {
-                 showNotification(data.description || 'Failed to add to cart.', 'error');
-                 addToCartBtn.disabled = false;
-                 addToCartBtn.textContent = originalText;
-                 return;
-              }
               // Fetch the updated cart and dispatch event for drawer/header sync
               fetch('/cart.js')
                 .then(res => res.json())
@@ -477,7 +471,7 @@
                 });
 
               // Show success notification
-              showNotification(`${data.title || 'Item'} added to cart!`, 'success');
+              showNotification(`${data.title} added to cart!`, 'success');
 
               // Reset button
               addToCartBtn.disabled = false;
@@ -515,20 +509,9 @@
               method: 'POST',
               body: formData
             })
+            .then(response => response.json())
             .then(data => {
-              if (data.status === 422 || data.description) {
-                 showNotification(data.description || 'Failed to process.', 'error');
-                 buyNowBtn.disabled = false;
-                 buyNowBtn.textContent = 'Buy It Now';
-                 return;
-              }
-              if (window.Shopify && window.Shopify.designMode) {
-                 showNotification('Checkout redirect disabled in Theme Editor', 'success');
-                 buyNowBtn.disabled = false;
-                 buyNowBtn.textContent = 'Buy It Now';
-              } else {
-                 window.location.href = '/checkout';
-              }
+              window.location.href = '/checkout';
             })
             .catch(error => {
               console.error('Error:', error);
@@ -547,10 +530,7 @@
           function updateVariant() {
             const selectedOptions = [];
             section.querySelectorAll('input[name^="option"]:checked').forEach(input => {
-              // Decode HTML entities (like &amp; to &) before matching with raw JSON
-              const text = document.createElement("textarea");
-              text.innerHTML = input.value;
-              selectedOptions.push(text.value);
+              selectedOptions.push(input.value);
             });
 
             const variants = {{ product.variants | json }};
