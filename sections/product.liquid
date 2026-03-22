@@ -368,14 +368,11 @@
           }
 
           // Existing Product Form Logic
-          const section = document.getElementById('MainProduct-{{ section.id }}');
-          if (!section) return;
-
-          const quantityInput = section.querySelector('#quantity-input') || document.getElementById('quantity-input');
-          const quantityBtns = section.querySelectorAll('.quantity-btn').length > 0 ? section.querySelectorAll('.quantity-btn') : document.querySelectorAll('.quantity-btn');
-          const buyNowBtn = section.querySelector('#buy-now-btn') || document.getElementById('buy-now-btn');
-          const productForm = section.querySelector('.product-form') || document.getElementById('product-form');
-          const addToCartBtn = productForm ? productForm.querySelector('button[name="add"]') : null;
+          const quantityInput = document.getElementById('quantity-input');
+          const quantityBtns = document.querySelectorAll('.quantity-btn');
+          const buyNowBtn = document.getElementById('buy-now-btn');
+          const productForm = document.getElementById('product-form');
+          const addToCartBtn = productForm.querySelector('button[name="add"]');
 
           // Quantity +/- buttons
           quantityBtns.forEach(btn => {
@@ -522,14 +519,14 @@
           });
 
           // Update variant ID when options change
-          const optionInputs = section.querySelectorAll('input[name^="option"]');
+          const optionInputs = document.querySelectorAll('input[name^="option"]');
           optionInputs.forEach(input => {
             input.addEventListener('change', updateVariant);
           });
 
           function updateVariant() {
             const selectedOptions = [];
-            section.querySelectorAll('input[name^="option"]:checked').forEach(input => {
+            document.querySelectorAll('input[name^="option"]:checked').forEach(input => {
               selectedOptions.push(input.value);
             });
 
@@ -539,22 +536,21 @@
             });
 
             if (matchedVariant) {
-              if (productForm) {
-                const idInput = productForm.querySelector('input[name="id"]');
-                if (idInput) idInput.value = matchedVariant.id;
-              }
+              document.querySelector('input[name="id"]').value = matchedVariant.id;
 
 
               // Update button state
-              const addBtn = productForm ? productForm.querySelector('button[name="add"]') : null;
-              const buyBtn = section.querySelector('#buy-now-btn') || document.getElementById('buy-now-btn');
+              const addBtn = productForm.querySelector('button[name="add"]');
+              const buyBtn = document.getElementById('buy-now-btn');
 
               if (matchedVariant.available) {
-                if (addBtn) { addBtn.disabled = false; addBtn.textContent = 'Add To Cart'; }
-                if (buyBtn) buyBtn.disabled = false;
+                addBtn.disabled = false;
+                addBtn.textContent = 'Add To Cart';
+                buyBtn.disabled = false;
               } else {
-                if (addBtn) { addBtn.disabled = true; addBtn.textContent = 'Sold Out'; }
-                if (buyBtn) buyBtn.disabled = true;
+                addBtn.disabled = true;
+                addBtn.textContent = 'Sold Out';
+                buyBtn.disabled = true;
               }
 
               // Format currency manually instead of raw locale string which outputs ₹
@@ -568,9 +564,9 @@
               }
 
               // Update price display
-              const priceEl = section.querySelector('#discounted') || document.getElementById('discounted');
-              const compareEl = section.querySelector('#mrp') || document.getElementById('mrp');
-              const discountEl = section.querySelector('#discount') || document.getElementById('discount');
+              const priceEl = document.getElementById('discounted');
+              const compareEl = document.getElementById('mrp');
+              const discountEl = document.getElementById('discount');
               
               if (priceEl) priceEl.textContent = formattedPrice;
               if (compareEl && matchedVariant.compare_at_price > matchedVariant.price) {
