@@ -85,75 +85,53 @@
       opacity: 0;
     }
   }
-
-  /* Robust Accordion animations */
-  details.accordion-block > div.accordion-content {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease, opacity 0.4s ease;
-  }
-  details.accordion-block[open] > div.accordion-content {
-    max-height: 2000px;
-    opacity: 1;
-  }
 {% endstyle %}
 
-<section class="py-12 px-4 md:px-10 xl:px-16 w-full">
+<section class="py-12 px-16 w-full">
   <div id="product" class="w-full flex flex-col md:flex-row">
     <div class="w-full md:w-1/2 max-h-svh overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-      
-      <div class="md:hidden flex flex-col gap-3 w-full mb-6">
-        <div id="viewport" class="overflow-hidden relative w-full aspect-[3/4] bg-gray-50 rounded-lg">
-          <div id="slider" class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth h-full w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {% for media in product.media %}
-              {% if media.media_type == 'image' %}
-                <div class="w-full h-full shrink-0 snap-center relative flex items-center justify-center">
-                  <img
-                    src="{{ media | image_url: width: 800 }}"
-                    alt="{{ media.alt | default: product.title | escape }}"
-                    width="{{ media.width }}"
-                    height="{{ media.height }}"
-                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                    {% if forloop.first %}fetchpriority="high"{% endif %}
-                    class="w-full h-full object-contain absolute inset-0"
-                  >
-                </div>
-              {% endif %}
-            {% endfor %}
-          </div>
-
-          <button
-            id="prev"
-            aria-label="Previous image"
-            class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 text-black aspect-square h-10 rounded-full hover:bg-white transition shadow-md z-10"
-          >
-            ‹
-          </button>
-
-          <button
-            id="next"
-            aria-label="Next image"
-            class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 text-black aspect-square h-10 rounded-full hover:bg-white transition shadow-md z-10"
-          >
-            ›
-          </button>
-        </div>
-
-        <div id="mobile-thumbnails" class="flex overflow-x-auto gap-2 py-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div id="viewport" class="overflow-hidden relative w-full aspect-[3/4] md:hidden">
+        <div id="slider" class="flex h-full">
           {% for media in product.media %}
             {% if media.media_type == 'image' %}
-              <button class="shrink-0 w-16 h-20 border-2 rounded-md overflow-hidden thumbnail-btn transition-colors {% if forloop.first %}border-rose-900{% else %}border-transparent{% endif %}" data-index="{{ forloop.index0 }}">
-                <img
-                  src="{{ media | image_url: width: 150 }}"
-                  alt="{{ media.alt | default: product.title | escape }}"
-                  class="w-full h-full object-cover bg-gray-50"
-                  loading="lazy"
-                >
-              </button>
+              <img
+                src="{{ media | image_url: width: 800 }}"
+                alt="{{ media.alt | default: product.title | escape }}"
+                width="{{ media.width }}"
+                height="{{ media.height }}"
+                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                {% if forloop.first %}
+                  fetchpriority="high"
+                {% endif %}
+                class="w-full h-full object-cover aspect-[3/4]"
+              >
             {% endif %}
           {% endfor %}
         </div>
+
+        <button
+          id="prev"
+          aria-label="Previous image"
+          class="
+            absolute left-2 top-1/2 -translate-y-1/2
+            bg-white/60 text-black aspect-square h-10 rounded-full
+            hover:bg-white transition
+          "
+        >
+          ‹
+        </button>
+
+        <button
+          id="next"
+          aria-label="Next image"
+          class="
+            absolute right-2 top-1/2 -translate-y-1/2
+            bg-white/60 text-black aspect-square h-10 rounded-full
+            hover:bg-white transition
+          "
+        >
+          ›
+        </button>
       </div>
 
       <div
@@ -167,15 +145,17 @@
       >
         {% for media in product.media %}
           {% if media.media_type == 'image' %}
-            <div class="aspect-[3/4] w-full bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center relative">
+            <div class="aspect-[3/4] w-full">
               <img
                 src="{{ media | image_url: width: 800 }}"
                 alt="{{ media.alt | default: product.title | escape }}"
                 width="{{ media.width }}"
                 height="{{ media.height }}"
                 loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                {% if forloop.first %}fetchpriority="high"{% endif %}
-                class="w-full h-full object-contain absolute inset-0 p-2"
+                {% if forloop.first %}
+                  fetchpriority="high"
+                {% endif %}
+                class="w-full h-full object-cover"
               >
             </div>
           {% endif %}
@@ -194,15 +174,19 @@
       </div>
       <div id="price" class="space-x-4 flex items-center">
         <span id="discounted" class="text-3xl text-rose-900 font-semibold">{{ product.price | money }}</span>
-        {% if product.compare_at_price > product.price %}
-          <span id="mrp" class="text-2xl line-through font-normal">{{ product.compare_at_price | money }}</span>
-          {% assign discount = product.compare_at_price
-            | minus: product.price
-            | times: 100
-            | divided_by: product.compare_at_price
-          %}
-          <span id="discount" class="text-lg font-thin">{{ discount }}% off</span>
-        {% endif %}
+        
+        <span id="mrp" class="text-2xl line-through font-normal" {% unless product.compare_at_price > product.price %}style="display:none;"{% endunless %}>
+          {% if product.compare_at_price > product.price %}
+            {{ product.compare_at_price | money }}
+          {% endif %}
+        </span>
+        
+        <span id="discount" class="text-lg font-thin" {% unless product.compare_at_price > product.price %}style="display:none;"{% endunless %}>
+          {% if product.compare_at_price > product.price %}
+            {% assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+            {{ discount }}% off
+          {% endif %}
+        </span>
       </div>
 
       {% for option in product.options_with_values %}
@@ -226,7 +210,7 @@
                   >
                   <label
                     for="{{ option_id }}"
-                    class="min-w-[5rem] px-4 py-2 min-h-[3rem] text-center flex items-center justify-center border border-gray-300 rounded-md cursor-pointer transition-all hover:shadow-lg peer-checked:border-gray-900 peer-checked:ring-1 peer-checked:ring-gray-900 peer-checked:text-gray-900 peer-checked:font-bold text-gray-600"
+                    class="w-20 h-12 flex items-center justify-center border border-gray-300 rounded-md cursor-pointer transition-all hover:shadow-lg peer-checked:border-transparent peer-checked:ring-2 peer-checked:ring-blue-600 peer-checked:text-blue-600 peer-checked:font-bold text-gray-600"
                   >
                     <span>{{ value }}</span>
                   </label>
@@ -316,62 +300,17 @@
 
       <script>
         document.addEventListener('DOMContentLoaded', function() {
-          // Mobile Slider & Thumbnails Logic
-          const slider = document.getElementById('slider');
-          const prevBtn = document.getElementById('prev');
-          const nextBtn = document.getElementById('next');
-          const thumbnails = document.querySelectorAll('.thumbnail-btn');
-
-          if (slider) {
-            let isScrolling = false;
-
-            const updateActiveThumbnail = (index) => {
-              thumbnails.forEach((thumb, i) => {
-                if (i === index) {
-                  thumb.classList.add('border-rose-900');
-                  thumb.classList.remove('border-transparent');
-                  // Auto scroll thumbnails container to keep active thumbnail in view
-                  thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                } else {
-                  thumb.classList.remove('border-rose-900');
-                  thumb.classList.add('border-transparent');
-                }
-              });
-            };
-
-            if (prevBtn && nextBtn) {
-              prevBtn.addEventListener('click', () => {
-                slider.scrollBy({ left: -slider.clientWidth, behavior: 'smooth' });
-              });
-              nextBtn.addEventListener('click', () => {
-                slider.scrollBy({ left: slider.clientWidth, behavior: 'smooth' });
-              });
-            }
-
-            thumbnails.forEach((thumb, index) => {
-              thumb.addEventListener('click', () => {
-                slider.scrollTo({ left: index * slider.clientWidth, behavior: 'smooth' });
-              });
-            });
-
-            slider.addEventListener('scroll', () => {
-              if (!isScrolling) {
-                window.requestAnimationFrame(() => {
-                  const index = Math.round(slider.scrollLeft / slider.clientWidth);
-                  updateActiveThumbnail(index);
-                  isScrolling = false;
-                });
-                isScrolling = true;
-              }
-            });
-          }
-
-          // Existing Product Form Logic
           const quantityInput = document.getElementById('quantity-input');
           const quantityBtns = document.querySelectorAll('.quantity-btn');
           const buyNowBtn = document.getElementById('buy-now-btn');
           const productForm = document.getElementById('product-form');
           const addToCartBtn = productForm.querySelector('button[name="add"]');
+
+          // Helper for currency formatting
+          const formatMoney = (cents) => {
+            const dollars = (cents / 100).toFixed(2);
+            return 'Rs. ' + dollars.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          };
 
           // Quantity +/- buttons
           quantityBtns.forEach(btn => {
@@ -451,7 +390,7 @@
             });
           });
 
-          // Update variant ID when options change
+          // Update variant ID and details when options change
           const optionInputs = document.querySelectorAll('input[name^="option"]');
           optionInputs.forEach(input => {
             input.addEventListener('change', updateVariant);
@@ -471,17 +410,32 @@
             if (matchedVariant) {
               document.querySelector('input[name="id"]').value = matchedVariant.id;
 
-              // Auto-set quantity from numeric value in selected options
-              // e.g. if option value is "130 pcs", set quantity to 130
-              for (const optionValue of matchedVariant.options) {
-                const numericMatch = optionValue.toString().match(/^(\d+)/);
-                if (numericMatch && parseInt(numericMatch[1]) > 1) {
-                  quantityInput.value = parseInt(numericMatch[1]);
-                  break;
-                }
+              // === UPDATE PRICE UI ===
+              const discountedPriceEl = document.getElementById('discounted');
+              const mrpPriceEl = document.getElementById('mrp');
+              const discountEl = document.getElementById('discount');
+              const labelContainer = document.getElementById('label');
+
+              // Update main price
+              discountedPriceEl.textContent = formatMoney(matchedVariant.price);
+
+              // Update Compare-at Price and Discount
+              if (matchedVariant.compare_at_price && matchedVariant.compare_at_price > matchedVariant.price) {
+                mrpPriceEl.textContent = formatMoney(matchedVariant.compare_at_price);
+                mrpPriceEl.style.display = 'inline';
+                
+                const percent = Math.round(((matchedVariant.compare_at_price - matchedVariant.price) * 100) / matchedVariant.compare_at_price);
+                discountEl.textContent = `${percent}% off`;
+                discountEl.style.display = 'inline';
+                
+                labelContainer.innerHTML = '<span class="px-[11px] py-[3px] border border-rose-900 rounded-sm text-xs text-rose-900">Sale</span>';
+              } else {
+                mrpPriceEl.style.display = 'none';
+                discountEl.style.display = 'none';
+                labelContainer.innerHTML = '';
               }
 
-              // Update button state
+              // === UPDATE BUTTON STATE ===
               const addBtn = productForm.querySelector('button[name="add"]');
               const buyBtn = document.getElementById('buy-now-btn');
 
@@ -494,28 +448,8 @@
                 addBtn.textContent = 'Sold Out';
                 buyBtn.disabled = true;
               }
-
-              // Update price display
-              const priceEl = document.getElementById('discounted');
-              const compareEl = document.getElementById('mrp');
-              const discountEl = document.getElementById('discount');
-              if (priceEl) priceEl.textContent = (matchedVariant.price / 100).toLocaleString('en-IN', { style: 'currency', currency: '{{ cart.currency.iso_code }}', minimumFractionDigits: 2 });
-              if (compareEl && matchedVariant.compare_at_price > matchedVariant.price) {
-                compareEl.style.display = '';
-                if (discountEl) {
-                  const pct = Math.round((matchedVariant.compare_at_price - matchedVariant.price) * 100 / matchedVariant.compare_at_price);
-                  discountEl.textContent = pct + '% off';
-                  discountEl.style.display = '';
-                }
-              } else {
-                if (compareEl) compareEl.style.display = 'none';
-                if (discountEl) discountEl.style.display = 'none';
-              }
             }
           }
-
-          // Trigger variant update on page load so quantity syncs with default variant
-          updateVariant();
 
           // Update header cart count
           function updateHeaderCartCount() {
@@ -563,10 +497,11 @@
           }
         });
       </script>
-      <div id="accordions" class="mt-8">
+
+      <div id="accordions">
         {% for block in section.blocks %}
           {% if block.type == 'accordion' %}
-            <details class="accordion-block group border-b border-rose-600 mb-2" {{ block.shopify_attributes }}>
+            <details class="group border-b border-rose-600" {{ block.shopify_attributes }}>
               <summary
                 class="
                   p-4 cursor-pointer list-none flex justify-between items-center
@@ -588,22 +523,19 @@
                 </span>
               </summary>
 
-              <div class="accordion-content">
-                <div class="p-4 pt-0 prose prose-sm text-gray-700">
-                  {% if block.settings.use_product_description %}
-                    {{ product.description }}
-                  {% elsif block.settings.is_reviews %}
-                    <div id="shopify-product-reviews" data-id="{{ product.id }}">{{ product.metafields.spr.reviews }}</div>
-                  {% else %}
-                    {{ block.settings.content }}
-                  {% endif %}
-                </div>
+              <div
+                class="
+                  overflow-hidden max-h-0 opacity-0
+                  transition-[max-height,opacity] duration-500 ease-in-out
+                  group-open:max-h-[1000px] group-open:opacity-100
+                "
+              >
+                <div class="p-4 pt-0 prose prose-sm">{{ block.settings.content }}</div>
               </div>
             </details>
           {% endif %}
         {% endfor %}
       </div>
-
       {% for block in section.blocks %}
         {% if block.type == 'selling_points' %}
           <div id="info" class="my-6" {{ block.shopify_attributes }}>
@@ -635,7 +567,7 @@
                       style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
                       class="flex items-center justify-center"
                     >
-                      {% render 'selling-point-icon', icon: icon_1, color: block.settings.icon_color %}
+                      {% render 'selling-point-icon', icon: icon_1 %}
                     </span>
                   {% endif %}
                   {% if text_1 != blank -%}
@@ -664,7 +596,7 @@
                       style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
                       class="flex items-center justify-center"
                     >
-                      {% render 'selling-point-icon', icon: icon_2, color: block.settings.icon_color %}
+                      {% render 'selling-point-icon', icon: icon_2 %}
                     </span>
                   {% endif %}
                   {% if text_2 != blank -%}
@@ -693,7 +625,7 @@
                       style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
                       class="flex items-center justify-center"
                     >
-                      {% render 'selling-point-icon', icon: icon_3, color: block.settings.icon_color %}
+                      {% render 'selling-point-icon', icon: icon_3 %}
                     </span>
                   {% endif %}
                   {% if text_3 != blank -%}
@@ -722,7 +654,7 @@
                       style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
                       class="flex items-center justify-center"
                     >
-                      {% render 'selling-point-icon', icon: icon_4, color: block.settings.icon_color %}
+                      {% render 'selling-point-icon', icon: icon_4 %}
                     </span>
                   {% endif %}
                   {% if text_4 != blank -%}
@@ -751,7 +683,7 @@
                       style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
                       class="flex items-center justify-center"
                     >
-                      {% render 'selling-point-icon', icon: icon_5, color: block.settings.icon_color %}
+                      {% render 'selling-point-icon', icon: icon_5 %}
                     </span>
                   {% endif %}
                   {% if text_5 != blank -%}
@@ -780,7 +712,7 @@
                       style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
                       class="flex items-center justify-center"
                     >
-                      {% render 'selling-point-icon', icon: icon_6, color: block.settings.icon_color %}
+                      {% render 'selling-point-icon', icon: icon_6 %}
                     </span>
                   {% endif %}
                   {% if text_6 != blank -%}
@@ -822,142 +754,10 @@
   </div>
 </section>
 
-{% if section.settings.enable_sticky_atc %}
-  <div id="sticky-add-to-cart" class="fixed bottom-0 left-0 w-full z-[100] transform translate-y-full transition-transform duration-300 ease-in-out border-t border-gray-200 p-3 md:p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur-md" style="background-color: {{ section.settings.sticky_atc_bg | default: '#ffffff' | color_modify: 'alpha', 0.95 }};">
-    <div class="max-w-[1200px] mx-auto flex items-center justify-between gap-4">
-      <div class="hidden md:flex flex-row items-center gap-4">
-        {% if product.featured_image %}
-          <img src="{{ product.featured_image | image_url: width: 100 }}" width="50" height="50" alt="{{ product.title | escape }}" class="rounded object-cover shadow-sm bg-white" style="aspect-ratio: 1/1;">
-        {% endif %}
-        <div class="flex flex-col">
-          <span class="font-bold text-[#1a1a1a] truncate max-w-[300px]">{{ product.title }}</span>
-          <span class="text-sm text-gray-500 truncate max-w-[300px]" id="sticky-variant-title">{% unless product.has_only_default_variant %}{{ product.selected_or_first_available_variant.title }}{% endunless %}</span>
-        </div>
-      </div>
-      
-      <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
-        <div class="flex flex-col items-end">
-          <div class="flex items-center gap-2">
-            <span class="font-bold text-lg md:text-xl" style="color: {{ section.settings.sticky_atc_btn_bg | default: '#B76E79' }};" id="sticky-price">{{ product.price | money }}</span>
-            <s class="opacity-70 text-sm text-gray-500" id="sticky-compare-price">{% if product.compare_at_price > product.price %}{{ product.compare_at_price | money }}{% endif %}</s>
-          </div>
-        </div>
-        
-        <button type="button" id="sticky-atc-btn" class="px-6 py-3 rounded font-bold transition-all disabled:opacity-50 min-w-[150px] shadow-sm hover:shadow active:scale-95" style="background-color: {{ section.settings.sticky_atc_btn_bg | default: '#B76E79' }}; color: {{ section.settings.sticky_atc_btn_text | default: '#ffffff' }};" {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}>
-          {% if product.selected_or_first_available_variant.available %}Add To Cart{% else %}Sold Out{% endif %}
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const stickyBar = document.getElementById('sticky-add-to-cart');
-      const stickyAtcBtn = document.getElementById('sticky-atc-btn');
-      const originalForm = document.getElementById('product-form');
-      const originalAtcBtn = originalForm ? originalForm.querySelector('button[name="add"]') : null;
-      
-      if (!stickyBar || !originalAtcBtn) return;
-
-      // Submit the real form when the sticky button is clicked
-      stickyAtcBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        if (!stickyAtcBtn.disabled) {
-           originalForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-        }
-      });
-
-      // Show/Hide sticky bar based on scroll position of the original Add To Cart button
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            // Original button is visible, hide sticky bar
-            stickyBar.classList.remove('translate-y-0');
-            stickyBar.classList.add('translate-y-full');
-          } else {
-            // Original button is hidden, check if we scrolled past it
-            const rect = originalAtcBtn.getBoundingClientRect();
-            if (rect.top < 0) { 
-              stickyBar.classList.remove('translate-y-full');
-              stickyBar.classList.add('translate-y-0');
-            } else {
-              stickyBar.classList.remove('translate-y-0');
-              stickyBar.classList.add('translate-y-full');
-            }
-          }
-        });
-      }, { threshold: 0 });
-
-      observer.observe(originalAtcBtn);
-      
-      // Update sticky bar UI when variant changes
-      const optionInputs = document.querySelectorAll('input[name^="option"]');
-      optionInputs.forEach(input => {
-        input.addEventListener('change', function() {
-          // Add a small delay to let the original updateVariant function process first
-          setTimeout(() => {
-             const selectedVariantIdElement = document.querySelector('input[name="id"]');
-             if (!selectedVariantIdElement) return;
-             
-             const selectedVariantId = selectedVariantIdElement.value;
-             const variants = {{ product.variants | json }};
-             const matchedVariant = variants.find(v => v.id.toString() === selectedVariantId.toString());
-             
-             if (matchedVariant) {
-               // Update sticky title
-               const stickyVariantTitle = document.getElementById('sticky-variant-title');
-               if (stickyVariantTitle && matchedVariant.title != 'Default Title') {
-                 stickyVariantTitle.textContent = matchedVariant.title;
-               }
-               // Update button state
-               if (matchedVariant.available) {
-                 stickyAtcBtn.disabled = false;
-                 stickyAtcBtn.textContent = 'Add To Cart';
-               } else {
-                 stickyAtcBtn.disabled = true;
-                 stickyAtcBtn.textContent = 'Sold Out';
-               }
-             }
-          }, 50);
-        });
-      });
-    });
-  </script>
-{% endif %}
-
 {% schema %}
 {
   "name": "Product",
-  "settings": [
-    {
-      "type": "header",
-      "content": "Sticky Add To Cart"
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_sticky_atc",
-      "label": "Enable Sticky Add To Cart",
-      "default": true
-    },
-    {
-      "type": "color",
-      "id": "sticky_atc_bg",
-      "label": "Background Color",
-      "default": "#ffffff"
-    },
-    {
-      "type": "color",
-      "id": "sticky_atc_btn_bg",
-      "label": "Button Background Color",
-      "default": "#881337"
-    },
-    {
-      "type": "color",
-      "id": "sticky_atc_btn_text",
-      "label": "Button Text Color",
-      "default": "#ffffff"
-    }
-  ],
+  "settings": [],
   "blocks": [
     {
       "type": "selling_points",
@@ -978,12 +778,6 @@
             { "value": "two_column", "label": "Two Column" }
           ],
           "default": "carousel"
-        },
-        {
-          "type": "color",
-          "id": "icon_color",
-          "label": "Icon Color",
-          "default": "#4b5563"
         },
         {
           "type": "range",
@@ -1254,18 +1048,6 @@
           "id": "content",
           "label": "Content",
           "default": "<p>Add your accordion content here.</p>"
-        },
-        {
-          "type": "checkbox",
-          "id": "use_product_description",
-          "label": "Use product description instead",
-          "default": false
-        },
-        {
-          "type": "checkbox",
-          "id": "is_reviews",
-          "label": "Is Reviews Section (Shopify Reviews placeholder)",
-          "default": false
         }
       ]
     }
