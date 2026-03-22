@@ -471,6 +471,16 @@
             if (matchedVariant) {
               document.querySelector('input[name="id"]').value = matchedVariant.id;
 
+              // Auto-set quantity from numeric value in selected options
+              // e.g. if option value is "130 pcs", set quantity to 130
+              for (const optionValue of matchedVariant.options) {
+                const numericMatch = optionValue.toString().match(/^(\d+)/);
+                if (numericMatch && parseInt(numericMatch[1]) > 1) {
+                  quantityInput.value = parseInt(numericMatch[1]);
+                  break;
+                }
+              }
+
               // Update button state
               const addBtn = productForm.querySelector('button[name="add"]');
               const buyBtn = document.getElementById('buy-now-btn');
@@ -484,8 +494,28 @@
                 addBtn.textContent = 'Sold Out';
                 buyBtn.disabled = true;
               }
+
+              // Update price display
+              const priceEl = document.getElementById('discounted');
+              const compareEl = document.getElementById('mrp');
+              const discountEl = document.getElementById('discount');
+              if (priceEl) priceEl.textContent = (matchedVariant.price / 100).toLocaleString('en-IN', { style: 'currency', currency: '{{ cart.currency.iso_code }}', minimumFractionDigits: 2 });
+              if (compareEl && matchedVariant.compare_at_price > matchedVariant.price) {
+                compareEl.style.display = '';
+                if (discountEl) {
+                  const pct = Math.round((matchedVariant.compare_at_price - matchedVariant.price) * 100 / matchedVariant.compare_at_price);
+                  discountEl.textContent = pct + '% off';
+                  discountEl.style.display = '';
+                }
+              } else {
+                if (compareEl) compareEl.style.display = 'none';
+                if (discountEl) discountEl.style.display = 'none';
+              }
             }
           }
+
+          // Trigger variant update on page load so quantity syncs with default variant
+          updateVariant();
 
           // Update header cart count
           function updateHeaderCartCount() {
