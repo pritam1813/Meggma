@@ -553,24 +553,12 @@
                 buyBtn.disabled = true;
               }
 
-              // Format currency manually instead of raw locale string which outputs ₹
-              let formattedPrice = (matchedVariant.price / 100).toLocaleString('en-IN', { style: 'currency', currency: '{{ cart.currency.iso_code }}', minimumFractionDigits: 2 });
-              formattedPrice = formattedPrice.replace('₹', 'Rs. ');
-
-              let formattedCompare = '';
-              if (matchedVariant.compare_at_price) {
-                formattedCompare = (matchedVariant.compare_at_price / 100).toLocaleString('en-IN', { style: 'currency', currency: '{{ cart.currency.iso_code }}', minimumFractionDigits: 2 });
-                formattedCompare = formattedCompare.replace('₹', 'Rs. ');
-              }
-
               // Update price display
               const priceEl = document.getElementById('discounted');
               const compareEl = document.getElementById('mrp');
               const discountEl = document.getElementById('discount');
-              
-              if (priceEl) priceEl.textContent = formattedPrice;
+              if (priceEl) priceEl.textContent = (matchedVariant.price / 100).toLocaleString('en-IN', { style: 'currency', currency: '{{ cart.currency.iso_code }}', minimumFractionDigits: 2 });
               if (compareEl && matchedVariant.compare_at_price > matchedVariant.price) {
-                compareEl.textContent = formattedCompare;
                 compareEl.style.display = '';
                 if (discountEl) {
                   const pct = Math.round((matchedVariant.compare_at_price - matchedVariant.price) * 100 / matchedVariant.compare_at_price);
@@ -580,32 +568,6 @@
               } else {
                 if (compareEl) compareEl.style.display = 'none';
                 if (discountEl) discountEl.style.display = 'none';
-              }
-
-              // Update sticky bar elements
-              const stickyVariantTitle = document.getElementById('sticky-variant-title');
-              const stickyPrice = document.getElementById('sticky-price');
-              const stickyCompare = document.getElementById('sticky-compare-price');
-              const stickyBtn = document.getElementById('sticky-atc-btn');
-
-              if (stickyVariantTitle) stickyVariantTitle.textContent = matchedVariant.title;
-              if (stickyPrice) stickyPrice.textContent = formattedPrice;
-              if (stickyCompare) {
-                if (matchedVariant.compare_at_price > matchedVariant.price) {
-                  stickyCompare.textContent = formattedCompare;
-                  stickyCompare.style.display = '';
-                } else {
-                  stickyCompare.style.display = 'none';
-                }
-              }
-              if (stickyBtn) {
-                if (matchedVariant.available) {
-                  stickyBtn.disabled = false;
-                  stickyBtn.textContent = 'Add To Cart';
-                } else {
-                  stickyBtn.disabled = true;
-                  stickyBtn.textContent = 'Sold Out';
-                }
               }
             }
           }
@@ -927,7 +889,7 @@
         {% endif %}
         <div class="flex flex-col">
           <span class="font-bold text-[#1a1a1a] truncate max-w-[300px]">{{ product.title }}</span>
-          <span class="text-sm text-gray-500 truncate max-w-[300px]" id="sticky-variant-title">Select options</span>
+          <span class="text-sm text-gray-500 truncate max-w-[300px]" id="sticky-variant-title">{% unless product.has_only_default_variant %}{{ product.selected_or_first_available_variant.title }}{% endunless %}</span>
         </div>
       </div>
       
@@ -939,8 +901,8 @@
           </div>
         </div>
         
-        <button type="button" id="sticky-atc-btn" class="px-6 py-3 rounded font-bold transition-all disabled:opacity-50 min-w-[150px] shadow-sm hover:shadow active:scale-95" style="background-color: {{ section.settings.sticky_atc_btn_bg | default: '#B76E79' }}; color: {{ section.settings.sticky_atc_btn_text | default: '#ffffff' }};">
-          Select Options
+        <button type="button" id="sticky-atc-btn" class="px-6 py-3 rounded font-bold transition-all disabled:opacity-50 min-w-[150px] shadow-sm hover:shadow active:scale-95" style="background-color: {{ section.settings.sticky_atc_btn_bg | default: '#B76E79' }}; color: {{ section.settings.sticky_atc_btn_text | default: '#ffffff' }};" {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}>
+          {% if product.selected_or_first_available_variant.available %}Add To Cart{% else %}Sold Out{% endif %}
         </button>
       </div>
     </div>
