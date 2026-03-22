@@ -314,10 +314,7 @@
         {%- endform -%}
       </div>
 
-      {%- render 'available-offers', product: product -%}
-
       <script>
-
         document.addEventListener('DOMContentLoaded', function() {
           // Mobile Slider & Thumbnails Logic
           const slider = document.getElementById('slider');
@@ -474,7 +471,6 @@
             if (matchedVariant) {
               document.querySelector('input[name="id"]').value = matchedVariant.id;
 
-
               // Update button state
               const addBtn = productForm.querySelector('button[name="add"]');
               const buyBtn = document.getElementById('buy-now-btn');
@@ -488,28 +484,8 @@
                 addBtn.textContent = 'Sold Out';
                 buyBtn.disabled = true;
               }
-
-              // Update price display
-              const priceEl = document.getElementById('discounted');
-              const compareEl = document.getElementById('mrp');
-              const discountEl = document.getElementById('discount');
-              if (priceEl) priceEl.textContent = (matchedVariant.price / 100).toLocaleString('en-IN', { style: 'currency', currency: '{{ cart.currency.iso_code }}', minimumFractionDigits: 2 });
-              if (compareEl && matchedVariant.compare_at_price > matchedVariant.price) {
-                compareEl.style.display = '';
-                if (discountEl) {
-                  const pct = Math.round((matchedVariant.compare_at_price - matchedVariant.price) * 100 / matchedVariant.compare_at_price);
-                  discountEl.textContent = pct + '% off';
-                  discountEl.style.display = '';
-                }
-              } else {
-                if (compareEl) compareEl.style.display = 'none';
-                if (discountEl) discountEl.style.display = 'none';
-              }
             }
           }
-
-          // Trigger variant update on page load so quantity syncs with default variant
-          updateVariant();
 
           // Update header cart count
           function updateHeaderCartCount() {
