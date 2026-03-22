@@ -85,60 +85,77 @@
       opacity: 0;
     }
   }
+
+  /* Robust Accordion animations */
+  details.accordion-block > div.accordion-content {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.4s ease;
+  }
+  details.accordion-block[open] > div.accordion-content {
+    max-height: 2000px;
+    opacity: 1;
+  }
 {% endstyle %}
 
-<section class="py-12 px-16 w-full">
+<section class="py-12 px-4 md:px-10 xl:px-16 w-full">
   <div id="product" class="w-full flex flex-col md:flex-row">
     <div class="w-full md:w-1/2 max-h-svh overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-      <!-- mobile view -->
-      <!-- mobile view -->
-      <div id="viewport" class="overflow-hidden relative w-full aspect-[3/4] md:hidden">
-        <div id="slider" class="flex h-full">
+      
+      <div class="md:hidden flex flex-col gap-3 w-full mb-6">
+        <div id="viewport" class="overflow-hidden relative w-full aspect-[3/4] bg-gray-50 rounded-lg">
+          <div id="slider" class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth h-full w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {% for media in product.media %}
+              {% if media.media_type == 'image' %}
+                <div class="w-full h-full shrink-0 snap-center relative flex items-center justify-center">
+                  <img
+                    src="{{ media | image_url: width: 800 }}"
+                    alt="{{ media.alt | default: product.title | escape }}"
+                    width="{{ media.width }}"
+                    height="{{ media.height }}"
+                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                    {% if forloop.first %}fetchpriority="high"{% endif %}
+                    class="w-full h-full object-contain absolute inset-0"
+                  >
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          <button
+            id="prev"
+            aria-label="Previous image"
+            class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 text-black aspect-square h-10 rounded-full hover:bg-white transition shadow-md z-10"
+          >
+            ‹
+          </button>
+
+          <button
+            id="next"
+            aria-label="Next image"
+            class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 text-black aspect-square h-10 rounded-full hover:bg-white transition shadow-md z-10"
+          >
+            ›
+          </button>
+        </div>
+
+        <div id="mobile-thumbnails" class="flex overflow-x-auto gap-2 py-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {% for media in product.media %}
             {% if media.media_type == 'image' %}
-              <img
-                src="{{ media | image_url: width: 800 }}"
-                alt="{{ media.alt | default: product.title | escape }}"
-                width="{{ media.width }}"
-                height="{{ media.height }}"
-                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                {% if forloop.first %}
-                  fetchpriority="high"
-                {% endif %}
-                class="w-full h-full object-cover aspect-[3/4]"
-              >
+              <button class="shrink-0 w-16 h-20 border-2 rounded-md overflow-hidden thumbnail-btn transition-colors {% if forloop.first %}border-rose-900{% else %}border-transparent{% endif %}" data-index="{{ forloop.index0 }}">
+                <img
+                  src="{{ media | image_url: width: 150 }}"
+                  alt="{{ media.alt | default: product.title | escape }}"
+                  class="w-full h-full object-cover bg-gray-50"
+                  loading="lazy"
+                >
+              </button>
             {% endif %}
           {% endfor %}
         </div>
-
-        <!-- Prev Button -->
-        <button
-          id="prev"
-          aria-label="Previous image"
-          class="
-            absolute left-2 top-1/2 -translate-y-1/2
-            bg-white/60 text-black aspect-square h-10 rounded-full
-            hover:bg-white transition
-          "
-        >
-          ‹
-        </button>
-
-        <!-- Next Button -->
-        <button
-          id="next"
-          aria-label="Next image"
-          class="
-            absolute right-2 top-1/2 -translate-y-1/2
-            bg-white/60 text-black aspect-square h-10 rounded-full
-            hover:bg-white transition
-          "
-        >
-          ›
-        </button>
       </div>
 
-      <!-- larger screens -->
       <div
         class="
           hidden md:flex flex-col lg:flex-row lg:flex-wrap gap-4
@@ -150,17 +167,15 @@
       >
         {% for media in product.media %}
           {% if media.media_type == 'image' %}
-            <div class="aspect-[3/4] w-full">
+            <div class="aspect-[3/4] w-full bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center relative">
               <img
                 src="{{ media | image_url: width: 800 }}"
                 alt="{{ media.alt | default: product.title | escape }}"
                 width="{{ media.width }}"
                 height="{{ media.height }}"
                 loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                {% if forloop.first %}
-                  fetchpriority="high"
-                {% endif %}
-                class="w-full h-full object-cover"
+                {% if forloop.first %}fetchpriority="high"{% endif %}
+                class="w-full h-full object-contain absolute inset-0 p-2"
               >
             </div>
           {% endif %}
@@ -168,7 +183,6 @@
       </div>
     </div>
 
-    <!-- right -->
     <div class="w-full md:w-1/2 flex flex-col justify-start my-6 md:my-0 md:px-10 xl:px-16 2xl:px-28 space-y-4 md:max-h-svh md:overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       <div id="label">
         {% if product.compare_at_price > product.price %}
@@ -206,13 +220,10 @@
                     id="{{ option_id }}"
                     value="{{ value | escape }}"
                     class="hidden peer"
-                    {% if forloop.first %}
-                      checked
-                    {% endif %}
                   >
                   <label
                     for="{{ option_id }}"
-                    class="w-20 h-12 flex items-center justify-center border border-gray-300 rounded-md cursor-pointer transition-all hover:shadow-lg peer-checked:border-transparent peer-checked:ring-2 peer-checked:ring-blue-600 peer-checked:text-blue-600 peer-checked:font-bold text-gray-600"
+                    class="min-w-[5rem] px-4 py-2 min-h-[3rem] text-center flex items-center justify-center border border-gray-300 rounded-md cursor-pointer transition-all hover:shadow-lg peer-checked:border-gray-900 peer-checked:ring-1 peer-checked:ring-gray-900 peer-checked:text-gray-900 peer-checked:font-bold text-gray-600"
                   >
                     <span>{{ value }}</span>
                   </label>
@@ -248,7 +259,7 @@
       </div>
       <div id="form">
         {%- form 'product', product, id: 'product-form', class: 'product-form' -%}
-          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+          <input type="hidden" name="id" value="">
 
           <div id="addtocart" class="flex space-x-2">
             <div class="inline-flex items-center border rounded-md w-fit">
@@ -261,7 +272,8 @@
                 id="quantity-input"
                 class="max-w-8 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
                 min="1"
-                value="1"
+                placeholder="1"
+                value=""
                 aria-label="Quantity"
               >
               <button type="button" class="size-8 quantity-btn" data-action="increase" aria-label="Increase quantity">
@@ -300,24 +312,85 @@
         {%- endform -%}
       </div>
 
+      {%- render 'available-offers', product: product -%}
+
       <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          const quantityInput = document.getElementById('quantity-input');
-          const quantityBtns = document.querySelectorAll('.quantity-btn');
-          const buyNowBtn = document.getElementById('buy-now-btn');
-          const productForm = document.getElementById('product-form');
-          const addToCartBtn = productForm.querySelector('button[name="add"]');
+        (function() {
+          const sectionId = 'MainProduct-{{ section.id }}';
+          const section = document.getElementById(sectionId);
+          if (!section) return; // safety
+          // Mobile Slider & Thumbnails Logic
+          const slider = document.getElementById('slider');
+          const prevBtn = document.getElementById('prev');
+          const nextBtn = document.getElementById('next');
+          const thumbnails = document.querySelectorAll('.thumbnail-btn');
+
+          if (slider) {
+            let isScrolling = false;
+
+            const updateActiveThumbnail = (index) => {
+              thumbnails.forEach((thumb, i) => {
+                if (i === index) {
+                  thumb.classList.add('border-rose-900');
+                  thumb.classList.remove('border-transparent');
+                  // Auto scroll thumbnails container to keep active thumbnail in view
+                  thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                } else {
+                  thumb.classList.remove('border-rose-900');
+                  thumb.classList.add('border-transparent');
+                }
+              });
+            };
+
+            if (prevBtn && nextBtn) {
+              prevBtn.addEventListener('click', () => {
+                slider.scrollBy({ left: -slider.clientWidth, behavior: 'smooth' });
+              });
+              nextBtn.addEventListener('click', () => {
+                slider.scrollBy({ left: slider.clientWidth, behavior: 'smooth' });
+              });
+            }
+
+            thumbnails.forEach((thumb, index) => {
+              thumb.addEventListener('click', () => {
+                slider.scrollTo({ left: index * slider.clientWidth, behavior: 'smooth' });
+              });
+            });
+
+            slider.addEventListener('scroll', () => {
+              if (!isScrolling) {
+                window.requestAnimationFrame(() => {
+                  const index = Math.round(slider.scrollLeft / slider.clientWidth);
+                  updateActiveThumbnail(index);
+                  isScrolling = false;
+                });
+                isScrolling = true;
+              }
+            });
+          }
+
+          }
+
+          // Existing Product Form Logic
+          const quantityInput = section.querySelector('#quantity-input') || document.getElementById('quantity-input');
+          const quantityBtns = section.querySelectorAll('.quantity-btn').length > 0 ? section.querySelectorAll('.quantity-btn') : document.querySelectorAll('.quantity-btn');
+          const buyNowBtn = section.querySelector('#buy-now-btn') || document.getElementById('buy-now-btn');
+          const productForm = section.querySelector('.product-form') || document.getElementById('product-form');
+          const addToCartBtn = productForm ? productForm.querySelector('button[name="add"]') : null;
 
           // Quantity +/- buttons
           quantityBtns.forEach(btn => {
             btn.addEventListener('click', function() {
               const action = this.dataset.action;
-              let currentValue = parseInt(quantityInput.value) || 1;
+              let currentValue = parseInt(quantityInput.value);
+              if (isNaN(currentValue)) currentValue = 0;
 
               if (action === 'increase') {
                 quantityInput.value = currentValue + 1;
               } else if (action === 'decrease' && currentValue > 1) {
                 quantityInput.value = currentValue - 1;
+              } else if (action === 'decrease' && currentValue === 1) {
+                quantityInput.value = '';
               }
             });
           });
@@ -327,18 +400,70 @@
             e.preventDefault();
 
             const formData = new FormData(productForm);
+
+            // Validation
+            const variantId = formData.get('id');
+            const qty = formData.get('quantity');
+
+            if (!variantId) {
+              showNotification('Please select a variant option first.', 'error');
+              return;
+            }
+            if (!qty || parseInt(qty) < 1) {
+              showNotification('Please select a quantity.', 'error');
+              return;
+            }
+
             const originalText = addToCartBtn.textContent;
 
             // Show loading state
             addToCartBtn.disabled = true;
             addToCartBtn.textContent = 'Adding...';
 
+            // Fly animation
+            const productImage = document.querySelector('#slider img.border-rose-900') || document.querySelector('#slider img') || document.querySelector('.aspect-\\[3\\/4\\] img');
+            const cartIcon = document.querySelector('[data-cart-drawer-trigger]');
+
+            if (productImage && cartIcon) {
+              const imgClone = productImage.cloneNode(true);
+              const imgRect = productImage.getBoundingClientRect();
+              const cartRect = cartIcon.getBoundingClientRect();
+
+              imgClone.style.position = 'fixed';
+              imgClone.style.top = imgRect.top + 'px';
+              imgClone.style.left = imgRect.left + 'px';
+              imgClone.style.width = imgRect.width + 'px';
+              imgClone.style.height = imgRect.height + 'px';
+              imgClone.style.objectFit = 'cover';
+              imgClone.style.borderRadius = '50%';
+              imgClone.style.zIndex = '9999';
+              imgClone.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+              imgClone.style.opacity = '0.8';
+              document.body.appendChild(imgClone);
+
+              // Trigger reflow
+              imgClone.getBoundingClientRect();
+
+              imgClone.style.top = cartRect.top + 'px';
+              imgClone.style.left = cartRect.left + 'px';
+              imgClone.style.width = '24px';
+              imgClone.style.height = '24px';
+              imgClone.style.opacity = '0';
+
+              setTimeout(() => imgClone.remove(), 850);
+            }
+
             fetch('/cart/add.js', {
               method: 'POST',
               body: formData
             })
-            .then(response => response.json())
             .then(data => {
+              if (data.status === 422 || data.description) {
+                 showNotification(data.description || 'Failed to add to cart.', 'error');
+                 addToCartBtn.disabled = false;
+                 addToCartBtn.textContent = originalText;
+                 return;
+              }
               // Fetch the updated cart and dispatch event for drawer/header sync
               fetch('/cart.js')
                 .then(res => res.json())
@@ -346,10 +471,13 @@
                   document.dispatchEvent(new CustomEvent('cart:updated', {
                     detail: { cart: cart }
                   }));
+                  // Open drawer if function exists
+                  if (typeof openDrawer === 'function') openDrawer();
+                  else if (window.CartDrawer && window.CartDrawer.open) window.CartDrawer.open();
                 });
 
               // Show success notification
-              showNotification(`${data.title} added to cart!`, 'success');
+              showNotification(`${data.title || 'Item'} added to cart!`, 'success');
 
               // Reset button
               addToCartBtn.disabled = false;
@@ -367,6 +495,19 @@
           buyNowBtn.addEventListener('click', function() {
             const formData = new FormData(productForm);
 
+            // Validation
+            const variantId = formData.get('id');
+            const qty = formData.get('quantity');
+
+            if (!variantId) {
+              showNotification('Please select a variant option first.', 'error');
+              return;
+            }
+            if (!qty || parseInt(qty) < 1) {
+              showNotification('Please select a quantity.', 'error');
+              return;
+            }
+
             buyNowBtn.disabled = true;
             buyNowBtn.textContent = 'Processing...';
 
@@ -374,9 +515,20 @@
               method: 'POST',
               body: formData
             })
-            .then(response => response.json())
             .then(data => {
-              window.location.href = '/checkout';
+              if (data.status === 422 || data.description) {
+                 showNotification(data.description || 'Failed to process.', 'error');
+                 buyNowBtn.disabled = false;
+                 buyNowBtn.textContent = 'Buy It Now';
+                 return;
+              }
+              if (window.Shopify && window.Shopify.designMode) {
+                 showNotification('Checkout redirect disabled in Theme Editor', 'success');
+                 buyNowBtn.disabled = false;
+                 buyNowBtn.textContent = 'Buy It Now';
+              } else {
+                 window.location.href = '/checkout';
+              }
             })
             .catch(error => {
               console.error('Error:', error);
@@ -387,15 +539,18 @@
           });
 
           // Update variant ID when options change
-          const optionInputs = document.querySelectorAll('input[name^="option"]');
+          const optionInputs = section.querySelectorAll('input[name^="option"]');
           optionInputs.forEach(input => {
             input.addEventListener('change', updateVariant);
           });
 
           function updateVariant() {
             const selectedOptions = [];
-            document.querySelectorAll('input[name^="option"]:checked').forEach(input => {
-              selectedOptions.push(input.value);
+            section.querySelectorAll('input[name^="option"]:checked').forEach(input => {
+              // Decode HTML entities (like &amp; to &) before matching with raw JSON
+              const text = document.createElement("textarea");
+              text.innerHTML = input.value;
+              selectedOptions.push(text.value);
             });
 
             const variants = {{ product.variants | json }};
@@ -404,23 +559,83 @@
             });
 
             if (matchedVariant) {
-              document.querySelector('input[name="id"]').value = matchedVariant.id;
+              if (productForm) {
+                const idInput = productForm.querySelector('input[name="id"]');
+                if (idInput) idInput.value = matchedVariant.id;
+              }
+
 
               // Update button state
-              const addBtn = productForm.querySelector('button[name="add"]');
-              const buyBtn = document.getElementById('buy-now-btn');
+              const addBtn = productForm ? productForm.querySelector('button[name="add"]') : null;
+              const buyBtn = section.querySelector('#buy-now-btn') || document.getElementById('buy-now-btn');
 
               if (matchedVariant.available) {
-                addBtn.disabled = false;
-                addBtn.textContent = 'Add To Cart';
-                buyBtn.disabled = false;
+                if (addBtn) { addBtn.disabled = false; addBtn.textContent = 'Add To Cart'; }
+                if (buyBtn) buyBtn.disabled = false;
               } else {
-                addBtn.disabled = true;
-                addBtn.textContent = 'Sold Out';
-                buyBtn.disabled = true;
+                if (addBtn) { addBtn.disabled = true; addBtn.textContent = 'Sold Out'; }
+                if (buyBtn) buyBtn.disabled = true;
+              }
+
+              // Format currency manually instead of raw locale string which outputs ₹
+              let formattedPrice = (matchedVariant.price / 100).toLocaleString('en-IN', { style: 'currency', currency: '{{ cart.currency.iso_code }}', minimumFractionDigits: 2 });
+              formattedPrice = formattedPrice.replace('₹', 'Rs. ');
+
+              let formattedCompare = '';
+              if (matchedVariant.compare_at_price) {
+                formattedCompare = (matchedVariant.compare_at_price / 100).toLocaleString('en-IN', { style: 'currency', currency: '{{ cart.currency.iso_code }}', minimumFractionDigits: 2 });
+                formattedCompare = formattedCompare.replace('₹', 'Rs. ');
+              }
+
+              // Update price display
+              const priceEl = section.querySelector('#discounted') || document.getElementById('discounted');
+              const compareEl = section.querySelector('#mrp') || document.getElementById('mrp');
+              const discountEl = section.querySelector('#discount') || document.getElementById('discount');
+              
+              if (priceEl) priceEl.textContent = formattedPrice;
+              if (compareEl && matchedVariant.compare_at_price > matchedVariant.price) {
+                compareEl.textContent = formattedCompare;
+                compareEl.style.display = '';
+                if (discountEl) {
+                  const pct = Math.round((matchedVariant.compare_at_price - matchedVariant.price) * 100 / matchedVariant.compare_at_price);
+                  discountEl.textContent = pct + '% off';
+                  discountEl.style.display = '';
+                }
+              } else {
+                if (compareEl) compareEl.style.display = 'none';
+                if (discountEl) discountEl.style.display = 'none';
+              }
+
+              // Update sticky bar elements
+              const stickyVariantTitle = document.getElementById('sticky-variant-title');
+              const stickyPrice = document.getElementById('sticky-price');
+              const stickyCompare = document.getElementById('sticky-compare-price');
+              const stickyBtn = document.getElementById('sticky-atc-btn');
+
+              if (stickyVariantTitle) stickyVariantTitle.textContent = matchedVariant.title;
+              if (stickyPrice) stickyPrice.textContent = formattedPrice;
+              if (stickyCompare) {
+                if (matchedVariant.compare_at_price > matchedVariant.price) {
+                  stickyCompare.textContent = formattedCompare;
+                  stickyCompare.style.display = '';
+                } else {
+                  stickyCompare.style.display = 'none';
+                }
+              }
+              if (stickyBtn) {
+                if (matchedVariant.available) {
+                  stickyBtn.disabled = false;
+                  stickyBtn.textContent = 'Add To Cart';
+                } else {
+                  stickyBtn.disabled = true;
+                  stickyBtn.textContent = 'Sold Out';
+                }
               }
             }
           }
+
+          // Trigger variant update on page load so quantity syncs with default variant
+          updateVariant();
 
           // Update header cart count
           function updateHeaderCartCount() {
@@ -466,12 +681,12 @@
               }
             }, 4000);
           }
-        });
+        })();
       </script>
-      <div id="accordions">
+      <div id="accordions" class="mt-8">
         {% for block in section.blocks %}
           {% if block.type == 'accordion' %}
-            <details class="group border-b border-rose-600" {{ block.shopify_attributes }}>
+            <details class="accordion-block group border-b border-rose-600 mb-2" {{ block.shopify_attributes }}>
               <summary
                 class="
                   p-4 cursor-pointer list-none flex justify-between items-center
@@ -493,19 +708,22 @@
                 </span>
               </summary>
 
-              <div
-                class="
-                  overflow-hidden max-h-0 opacity-0
-                  transition-[max-height,opacity] duration-500 ease-in-out
-                  group-open:max-h-[1000px] group-open:opacity-100
-                "
-              >
-                <div class="p-4 pt-0 prose prose-sm">{{ block.settings.content }}</div>
+              <div class="accordion-content">
+                <div class="p-4 pt-0 prose prose-sm text-gray-700">
+                  {% if block.settings.use_product_description %}
+                    {{ product.description }}
+                  {% elsif block.settings.is_reviews %}
+                    <div id="shopify-product-reviews" data-id="{{ product.id }}">{{ product.metafields.spr.reviews }}</div>
+                  {% else %}
+                    {{ block.settings.content }}
+                  {% endif %}
+                </div>
               </div>
             </details>
           {% endif %}
         {% endfor %}
       </div>
+
       {% for block in section.blocks %}
         {% if block.type == 'selling_points' %}
           <div id="info" class="my-6" {{ block.shopify_attributes }}>
@@ -537,7 +755,7 @@
                       style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
                       class="flex items-center justify-center"
                     >
-                      {% render 'selling-point-icon', icon: icon_1 %}
+                      {% render 'selling-point-icon', icon: icon_1, color: block.settings.icon_color %}
                     </span>
                   {% endif %}
                   {% if text_1 != blank -%}
@@ -566,7 +784,7 @@
                       style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
                       class="flex items-center justify-center"
                     >
-                      {% render 'selling-point-icon', icon: icon_2 %}
+                      {% render 'selling-point-icon', icon: icon_2, color: block.settings.icon_color %}
                     </span>
                   {% endif %}
                   {% if text_2 != blank -%}
@@ -595,7 +813,7 @@
                       style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
                       class="flex items-center justify-center"
                     >
-                      {% render 'selling-point-icon', icon: icon_3 %}
+                      {% render 'selling-point-icon', icon: icon_3, color: block.settings.icon_color %}
                     </span>
                   {% endif %}
                   {% if text_3 != blank -%}
@@ -624,7 +842,7 @@
                       style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
                       class="flex items-center justify-center"
                     >
-                      {% render 'selling-point-icon', icon: icon_4 %}
+                      {% render 'selling-point-icon', icon: icon_4, color: block.settings.icon_color %}
                     </span>
                   {% endif %}
                   {% if text_4 != blank -%}
@@ -653,7 +871,7 @@
                       style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
                       class="flex items-center justify-center"
                     >
-                      {% render 'selling-point-icon', icon: icon_5 %}
+                      {% render 'selling-point-icon', icon: icon_5, color: block.settings.icon_color %}
                     </span>
                   {% endif %}
                   {% if text_5 != blank -%}
@@ -682,7 +900,7 @@
                       style="width: {{ icon_width }}px; height: {{ icon_width }}px;"
                       class="flex items-center justify-center"
                     >
-                      {% render 'selling-point-icon', icon: icon_6 %}
+                      {% render 'selling-point-icon', icon: icon_6, color: block.settings.icon_color %}
                     </span>
                   {% endif %}
                   {% if text_6 != blank -%}
@@ -700,7 +918,6 @@
           <li class="size-10">
             <a href="" aria-label="Share on Facebook">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" aria-hidden="true">
-                <!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
                 <path d="M453.2 112L523.8 112L369.6 288.2L551 528L409 528L297.7 382.6L170.5 528L99.8 528L264.7 339.5L90.8 112L236.4 112L336.9 244.9L453.2 112zM428.4 485.8L467.5 485.8L215.1 152L173.1 152L428.4 485.8z" />
               </svg>
             </a>
@@ -708,7 +925,6 @@
           <li class="size-10">
             <a href="" aria-label="Share on Twitter">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" aria-hidden="true">
-                <!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
                 <path d="M240 363.3L240 576L356 576L356 363.3L442.5 363.3L460.5 265.5L356 265.5L356 230.9C356 179.2 376.3 159.4 428.7 159.4C445 159.4 458.1 159.8 465.7 160.6L465.7 71.9C451.4 68 416.4 64 396.2 64C289.3 64 240 114.5 240 223.4L240 265.5L174 265.5L174 363.3L240 363.3z" />
               </svg>
             </a>
@@ -716,7 +932,6 @@
           <li class="size-10">
             <a href="" aria-label="Share on Pinterest">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" aria-hidden="true">
-                <!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
                 <path d="M568 320C568 457 457 568 320 568C294.4 568 269.8 564.1 246.6 556.9C256.7 540.4 271.8 513.4 277.4 491.9C280.4 480.3 292.8 432.9 292.8 432.9C300.9 448.3 324.5 461.4 349.6 461.4C424.4 461.4 478.3 392.6 478.3 307.1C478.3 225.2 411.4 163.9 325.4 163.9C218.4 163.9 161.5 235.7 161.5 314C161.5 350.4 180.9 395.7 211.8 410.1C216.5 412.3 219 411.3 220.1 406.8C220.9 403.4 225.1 386.5 227 378.7C227.6 376.2 227.3 374 225.3 371.6C215.2 359.1 207 336.3 207 315C207 260.3 248.4 207.4 319 207.4C379.9 207.4 422.6 248.9 422.6 308.3C422.6 375.4 388.7 421.9 344.6 421.9C320.3 421.9 302 401.8 307.9 377.1C314.9 347.6 328.4 315.8 328.4 294.5C328.4 275.5 318.2 259.6 297 259.6C272.1 259.6 252.1 285.3 252.1 319.8C252.1 341.8 259.5 356.6 259.5 356.6C259.5 356.6 235 460.4 230.5 479.8C225.5 501.2 227.5 531.4 229.6 551C137.4 514.9 72 425.1 72 320C72 183 183 72 320 72C457 72 568 183 568 320z" />
               </svg>
             </a>
@@ -727,10 +942,142 @@
   </div>
 </section>
 
+{% if section.settings.enable_sticky_atc %}
+  <div id="sticky-add-to-cart" class="fixed bottom-0 left-0 w-full z-[100] transform translate-y-full transition-transform duration-300 ease-in-out border-t border-gray-200 p-3 md:p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur-md" style="background-color: {{ section.settings.sticky_atc_bg | default: '#ffffff' | color_modify: 'alpha', 0.95 }};">
+    <div class="max-w-[1200px] mx-auto flex items-center justify-between gap-4">
+      <div class="hidden md:flex flex-row items-center gap-4">
+        {% if product.featured_image %}
+          <img src="{{ product.featured_image | image_url: width: 100 }}" width="50" height="50" alt="{{ product.title | escape }}" class="rounded object-cover shadow-sm bg-white" style="aspect-ratio: 1/1;">
+        {% endif %}
+        <div class="flex flex-col">
+          <span class="font-bold text-[#1a1a1a] truncate max-w-[300px]">{{ product.title }}</span>
+          <span class="text-sm text-gray-500 truncate max-w-[300px]" id="sticky-variant-title">Select options</span>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+        <div class="flex flex-col items-end">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-lg md:text-xl" style="color: {{ section.settings.sticky_atc_btn_bg | default: '#B76E79' }};" id="sticky-price">{{ product.price | money }}</span>
+            <s class="opacity-70 text-sm text-gray-500" id="sticky-compare-price">{% if product.compare_at_price > product.price %}{{ product.compare_at_price | money }}{% endif %}</s>
+          </div>
+        </div>
+        
+        <button type="button" id="sticky-atc-btn" class="px-6 py-3 rounded font-bold transition-all disabled:opacity-50 min-w-[150px] shadow-sm hover:shadow active:scale-95" style="background-color: {{ section.settings.sticky_atc_btn_bg | default: '#B76E79' }}; color: {{ section.settings.sticky_atc_btn_text | default: '#ffffff' }};">
+          Select Options
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const stickyBar = document.getElementById('sticky-add-to-cart');
+      const stickyAtcBtn = document.getElementById('sticky-atc-btn');
+      const originalForm = document.getElementById('product-form');
+      const originalAtcBtn = originalForm ? originalForm.querySelector('button[name="add"]') : null;
+      
+      if (!stickyBar || !originalAtcBtn) return;
+
+      // Submit the real form when the sticky button is clicked
+      stickyAtcBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (!stickyAtcBtn.disabled) {
+           originalForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        }
+      });
+
+      // Show/Hide sticky bar based on scroll position of the original Add To Cart button
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            // Original button is visible, hide sticky bar
+            stickyBar.classList.remove('translate-y-0');
+            stickyBar.classList.add('translate-y-full');
+          } else {
+            // Original button is hidden, check if we scrolled past it
+            const rect = originalAtcBtn.getBoundingClientRect();
+            if (rect.top < 0) { 
+              stickyBar.classList.remove('translate-y-full');
+              stickyBar.classList.add('translate-y-0');
+            } else {
+              stickyBar.classList.remove('translate-y-0');
+              stickyBar.classList.add('translate-y-full');
+            }
+          }
+        });
+      }, { threshold: 0 });
+
+      observer.observe(originalAtcBtn);
+      
+      // Update sticky bar UI when variant changes
+      const optionInputs = document.querySelectorAll('input[name^="option"]');
+      optionInputs.forEach(input => {
+        input.addEventListener('change', function() {
+          // Add a small delay to let the original updateVariant function process first
+          setTimeout(() => {
+             const selectedVariantIdElement = document.querySelector('input[name="id"]');
+             if (!selectedVariantIdElement) return;
+             
+             const selectedVariantId = selectedVariantIdElement.value;
+             const variants = {{ product.variants | json }};
+             const matchedVariant = variants.find(v => v.id.toString() === selectedVariantId.toString());
+             
+             if (matchedVariant) {
+               // Update sticky title
+               const stickyVariantTitle = document.getElementById('sticky-variant-title');
+               if (stickyVariantTitle && matchedVariant.title != 'Default Title') {
+                 stickyVariantTitle.textContent = matchedVariant.title;
+               }
+               // Update button state
+               if (matchedVariant.available) {
+                 stickyAtcBtn.disabled = false;
+                 stickyAtcBtn.textContent = 'Add To Cart';
+               } else {
+                 stickyAtcBtn.disabled = true;
+                 stickyAtcBtn.textContent = 'Sold Out';
+               }
+             }
+          }, 50);
+        });
+      });
+    });
+  </script>
+{% endif %}
+
 {% schema %}
 {
   "name": "Product",
-  "settings": [],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Sticky Add To Cart"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky_atc",
+      "label": "Enable Sticky Add To Cart",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "sticky_atc_bg",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "sticky_atc_btn_bg",
+      "label": "Button Background Color",
+      "default": "#881337"
+    },
+    {
+      "type": "color",
+      "id": "sticky_atc_btn_text",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    }
+  ],
   "blocks": [
     {
       "type": "selling_points",
@@ -751,6 +1098,12 @@
             { "value": "two_column", "label": "Two Column" }
           ],
           "default": "carousel"
+        },
+        {
+          "type": "color",
+          "id": "icon_color",
+          "label": "Icon Color",
+          "default": "#4b5563"
         },
         {
           "type": "range",
@@ -1021,6 +1374,18 @@
           "id": "content",
           "label": "Content",
           "default": "<p>Add your accordion content here.</p>"
+        },
+        {
+          "type": "checkbox",
+          "id": "use_product_description",
+          "label": "Use product description instead",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "is_reviews",
+          "label": "Is Reviews Section (Shopify Reviews placeholder)",
+          "default": false
         }
       ]
     }
